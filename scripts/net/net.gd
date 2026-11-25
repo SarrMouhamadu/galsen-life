@@ -246,6 +246,21 @@ func start_server(port := PORT) -> int:
 	return OK
 
 
+## Recherche insensible à la casse d'un compte (garantit qu'un joueur retrouvera toujours son compte
+## même si la première lettre a été mise en majuscule par le clavier mobile ou s'il y a une divergence de casse).
+func _get_account_key(who: String) -> String:
+	var clean := who.strip_edges()
+	if clean == "":
+		return ""
+	if _accounts.has(clean):
+		return clean
+	var lower := clean.to_lower()
+	for k in _accounts:
+		if str(k).strip_edges().to_lower() == lower:
+			return str(k)
+	return ""
+
+
 func _load_accounts() -> void:
 	if not FileAccess.file_exists(ACCOUNTS_PATH):
 		if FileAccess.file_exists(ACCOUNTS_PATH + ".bak"):
@@ -266,20 +281,26 @@ func _load_accounts() -> void:
 		var acc = _accounts[who]
 		if acc is Dictionary:
 			if not acc.has("friend_code"):
-				acc["friend_code"] = generate_friend_code(who)
+				acc["friend_code"] = generate_friend_code(str(who))
 				_dirty = true
-			_code_to_account[str(acc["friend_code"]).to_upper()] = who
+			if not acc.has("display_name"):
+				acc["display_name"] = str(who)
+			_code_to_account[str(acc["friend_code"]).to_upper()] = str(who)
 
 
-func _save_accounts() -> void:
+func _save_accounts(sync := false) -> void:
 	if _saving_task != -1 and not WorkerThreadPool.is_task_completed(_saving_task):
-		return # Écriture précédente encore en cours sur le disque, on évite d'empiler
+		if sync:
+			WorkerThreadPool.wait_for_task_completion(_saving_task)
+			_saving_task = -1
+		else:
+			return # Écriture précédente encore en cours sur le disque, on évite d'empiler
 	if _saving_task != -1:
 		WorkerThreadPool.wait_for_task_completion(_saving_task)
 		_saving_task = -1
 	var accounts_copy: Dictionary = _accounts.duplicate(true)
 	_dirty = false
-	_saving_task = WorkerThreadPool.add_task(func():
+	if sync:
 		var json_str := JSON.stringify(accounts_copy)
 		var tmp_path := ACCOUNTS_PATH + ".tmp"
 		var f := FileAccess.open(tmp_path, FileAccess.WRITE)
@@ -289,7 +310,18 @@ func _save_accounts() -> void:
 			if FileAccess.file_exists(ACCOUNTS_PATH):
 				DirAccess.copy_absolute(ACCOUNTS_PATH, ACCOUNTS_PATH + ".bak")
 			DirAccess.rename_absolute(tmp_path, ACCOUNTS_PATH)
-	)
+	else:
+		_saving_task = WorkerThreadPool.add_task(func():
+			var json_str := JSON.stringify(accounts_copy)
+			var tmp_path := ACCOUNTS_PATH + ".tmp"
+			var f := FileAccess.open(tmp_path, FileAccess.WRITE)
+			if f:
+				f.store_string(json_str)
+				f.close()
+				if FileAccess.file_exists(ACCOUNTS_PATH):
+					DirAccess.copy_absolute(ACCOUNTS_PATH, ACCOUNTS_PATH + ".bak")
+				DirAccess.rename_absolute(tmp_path, ACCOUNTS_PATH)
+		)
 
 
 ## Tolérance réseau : un joueur dont le jeu charge la ville (téléphone lent) ne répond plus pendant
@@ -366,52 +398,86 @@ func _login(who: String, proof: String, new_key: String, wanted_avatar: String) 
 	if who.length() < 3 or who.length() > 16:
 		rpc_login_result.rpc_id(id, false, "Le pseudo doit faire 3 à 16 caractères.", {}, "")
 		return
-	for other in _sessions.values():
-		if other == who:
-			rpc_login_result.rpc_id(id, false, "%s est déjà connecté." % who, {}, "")
-			return
+
+	var acc_key := _get_account_key(who)
 	var nonce: String = _nonces.get(id, "")
+
 	if new_key != "":
-		if _accounts.has(who):
-			rpc_login_result.rpc_id(id, false, "Ce pseudo est déjà pris.", {}, "", "")
+		# Création d'un nouveau compte : vérification insensible à la casse
+		if acc_key != "":
+			rpc_login_result.rpc_id(id, false, "Ce pseudo est déjà pris.", {}, "")
 			return
 		var fcode := generate_friend_code(who)
 		var tries := 0
 		while _code_to_account.has(fcode) and tries < 100:
 			fcode = "GAL-%05d" % ((absi(who.hash()) + tries + 1000) % 90000 + 10000)
 			tries += 1
-		_accounts[who] = {"hash": new_key, "avatar": wanted_avatar if wanted_avatar in AVATARS else "heros", "save": {}, "friend_code": fcode}
+		_accounts[who] = {
+			"hash": new_key,
+			"avatar": wanted_avatar if wanted_avatar in AVATARS else "heros",
+			"save": {},
+			"friend_code": fcode,
+			"display_name": who
+		}
 		_code_to_account[fcode] = who
 		_dirty = true
-		print("Nouveau compte : %s (code ami %s)" % [who, fcode])
-	elif not _accounts.has(who):
-		rpc_login_result.rpc_id(id, false, "Compte inconnu. Coche « Créer un compte ».", {}, "", "")
+		_save_accounts(true) # Sauvegarde immédiate et synchrone pour garantir 0 perte de compte
+		acc_key = who
+		print("Nouveau compte créé et sauvegardé avec succès : %s (code ami %s)" % [who, fcode])
+	elif acc_key == "":
+		rpc_login_result.rpc_id(id, false, "Compte inconnu. Coche « Créer un compte ».", {}, "")
 		return
-	var acc: Dictionary = _accounts[who]
+
+	var acc: Dictionary = _accounts[acc_key]
+	var display_who: String = str(acc.get("display_name", acc_key))
+
 	if not acc.has("friend_code"):
-		acc["friend_code"] = generate_friend_code(who)
-		_code_to_account[acc["friend_code"].to_upper()] = who
+		acc["friend_code"] = generate_friend_code(display_who)
+		_code_to_account[acc["friend_code"].to_upper()] = acc_key
 		_dirty = true
+
+	# Vérification du mot de passe
 	if _sha(acc["hash"] + nonce) != proof:
-		rpc_login_result.rpc_id(id, false, "Mot de passe incorrect.", {}, "", "")
+		rpc_login_result.rpc_id(id, false, "Mot de passe incorrect.", {}, "")
 		return
-	if wanted_avatar in AVATARS and wanted_avatar != acc["avatar"]:
+
+	# Si ce joueur avait une session précédente encore active sur le serveur (ex: appli fermée brutalement sur mobile)
+	# On déconnecte l'ancien pair et on reprend la session instantanément sans bloquer le joueur !
+	var old_peer_id := -1
+	for sid in _sessions:
+		if _sessions[sid].to_lower() == acc_key.to_lower():
+			old_peer_id = sid
+			break
+	if old_peer_id != -1 and old_peer_id != id:
+		print("[SESSION] Remplacement session zombie pour %s (peer %d remplacé par %d)" % [display_who, old_peer_id, id])
+		_sessions.erase(old_peer_id)
+		_states.erase(old_peer_id)
+		_pos.erase(old_peer_id)
+		_nonces.erase(old_peer_id)
+		_peer_packets.erase(old_peer_id)
+		if multiplayer.multiplayer_peer and multiplayer.multiplayer_peer.has_peer(old_peer_id):
+			multiplayer.multiplayer_peer.disconnect_peer(old_peer_id)
+
+	if wanted_avatar in AVATARS and wanted_avatar != acc.get("avatar", ""):
 		acc["avatar"] = wanted_avatar
 		_dirty = true
-	_sessions[id] = who
-	print("%s s'est connecté (%d en ligne)" % [who, _sessions.size()])
-	rpc_login_result.rpc_id(id, true, "Bienvenue à Dakar, %s !" % who, acc["save"], acc["avatar"], str(acc.get("friend_code", generate_friend_code(who))))
+
+	_sessions[id] = display_who
+	print("%s s'est connecté (%d en ligne)" % [display_who, _sessions.size()])
+	rpc_login_result.rpc_id(id, true, "Bienvenue à Dakar, %s !" % display_who, acc.get("save", {}), acc.get("avatar", "heros"))
+
 	var full := {}
 	for other in _sessions:
 		var st: Dictionary = _states.get(other, {})
-		var oacc: Dictionary = _accounts.get(_sessions[other], {})
+		var o_key := _get_account_key(_sessions[other])
+		var oacc: Dictionary = _accounts.get(o_key if o_key != "" else _sessions[other], {})
 		full[other] = [_sessions[other], oacc.get("avatar", "heros"), st.get("job", ""), st.get("wl", 0), _tenue_of(oacc)]
 	rpc_roster_full.rpc_id(id, full)
-	_delta_add[id] = [who, acc["avatar"], _tenue_of(acc)]
-	social.on_join(id, who)
-	lutte.on_join(id, who)
+	_delta_add[id] = [display_who, acc.get("avatar", "heros"), _tenue_of(acc)]
+	social.on_join(id, display_who)
+	lutte.on_join(id, display_who)
 	if _sessions.size() <= 100:
-		_broadcast_chat("Serveur", "%s est arrivé à Dakar." % who)
+		_broadcast_chat("Serveur", "%s est arrivé à Dakar." % display_who)
 
 
 ## État compact : [x, y, z, cap, vitesse, véhicule, passager, étoiles, métier, policiers]
@@ -452,8 +518,12 @@ func rpc_save(save: Dictionary) -> void:
 	if not is_server:
 		return
 	var id := multiplayer.get_remote_sender_id()
-	if _sessions.has(id) and _accounts.has(_sessions[id]):
-		var acc: Dictionary = _accounts[_sessions[id]]
+	if not _sessions.has(id):
+		return
+	var who: String = _sessions[id]
+	var acc_key := _get_account_key(who)
+	if acc_key != "" and _accounts.has(acc_key):
+		var acc: Dictionary = _accounts[acc_key]
 		var old := _tenue_of(acc)
 		# Sécurité serveur anti-triche : validation des sauts d'argent suspects
 		var prev = acc.get("save", {})
@@ -461,7 +531,7 @@ func rpc_save(save: Dictionary) -> void:
 			var prev_tot := int(prev.get("money", 0)) + int(prev.get("bank", 0))
 			var new_tot := int(save.get("money", 0)) + int(save.get("bank", 0))
 			if new_tot > prev_tot + 150000:
-				print("[SÉCURITÉ] Sauvegarde suspecte pour %s (+%d FCFA d'un coup) : montant plafonné" % [_sessions[id], new_tot - prev_tot])
+				print("[SÉCURITÉ] Sauvegarde suspecte pour %s (+%d FCFA d'un coup) : montant plafonné" % [who, new_tot - prev_tot])
 				save["money"] = int(prev.get("money", 0)) + 30000
 		acc["save"] = save
 		_dirty = true
@@ -500,15 +570,16 @@ func rpc_delete_account() -> void:
 		return
 	var id := multiplayer.get_remote_sender_id()
 	var who: String = _sessions.get(id, "")
-	if who == "" or not _accounts.has(who):
+	var acc_key := _get_account_key(who)
+	if who == "" or acc_key == "":
 		return
 	social.forget(who)
 	lutte.forget(who)
 	properties.forget_account(who)
 	city.forget_account(who)
-	_accounts.erase(who)
-	_save_accounts()
-	print("Compte supprimé à la demande du joueur : %s" % who)
+	_accounts.erase(acc_key)
+	_save_accounts(true)
+	print("Compte supprimé définitivement à la demande du joueur : %s" % who)
 	rpc_account_deleted.rpc_id(id)
 	get_tree().create_timer(1.5).timeout.connect(func():
 		if multiplayer.multiplayer_peer and _sessions.has(id):

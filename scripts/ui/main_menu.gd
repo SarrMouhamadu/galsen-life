@@ -292,12 +292,22 @@ func _build() -> void:
 			_create.text = " Nouveau joueur ? Créer un compte"
 			_connect_btn.text = "Se connecter"
 	)
+
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.add_theme_color_override("font_color", Color("ffd166"))
 	_status.add_theme_font_size_override("font_size", 14)
-	if saved_p != "" and saved_pw != "":
+
+	# Si le joueur vient d'installer l'application (pas de compte local sauvé), on active directement le mode création
+	if saved_p == "":
+		_create.button_pressed = true
+		_status.text = "Bienvenue à Dakar ! Choisis ton pseudo et ton mot de passe pour commencer."
+	elif saved_pw != "":
+		_create.button_pressed = false
 		_status.text = "Identifiants mémorisés pour %s. Touche « Se connecter » !" % saved_p
+	else:
+		_create.button_pressed = false
+		_status.text = "Saisis ton mot de passe pour %s." % saved_p
 	v.add_child(_status)
 
 	var note := Label.new()
@@ -377,6 +387,7 @@ func _button(text: String, cb: Callable) -> Button:
 
 func _on_connect() -> void:
 	_pseudo.text = _pseudo.text.strip_edges()
+	_password.text = _password.text.strip_edges()
 	if _pseudo.text.length() < 3 or _password.text.length() < 4:
 		_status.text = "Pseudo d'au moins 3 caractères et mot de passe d'au moins 4 caractères."
 		return
@@ -432,10 +443,14 @@ func _on_login(ok: bool, message: String) -> void:
 		elif "déjà pris" in message and _create.button_pressed:
 			_create.button_pressed = false
 			_status.text = "Ce compte existe déjà. Touche « Se connecter » avec ton mot de passe."
+		elif "déjà connecté" in message:
+			_status.text = "Connexion précédente en cours de libération. Touche à nouveau « Se connecter » !"
+		elif "Mot de passe incorrect" in message:
+			_status.text = "Mot de passe incorrect. Vérifie les majuscules et minuscules."
 	if ok:
 		var cfg := ConfigFile.new()
 		cfg.load(SETTINGS)
 		cfg.set_value("net", "pseudo", _pseudo.text.strip_edges())
-		cfg.set_value("net", "password", _password.text)
+		cfg.set_value("net", "password", _password.text.strip_edges())
 		cfg.save(SETTINGS)
 		get_tree().change_scene_to_file(MAIN)
