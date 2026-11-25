@@ -631,6 +631,11 @@ func _input(event: InputEvent) -> void:
 		if _is_escape(event):
 			close_chat()
 			get_viewport().set_input_as_handled()
+		elif event is InputEventScreenTouch and event.pressed:
+			var cr := _chat_input.get_global_rect()
+			if not cr.has_point(event.position):
+				close_chat()
+				get_viewport().set_input_as_handled()
 		return
 	if _intro.visible and _intro.modulate.a >= 1.0:
 		if _is_press(event):
@@ -679,6 +684,11 @@ func open_chat() -> void:
 		return
 	_chat_input.visible = true
 	_chat_input.text = ""
+	var vp := get_viewport_rect().size
+	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
+	var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
+	_chat_input.position = Vector2(16, vp.y - bot_m - 44.0)
+	_chat_input.custom_minimum_size.x = minf(520, vp.x - 32)
 	_chat_input.grab_focus()
 	GameState.typing = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -855,6 +865,13 @@ func _on_notify(text: String) -> void:
 
 
 func _process(delta: float) -> void:
+	if _chat_input and _chat_input.visible:
+		var vp := get_viewport_rect().size
+		var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
+		var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
+		var target_y := vp.y - bot_m - _chat_input.size.y
+		_chat_input.position.y = lerpf(_chat_input.position.y, target_y, 0.45)
+		_chat_input.custom_minimum_size.x = minf(520, vp.x - 32)
 	if main == null or main.player == null:
 		return
 	# Textes de l'interface : 10 mises à jour par seconde suffisent (moins de calcul sur téléphone)

@@ -133,6 +133,10 @@ func _on_ads_changed() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
+	if event is InputEventScreenTouch and event.pressed and GameState.typing:
+		var r := get_global_rect()
+		if not r.has_point(event.position):
+			_unfocus()
 	var to_local := _scroll.get_global_transform_with_canvas().affine_inverse()
 	if event is InputEventScreenTouch:
 		if event.pressed:
@@ -153,6 +157,14 @@ func _process(_delta: float) -> void:
 	if visible:
 		var m := int(GameState.game_minutes)
 		_clock.text = "%02d:%02d" % [m / 60, m % 60]
+		var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
+		if kb_h > 0 and GameState.typing:
+			var target_b := -float(kb_h) - 10.0
+			offset_bottom = lerpf(offset_bottom, target_b, 0.4)
+			offset_top = offset_bottom - H
+		else:
+			offset_bottom = lerpf(offset_bottom, -16.0, 0.4)
+			offset_top = offset_bottom - H
 
 
 # --- Ouverture ---------------------------------------------------------------------------
@@ -1430,6 +1442,21 @@ func _line(placeholder: String) -> LineEdit:
 	e.placeholder_text = placeholder
 	e.custom_minimum_size = Vector2(0, 36)
 	e.add_theme_font_size_override("font_size", 14)
-	e.focus_entered.connect(func(): GameState.typing = true)
-	e.focus_exited.connect(func(): GameState.typing = false)
+	e.focus_entered.connect(func():
+		GameState.typing = true
+		call_deferred("_scroll_to_entry", e)
+	)
+	e.focus_exited.connect(func():
+		GameState.typing = false
+	)
 	return e
+
+
+func _scroll_to_entry(e: Control) -> void:
+	if not e or not is_instance_valid(e) or not _scroll or not is_instance_valid(_scroll):
+		return
+	await get_tree().create_timer(0.06).timeout
+	if not is_instance_valid(e) or not is_instance_valid(_scroll):
+		return
+	var rel_y := e.global_position.y - _scroll.global_position.y
+	_scroll.scroll_vertical = clampi(int(_scroll.scroll_vertical + rel_y - 40), 0, 3000)

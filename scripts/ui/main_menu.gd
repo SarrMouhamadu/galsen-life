@@ -21,6 +21,9 @@ var _friend_code: LineEdit
 var _create: CheckBox
 var _status: Label
 var _connect_btn: Button
+var _scroll: ScrollContainer
+var _margin: MarginContainer
+var _content_vbox: VBoxContainer
 
 
 func _ready() -> void:
@@ -57,68 +60,120 @@ func _ready() -> void:
 		_on_connect()
 
 
+func _process(_delta: float) -> void:
+	if not _scroll:
+		return
+	var vp_size := get_viewport_rect().size
+	var target_w := clampf(vp_size.x - 32.0, 280.0, 480.0)
+	if _content_vbox and absf(_content_vbox.custom_minimum_size.x - target_w) > 1.0:
+		_content_vbox.custom_minimum_size.x = target_w
+
+	# Élévation réactive de l'interface quand le clavier virtuel apparaît sur smartphone (iOS / Android)
+	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
+	var target_bottom: float = -float(kb_h) if kb_h > 0 else 0.0
+	if absf(_scroll.offset_bottom - target_bottom) > 1.0:
+		_scroll.offset_bottom = lerpf(_scroll.offset_bottom, target_bottom, 0.45)
+
+
+func _input(event: InputEvent) -> void:
+	# Ferme le clavier virtuel si l'utilisateur touche l'arrière-plan en dehors des champs
+	if event is InputEventScreenTouch and event.pressed:
+		var fo := get_viewport().gui_get_focus_owner()
+		if fo is LineEdit:
+			var r := fo.get_global_rect()
+			if not r.has_point(event.position):
+				fo.release_focus()
+
+
 func _build() -> void:
 	var bg := ColorRect.new()
 	bg.color = Color("101418")
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
-	var cc := CenterContainer.new()
-	cc.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(cc)
+
+	_scroll = ScrollContainer.new()
+	_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	add_child(_scroll)
+
+	_margin = MarginContainer.new()
+	_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_margin.add_theme_constant_override("margin_left", 16)
+	_margin.add_theme_constant_override("margin_right", 16)
+	_margin.add_theme_constant_override("margin_top", 16)
+	_margin.add_theme_constant_override("margin_bottom", 24)
+	_scroll.add_child(_margin)
+
+	var center := CenterContainer.new()
+	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_margin.add_child(center)
+
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 12)
-	v.custom_minimum_size = Vector2(520, 0)
-	cc.add_child(v)
+	v.add_theme_constant_override("separation", 9)
+	v.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var vp_size := get_viewport_rect().size
+	v.custom_minimum_size = Vector2(clampf(vp_size.x - 32.0, 280.0, 480.0), 0)
+	_content_vbox = v
+	center.add_child(v)
+
 	var title := Label.new()
 	title.text = "GALSEN-LIFE"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 72)
+	title.add_theme_font_size_override("font_size", 42)
 	title.add_theme_color_override("font_color", Color("fdef42"))
 	v.add_child(title)
+
 	var sub := Label.new()
 	sub.text = "Dalal ak jàmm ci Dakar !"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub.add_theme_font_size_override("font_size", 24)
+	sub.add_theme_font_size_override("font_size", 18)
 	v.add_child(sub)
+
 	var solo := _button("Jouer en solo", func(): get_tree().change_scene_to_file(MAIN))
+	solo.custom_minimum_size = Vector2(0, 48)
+	solo.add_theme_font_size_override("font_size", 20)
 	v.add_child(solo)
+
 	var sep := HSeparator.new()
 	v.add_child(sep)
+
 	var online_title := Label.new()
 	online_title.text = "Jouer en ligne"
-	online_title.add_theme_font_size_override("font_size", 28)
+	online_title.add_theme_font_size_override("font_size", 22)
 	online_title.add_theme_color_override("font_color", Color("7cfc9a"))
 	v.add_child(online_title)
+
 	var cfg := ConfigFile.new()
 	cfg.load(SETTINGS)
 	_host = _field(v, "Adresse du serveur", cfg.get_value("net", "host", Net.DEFAULT_HOST))
-	# Version des joueurs : toujours le serveur officiel (des testeurs écrivaient leur pseudo dans ce champ
-	# et ne pouvaient plus se connecter : « Couldn't resolve the server IP address »)
+	# Version des joueurs : toujours le serveur officiel
 	if not OS.is_debug_build():
 		_host.text = Net.DEFAULT_HOST
 		_host.visible = false
 
-	var chan_label := Label.new()
-	chan_label.text = "Serveur & Canal (capacité millions de joueurs) :"
-	chan_label.add_theme_font_size_override("font_size", 16)
-	chan_label.add_theme_color_override("font_color", Color("90e0ef"))
-	v.add_child(chan_label)
-
+	# Canal de connexion : sélection automatique transparente sans encombrer l'écran
 	_channel = OptionButton.new()
-	_channel.custom_minimum_size = Vector2(0, 48)
-	_channel.add_theme_font_size_override("font_size", 18)
 	for ch in Net.CHANNELS:
 		_channel.add_item(ch["name"])
 	var saved_chan: int = int(cfg.get_value("net", "channel_idx", 0))
 	_channel.select(clampi(saved_chan, 0, Net.CHANNELS.size() - 1))
+	_channel.visible = false
 	v.add_child(_channel)
 
 	_pseudo = _field(v, "Pseudo (3 à 16 caractères)", cfg.get_value("net", "pseudo", ""))
 	_password = _field(v, "Mot de passe", "")
 	_password.secret = true
+
+	# Enchaînement rapide et naturel au clavier virtuel
+	_pseudo.text_submitted.connect(func(_t): _password.grab_focus())
+	_password.text_submitted.connect(func(_t): _on_connect())
+
 	_avatar = OptionButton.new()
-	_avatar.custom_minimum_size = Vector2(0, 48)
-	_avatar.add_theme_font_size_override("font_size", 20)
+	_avatar.custom_minimum_size = Vector2(0, 44)
+	_avatar.add_theme_font_size_override("font_size", 18)
 	for a in Net.AVATARS:
 		_avatar.add_item(AVATAR_NAMES.get(a, a))
 	_avatar.select(maxi(0, Net.AVATARS.find(cfg.get_value("net", "avatar", "heros"))))
@@ -134,8 +189,8 @@ func _build() -> void:
 	f_box.add_child(f_header)
 
 	var f_label := Label.new()
-	f_label.text = "🤝 Rejoindre un ami avec son code (optionnel) :"
-	f_label.add_theme_font_size_override("font_size", 16)
+	f_label.text = "🤝 Rejoindre un ami (optionnel) :"
+	f_label.add_theme_font_size_override("font_size", 15)
 	f_label.add_theme_color_override("font_color", Color("90e0ef"))
 	f_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	f_header.add_child(f_label)
@@ -146,11 +201,12 @@ func _build() -> void:
 
 	_friend_code = _field(f_row, "Code ami (ex: GAL-12345)", "")
 	_friend_code.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_friend_code.text_submitted.connect(func(_t): _on_connect())
 
 	var paste_btn := Button.new()
 	paste_btn.text = "Coller"
-	paste_btn.custom_minimum_size = Vector2(85, 48)
-	paste_btn.add_theme_font_size_override("font_size", 16)
+	paste_btn.custom_minimum_size = Vector2(75, 46)
+	paste_btn.add_theme_font_size_override("font_size", 15)
 	paste_btn.pressed.connect(func():
 		var clip := DisplayServer.clipboard_get().strip_edges()
 		if clip != "":
@@ -166,15 +222,15 @@ func _build() -> void:
 	var my_c_val := Net.generate_friend_code(init_p if init_p != "" else "Joueur")
 	var my_code_label := Label.new()
 	my_code_label.text = "Ton code ami : %s" % my_c_val
-	my_code_label.add_theme_font_size_override("font_size", 15)
+	my_code_label.add_theme_font_size_override("font_size", 14)
 	my_code_label.add_theme_color_override("font_color", Color("fdef42"))
 	my_code_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	my_code_row.add_child(my_code_label)
 
 	var copy_my_code_btn := Button.new()
 	copy_my_code_btn.text = "📋 Partager mon code"
-	copy_my_code_btn.custom_minimum_size = Vector2(170, 38)
-	copy_my_code_btn.add_theme_font_size_override("font_size", 14)
+	copy_my_code_btn.custom_minimum_size = Vector2(160, 36)
+	copy_my_code_btn.add_theme_font_size_override("font_size", 13)
 	copy_my_code_btn.pressed.connect(func():
 		var cur_p := _pseudo.text.strip_edges()
 		var c := Net.generate_friend_code(cur_p if cur_p != "" else "Joueur")
@@ -188,11 +244,11 @@ func _build() -> void:
 		my_code_label.text = "Ton code ami : %s" % c
 	)
 
-	# Case à cocher "Créer un compte" agrandie et stylisée pour smartphones
+	# Case à cocher "Créer un compte"
 	_create = CheckBox.new()
 	_create.text = " Nouveau joueur ? Créer un compte"
-	_create.custom_minimum_size = Vector2(0, 52)
-	_create.add_theme_font_size_override("font_size", 20)
+	_create.custom_minimum_size = Vector2(0, 46)
+	_create.add_theme_font_size_override("font_size", 18)
 	_create.add_theme_color_override("font_color", Color("e2e8f0"))
 	_create.add_theme_color_override("font_pressed_color", Color("7cfc9a"))
 	_create.add_theme_color_override("font_hover_color", Color.WHITE)
@@ -205,14 +261,14 @@ func _build() -> void:
 	create_box.border_width_top = 2
 	create_box.border_width_right = 2
 	create_box.border_width_bottom = 2
-	create_box.corner_radius_top_left = 10
-	create_box.corner_radius_top_right = 10
-	create_box.corner_radius_bottom_right = 10
-	create_box.corner_radius_bottom_left = 10
-	create_box.content_margin_left = 16.0
-	create_box.content_margin_right = 16.0
-	create_box.content_margin_top = 10.0
-	create_box.content_margin_bottom = 10.0
+	create_box.corner_radius_top_left = 8
+	create_box.corner_radius_top_right = 8
+	create_box.corner_radius_bottom_right = 8
+	create_box.corner_radius_bottom_left = 8
+	create_box.content_margin_left = 14.0
+	create_box.content_margin_right = 14.0
+	create_box.content_margin_top = 8.0
+	create_box.content_margin_bottom = 8.0
 	_create.add_theme_stylebox_override("normal", create_box)
 	_create.add_theme_stylebox_override("hover", create_box)
 	
@@ -224,6 +280,8 @@ func _build() -> void:
 	v.add_child(_create)
 
 	_connect_btn = _button("Se connecter", _on_connect)
+	_connect_btn.custom_minimum_size = Vector2(0, 50)
+	_connect_btn.add_theme_font_size_override("font_size", 20)
 	v.add_child(_connect_btn)
 
 	_create.toggled.connect(func(pressed: bool):
@@ -237,17 +295,35 @@ func _build() -> void:
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.add_theme_color_override("font_color", Color("ffd166"))
+	_status.add_theme_font_size_override("font_size", 14)
 	v.add_child(_status)
+
 	var note := Label.new()
 	note.text = "Ne réutilise pas un mot de passe important. Carte : © OpenStreetMap."
-	note.add_theme_font_size_override("font_size", 14)
+	note.add_theme_font_size_override("font_size", 12)
 	note.add_theme_color_override("font_color", Color("999999"))
 	v.add_child(note)
+
 	var credits := _button("Crédits", _show_credits)
 	credits.flat = true
-	credits.custom_minimum_size = Vector2(0, 40)
-	credits.add_theme_font_size_override("font_size", 18)
+	credits.custom_minimum_size = Vector2(0, 36)
+	credits.add_theme_font_size_override("font_size", 16)
 	v.add_child(credits)
+
+
+func _scroll_to_control(c: Control) -> void:
+	if not c or not is_instance_valid(c) or not _scroll or not is_instance_valid(_scroll):
+		return
+	await get_tree().create_timer(0.06).timeout
+	if not is_instance_valid(c) or not is_instance_valid(_scroll):
+		return
+	var c_y := c.global_position.y
+	var s_y := _scroll.global_position.y
+	var s_h := _scroll.size.y
+	var rel_y := c_y - s_y
+	if rel_y < 20.0 or rel_y > s_h - c.size.y - 20.0:
+		var target := _scroll.scroll_vertical + int(rel_y - (s_h * 0.35))
+		_scroll.scroll_vertical = clampi(target, 0, 3000)
 
 
 ## Crédits des modèles sous licence CC BY (obligatoires) — détail dans vehicles/CREDITS.md
@@ -279,8 +355,11 @@ func _field(parent: Control, placeholder: String, value: String) -> LineEdit:
 	var e := LineEdit.new()
 	e.placeholder_text = placeholder
 	e.text = value
-	e.custom_minimum_size = Vector2(0, 48)
-	e.add_theme_font_size_override("font_size", 20)
+	e.custom_minimum_size = Vector2(0, 46)
+	e.add_theme_font_size_override("font_size", 17)
+	e.focus_entered.connect(func():
+		call_deferred("_scroll_to_control", e)
+	)
 	parent.add_child(e)
 	return e
 
@@ -288,8 +367,8 @@ func _field(parent: Control, placeholder: String, value: String) -> LineEdit:
 func _button(text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(0, 56)
-	b.add_theme_font_size_override("font_size", 24)
+	b.custom_minimum_size = Vector2(0, 50)
+	b.add_theme_font_size_override("font_size", 20)
 	b.pressed.connect(cb)
 	return b
 
