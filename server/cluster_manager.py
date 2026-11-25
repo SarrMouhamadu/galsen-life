@@ -16,7 +16,7 @@ GODOT_BIN = os.environ.get("GODOT_BIN", "/opt/galsen-life/Godot")
 PCK_PATH = os.environ.get("PCK_PATH", "/opt/galsen-life/galsen-life.pck")
 START_PORT = int(os.environ.get("START_PORT", "7777"))
 NUM_SHARDS = int(os.environ.get("NUM_SHARDS", "5"))
-MAX_PLAYERS_PER_SHARD = int(os.environ.get("MAX_PLAYERS", "4096"))
+MAX_PLAYERS_PER_SHARD = int(os.environ.get("MAX_PLAYERS", "4095"))
 
 processes = {}
 running = True

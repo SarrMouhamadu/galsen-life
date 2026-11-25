@@ -26,7 +26,7 @@ signal friend_joined(ok: bool, message: String, friend_name: String, friend_pos:
 const PORT := 7777
 ## Serveur officiel du jeu (VPS Hetzner) : adresse proposée par défaut dans le menu
 const DEFAULT_HOST := "188.245.233.220"
-const DEFAULT_MAX_PLAYERS := 4096
+const DEFAULT_MAX_PLAYERS := 4095
 var max_players := DEFAULT_MAX_PLAYERS
 const SEND_RATE := 0.1
 ## Zone d'intérêt adaptative & Répartition par cellules spatiales
@@ -218,7 +218,8 @@ func start_server(port := PORT) -> int:
 		elif a.begins_with("--port="):
 			port = a.trim_prefix("--port=").to_int()
 		elif a.begins_with("--max-players="):
-			max_players = a.trim_prefix("--max-players=").to_int()
+			max_players = clampi(a.trim_prefix("--max-players=").to_int(), 1, 4095)
+	max_players = clampi(max_players, 1, 4095)
 	var err := peer.create_server(port, max_players)
 	if err != OK:
 		printerr("Serveur : impossible d'ouvrir le port %d (erreur %d)" % [port, err])

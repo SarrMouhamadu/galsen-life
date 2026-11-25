@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 User=galsen
 WorkingDirectory=/opt/galsen-life
-ExecStart=/opt/galsen-life/Godot --headless --main-pack /opt/galsen-life/galsen-life.pck -- --server --port=%I --max-players=4096
+ExecStart=/opt/galsen-life/Godot --headless --main-pack /opt/galsen-life/galsen-life.pck -- --server --port=%I --max-players=4095
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
