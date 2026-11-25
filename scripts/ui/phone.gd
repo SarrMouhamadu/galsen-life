@@ -1337,7 +1337,7 @@ func _cars_app() -> void:
 			main.gps.set_waypoint(ap0, "Location de véhicules")
 			close(), Color("1d3557")))
 	if dl.owned().is_empty():
-		_content.add_child(_note("Tu n'as pas encore de véhicule. Achète une moto ou une voiture à la concession (Plateau)."))
+		_content.add_child(_note("Tu n'as pas encore de véhicule. Achète une moto sportive ou une voiture de luxe à la concession de prestige (Plateau)."))
 		return
 	_content.add_child(_note("La dépanneuse t'amène ton véhicule pour %s. Un seul véhicule dehors à la fois. Fais le plein dans les stations-service." % GameState.fcfa(dl.DELIVERY)))
 	for i in dl.owned().size():

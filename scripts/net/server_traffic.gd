@@ -17,7 +17,7 @@ const TYPE_NAMES := ["taxi", "clando", "car_rapide", "police", "coach", "bus", "
 const MIX := [0, 6, 1, 2, 8, 0, 6, 7, 1, 3, 6, 0, 2, 8, 1, 6, 7, 0, 8, 2, 4, 6, 1, 5, 8, 0, 6, 2]
 const CRUISE := {
 	"car_rapide": 8.5, "bus": 8.0, "coach": 8.5, "police": 11.0,
-	"jakarta": 10.5, "grosse_moto": 13.5, "ndiaga": 8.5, "taxi": 10.0, "clando": 9.5
+	"jakarta": 12.5, "grosse_moto": 16.0, "ndiaga": 8.5, "taxi": 11.0, "clando": 12.5
 }
 const MIN_ROAD := {"bus": 8.0, "coach": 8.0, "car_rapide": 6.0, "ndiaga": 6.0}
 const LOCAL_TARGET := 24 ## voitures voulues autour d'un joueur

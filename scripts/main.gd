@@ -47,14 +47,14 @@ const Stade = preload("res://scripts/world/stade.gd")
 const Ter = preload("res://scripts/transport/ter.gd")
 
 const TRAFFIC := [
-	"taxi", "jakarta", "clando", "car_rapide", "grosse_moto", "charette",
+	"taxi", "jakarta", "clando", "suv", "car_rapide", "grosse_moto", "charette",
 	"taxi", "jakarta", "ndiaga", "clando", "police",
-	"jakarta", "taxi", "car_rapide", "grosse_moto", "clando", "charette",
+	"jakarta", "taxi", "car_rapide", "grosse_moto", "suv", "charette",
 	"taxi", "jakarta", "ndiaga", "car_rapide", "police",
-	"grosse_moto", "taxi", "jakarta", "clando", "car_rapide",
+	"grosse_moto", "taxi", "jakarta", "clando", "suv", "car_rapide",
 	"jakarta", "taxi", "grosse_moto", "ndiaga", "clando", "charette",
 	"car_rapide", "jakarta", "taxi", "police", "grosse_moto",
-	"clando", "jakarta", "taxi", "ndiaga", "car_rapide",
+	"suv", "clando", "jakarta", "taxi", "ndiaga", "car_rapide",
 	"coach", "jakarta", "grosse_moto", "taxi", "clando", "charette",
 	"car_rapide", "jakarta", "bus"
 ]

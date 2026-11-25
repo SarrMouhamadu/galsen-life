@@ -4,13 +4,14 @@ extends CharacterBody3D
 const Mk = preload("res://scripts/util/mk.gd")
 
 const TYPES := {
-	"taxi": {"name": "Taxi", "size": Vector3(1.84, 1.34, 4.3), "speed": 26.0, "accel": 9.0, "steer": 2.1, "cam": 7.0},
+	"taxi": {"name": "Taxi VIP Dakar", "size": Vector3(1.84, 1.34, 4.3), "speed": 28.0, "accel": 11.0, "steer": 2.2, "cam": 7.0},
 	"bus": {"name": "Autocar", "size": Vector3(2.55, 3.3, 12.0), "speed": 20.0, "accel": 4.0, "steer": 1.15, "cam": 15.0},
 	"coach": {"name": "Car interurbain", "size": Vector3(2.55, 3.3, 12.0), "speed": 21.0, "accel": 4.0, "steer": 1.15, "cam": 15.0},
 	"car_rapide": {"name": "Car rapide", "size": Vector3(2.5, 2.9, 6.2), "speed": 19.0, "accel": 5.5, "steer": 1.6, "cam": 10.0},
-	"jakarta": {"name": "Jakarta", "size": Vector3(0.7, 1.1, 1.9), "speed": 25.0, "accel": 13.0, "steer": 2.8, "cam": 5.5},
-	"grosse_moto": {"name": "Grosse moto", "size": Vector3(0.85, 1.25, 2.2), "speed": 36.0, "accel": 18.0, "steer": 3.0, "cam": 5.8},
-	"clando": {"name": "Clando", "size": Vector3(1.95, 1.35, 4.45), "speed": 23.0, "accel": 8.0, "steer": 2.0, "cam": 7.5},
+	"jakarta": {"name": "Maxi-Scooter T-MAX de Luxe", "size": Vector3(0.75, 1.15, 2.0), "speed": 32.0, "accel": 16.0, "steer": 2.9, "cam": 5.5},
+	"grosse_moto": {"name": "Superbike de Luxe (1000cc V4)", "size": Vector3(0.85, 1.25, 2.2), "speed": 42.0, "accel": 22.0, "steer": 3.2, "cam": 5.8},
+	"clando": {"name": "Berline VIP de Luxe", "size": Vector3(2.0, 1.4, 4.5), "speed": 32.0, "accel": 15.0, "steer": 2.4, "cam": 7.5},
+	"suv": {"name": "SUV de Luxe (Range Rover / V8)", "size": Vector3(2.3, 1.7, 4.7), "speed": 31.0, "accel": 14.0, "steer": 2.2, "cam": 8.0},
 	"police": {"name": "Voiture de police", "size": Vector3(2.15, 1.5, 4.6), "speed": 27.0, "accel": 10.0, "steer": 2.2, "cam": 7.5},
 	"van": {"name": "Camionnette Jumbo", "size": Vector3(2.6, 2.7, 5.4), "speed": 21.0, "accel": 6.5, "steer": 1.8, "cam": 9.0},
 	"ndiaga": {"name": "Ndiaga Ndiaye", "size": Vector3(2.5, 2.6, 6.0), "speed": 19.0, "accel": 5.5, "steer": 1.7, "cam": 10.0},
@@ -19,8 +20,8 @@ const TYPES := {
 	"charette": {"name": "Charrette traditionnelle", "size": Vector3(1.6, 1.8, 4.4), "speed": 14.0, "accel": 5.0, "steer": 2.4, "cam": 6.5},
 }
 const FUEL_PER_M := 100.0 / 15000.0 ## % de réservoir par mètre parcouru
-const RADIO_TYPES := ["taxi", "car_rapide", "clando", "police", "bus", "coach", "ndiaga", "brt"]
-const ENGINE_PITCH := {"army": 0.6, "taxi": 0.75, "car_rapide": 0.55, "jakarta": 1.5, "grosse_moto": 0.85, "clando": 0.7, "police": 0.8, "bus": 0.42, "coach": 0.42, "ndiaga": 0.5, "brt": 0.35, "charette": 0.0}
+const RADIO_TYPES := ["taxi", "car_rapide", "clando", "police", "bus", "coach", "ndiaga", "brt", "suv"]
+const ENGINE_PITCH := {"army": 0.6, "taxi": 0.78, "car_rapide": 0.55, "jakarta": 1.05, "grosse_moto": 0.85, "clando": 0.78, "suv": 0.65, "police": 0.8, "bus": 0.42, "coach": 0.42, "ndiaga": 0.5, "brt": 0.35, "charette": 0.0}
 ## Les grands véhicules évitent les ruelles trop étroites.
 const MIN_ROAD := {"bus": 8.0, "coach": 8.0, "car_rapide": 6.0, "ndiaga": 6.0, "brt": 9.0}
 ## Vrais modèles 3D : packs CC0 de Quaternius (tools/convert_vehicles.py) et modèles Sketchfab « sf_* »
@@ -28,7 +29,8 @@ const MIN_ROAD := {"bus": 8.0, "coach": 8.0, "car_rapide": 6.0, "ndiaga": 6.0, "
 ## type → [fichiers possibles, {matériau: nouvelle couleur}]
 const MODELS := {
 	"taxi": [["taxi"], {"Yellow": Color("f2c40c")}],
-	"clando": [["clando1", "clando2", "sf_bmw2002"], {}],
+	"clando": [["suv", "sf_caprice", "sf_bmw2002", "clando2"], {}],
+	"suv": [["suv"], {}],
 	"police": [["police", "sf_caprice", "sf_caprice78"], {"Black": Color("1d3557"), "WhiteLights": Color("ff1f3d")}],
 	"army": [["suv"], {"White": Color("4b5320"), "Black": Color("2f3414")}],
 	"bus": [["bus"], {"Top": Color("f39200"), "Bottom": Color("f39200"), "Material": Color("c46f00")}],
@@ -36,13 +38,24 @@ const MODELS := {
 	"car_rapide": [["sf_car_rapide"], {}],
 	"van": [["van"], {"Red": Color("c1121f")}],
 	"ndiaga": [["sf_ndiaga"], {}],
-	"jakarta": [["sf_dt125"], {}],
-	"grosse_moto": [["sf_dt125"], {"plastico naranja": Color("0d0d0d"), "calcas": Color("e63946"), "aluminio": Color("1a1a1a"), "ALUMINIO NEGRO": Color("050505")}],
+	"jakarta": [["sf_dt125"], {"plastico naranja": Color("0e1116"), "calcas": Color("d4af37"), "aluminio": Color("e2e8f0"), "ALUMINIO NEGRO": Color("14161a"), "COBRE": Color("e5a93c"), "plastico mate": Color("121316")}],
+	"grosse_moto": [["sf_dt125"], {"plastico naranja": Color("800010"), "calcas": Color("e63946"), "aluminio": Color("f0f2f5"), "ALUMINIO NEGRO": Color("08080a"), "COBRE": Color("ffb703")}],
 }
 ## Matériau de carrosserie de chaque modèle (repeint au garage, couleur des clandos)
 const BODY := {"taxi": "Yellow", "clando1": "Blue", "clando2": "LightBlue", "police": "White", "suv": "White",
+	"sf_caprice": "color_notint.002", "sf_bmw2002": "tmfgb_009",
 	"bus": "Top", "car_rapide": "Yellow", "van": "White", "sf_dt125": "plastico naranja"}
-const CLANDO_COLORS := [Color("8d99ae"), Color("c9ada7"), Color("6d6875"), Color("a3b18a"), Color("bc6c25"), Color("e9edc9")]
+const CLANDO_COLORS := [
+	Color("0a0a0c"), # Noir Onyx métallisé (Maybach / VIP)
+	Color("f8f9fa"), # Blanc Perle nacré métallisé
+	Color("1c1d21"), # Gris Nardo / Carbone foncé
+	Color("0b2545"), # Bleu Nuit Impérial métallisé
+	Color("8b0000"), # Rouge Rubis Candy métallisé
+	Color("c5a059"), # Or Champagne Royal métallisé
+	Color("133c2e"), # Vert Émeraude British Racing
+	Color("5c677d"), # Argent Diamant étincelant
+	Color("4a0e17"), # Bordeaux Prestige
+]
 
 @export var vehicle_type := "taxi"
 var display_name := ""
@@ -233,12 +246,17 @@ func _build_real_model() -> void:
 	inst.name = "Modele"
 	add_child(inst)
 	var sketchfab := _model_file.begins_with("sf_")
-	var colors: Dictionary = MODELS[vehicle_type][1].duplicate() if (not sketchfab or vehicle_type == "grosse_moto") else {}
-	if vehicle_type == "clando" and BODY.has(_model_file):
-		colors[BODY[_model_file]] = CLANDO_COLORS[get_instance_id() % CLANDO_COLORS.size()]
+	var colors: Dictionary = MODELS[vehicle_type][1].duplicate() if (not sketchfab or vehicle_type in ["grosse_moto", "jakarta"]) else {}
+	if (vehicle_type in ["clando", "suv"]) and BODY.has(_model_file):
+		var base_col: Color = CLANDO_COLORS[get_instance_id() % CLANDO_COLORS.size()]
+		colors[BODY[_model_file]] = base_col
+		if _model_file == "sf_caprice":
+			colors["highway_patrol"] = base_col
 	_recolor_model(colors)
 	if vehicle_type == "grosse_moto":
 		inst.scale = Vector3(1.18, 1.15, 1.15)
+	elif vehicle_type == "jakarta":
+		inst.scale = Vector3(1.08, 1.05, 1.05)
 	# Roues : elles tournent autour de leur axe (X)
 	for mi in inst.find_children("*", "MeshInstance3D", true, false):
 		if "wheel" in String(mi.name).to_lower():
@@ -264,12 +282,13 @@ func _build_real_model() -> void:
 			_lights.append(Mk.box(self, Vector3(0.42, 0.13, 0.24), Vector3(sx * 0.23, top + 0.05, 0.25), Color("5a1a22")))
 	if vehicle_type in ["jakarta", "grosse_moto"]:
 		_add_rider()
-		# Phare avant
+		# Phare avant LED
 		if vehicle_type == "grosse_moto":
 			for sx in [-0.11, 0.11]:
-				Mk.box(self, Vector3(0.09, 0.08, 0.04), Vector3(sx, 1.05, -0.9), Color("ffffff"), false, Mk.mat(Color("ffffff"), 2.2))
+				Mk.box(self, Vector3(0.09, 0.08, 0.04), Vector3(sx, 1.05, -0.9), Color("ffffff"), false, Mk.mat(Color("ffffff"), 2.8))
 		else:
-			Mk.box(self, Vector3(0.14, 0.1, 0.04), Vector3(0, 1.0, -0.85), Color("fff3b0"), false, Mk.mat(Color("fff3b0"), 1.5))
+			for sx in [-0.08, 0.08]:
+				Mk.box(self, Vector3(0.07, 0.07, 0.04), Vector3(sx, 1.02, -0.88), Color("f0f8ff"), false, Mk.mat(Color("f0f8ff"), 2.4))
 
 
 ## Conducteur de la moto (visible quand elle roule dans le trafic ou que le joueur la conduit)
@@ -331,37 +350,42 @@ func _recolor_model(colors: Dictionary) -> void:
 				var m: StandardMaterial3D = _opaque(base.duplicate())
 				m.albedo_color = Color(col.r, col.g, col.b, 1.0)
 				var low := nm.to_lower()
+				if (vehicle_type in ["clando", "suv"]) and nm == "highway_patrol":
+					m.albedo_texture = null
+					m.albedo_color = col
 				if low == "windows" or "glass" in low or "vitre" in low:
-					m.roughness = 0.04 if glossy else 0.15
-					m.metallic_specular = 0.95
-				elif "light" in low or "phare" in low or "feu" in low:
-					# Phares et feux lumineux
+					m.roughness = 0.02 if glossy else 0.12
+					m.metallic_specular = 1.0
+					if vehicle_type in ["clando", "suv"]:
+						m.albedo_color = Color(0.02, 0.02, 0.03, 1.0) # Vitres surteintées VIP
+				elif "light" in low or "phare" in low or "feu" in low or "luces" in low:
+					# Phares LED Xenon haute luminosité
 					m.emission_enabled = true
-					m.emission = col
-					m.emission_energy_multiplier = 1.4
+					m.emission = col if (col.v > 0.3) else Color("ffffff")
+					m.emission_energy_multiplier = 2.2
 				elif nm == BODY.get(_model_file, "") or colors.has(nm):
-					# Vernis carrosserie haute brillance (clearcoat PBR)
-					m.roughness = 0.16 if glossy else 0.35
-					m.metallic = 0.45 if glossy else 0.15
-					m.metallic_specular = 0.8
+					# Vernis carrosserie haute brillance (clearcoat PBR miroir de luxe)
+					m.roughness = 0.08 if glossy else 0.25
+					m.metallic = 0.70 if glossy else 0.25
+					m.metallic_specular = 0.95
 					if glossy:
 						m.clearcoat_enabled = true
-						m.clearcoat = 0.85
-						m.clearcoat_roughness = 0.12
-				elif "wheel" in low or "tire" in low or "pneu" in low:
+						m.clearcoat = 1.0
+						m.clearcoat_roughness = 0.04
+				elif "wheel" in low or "tire" in low or "pneu" in low or "caucho" in low:
 					# Gomme des pneus réaliste
 					m.roughness = 0.82
 					m.metallic = 0.0
 					m.metallic_specular = 0.2
-					m.albedo_color = Color("18191b")
-				elif "chrome" in low or "metal" in low or "aluminio" in low:
-					# Métaux chromés et jantes brillantes
-					m.roughness = 0.15
-					m.metallic = 0.88
-					m.metallic_specular = 0.9
+					m.albedo_color = Color("141517")
+				elif "chrome" in low or "metal" in low or "aluminio" in low or "16in" in low or "grey" in low:
+					# Métaux chromés et jantes de luxe brillantes
+					m.roughness = 0.08
+					m.metallic = 0.95
+					m.metallic_specular = 1.0
 				else:
-					m.roughness = 0.4 if glossy else 0.6
-					m.metallic_specular = 0.4
+					m.roughness = 0.35 if glossy else 0.55
+					m.metallic_specular = 0.45
 				_mat_cache[key] = m
 			mi.set_surface_override_material(s, _mat_cache[key])
 	# Le gyrophare rouge en premier, le bleu ensuite
@@ -404,20 +428,24 @@ func _build_model() -> void:
 			var side_r := Mk.label(self, "Touba — Dakar", Vector3(s.x / 2.0 + 0.02, 0.4 + s.y * 0.25, 0), 48, Color("c1121f"), false)
 			side_r.rotation.y = PI / 2.0
 		"jakarta":
-			Mk.box(self, Vector3(0.35, 0.4, 1.5), Vector3(0, 0.6, 0), Color("c1121f"))
-			Mk.box(self, Vector3(0.4, 0.15, 0.7), Vector3(0, 0.85, 0.25), Color("111111"))
-			Mk.box(self, Vector3(0.7, 0.06, 0.06), Vector3(0, 1.15, -0.6), Color("888888"))
-			Mk.cyl(self, 0.04, 0.04, 0.5, Vector3(0, 0.9, -0.6), Color("888888"), false, 4)
+			# Maxi-Scooter T-MAX de Luxe : carénage profilé sport, bulle teintée, double optique et selle confort
+			Mk.box(self, Vector3(0.48, 0.48, 1.6), Vector3(0, 0.62, 0), Color("121316"))
+			Mk.box(self, Vector3(0.42, 0.28, 0.8), Vector3(0, 0.85, -0.3), Color("0e1116")) # Carénage avant noir mat
+			Mk.box(self, Vector3(0.36, 0.2, 0.35), Vector3(0, 1.05, -0.4), Color("050508")) # Bulle fumée sport
+			Mk.box(self, Vector3(0.44, 0.18, 0.75), Vector3(0, 0.88, 0.3), Color("1a1a1e")) # Selle confort cuir
+			Mk.box(self, Vector3(0.72, 0.06, 0.06), Vector3(0, 1.15, -0.55), Color("222226")) # Guidon sport
+			Mk.cyl(self, 0.05, 0.04, 0.65, Vector3(0.24, 0.46, 0.45), Color("2b2d30"), false, 8) # Échappement sport
 			_add_rider()
 		"grosse_moto":
-			# Grosse moto sportive (Superbike / T-MAX) : châssis renforcé, réservoir profilé, double échappement sport
-			Mk.box(self, Vector3(0.5, 0.5, 1.8), Vector3(0, 0.65, 0), Color("111111"))
-			Mk.box(self, Vector3(0.55, 0.35, 0.8), Vector3(0, 0.85, -0.2), Color("e63946"))
-			Mk.box(self, Vector3(0.42, 0.18, 0.8), Vector3(0, 0.92, 0.35), Color("1a1a1a"))
-			Mk.box(self, Vector3(0.76, 0.07, 0.07), Vector3(0, 1.18, -0.65), Color("222222"))
-			Mk.cyl(self, 0.05, 0.05, 0.6, Vector3(0, 0.95, -0.65), Color("222222"), false, 6)
-			Mk.cyl(self, 0.06, 0.05, 0.7, Vector3(0.28, 0.5, 0.5), Color("444444"), false, 8)
-			Mk.cyl(self, 0.06, 0.05, 0.7, Vector3(-0.28, 0.5, 0.5), Color("444444"), false, 8)
+			# Superbike V4 de Luxe (1000cc) : carénage profilé course, réservoir musclé, double sortie titane
+			Mk.box(self, Vector3(0.5, 0.52, 1.8), Vector3(0, 0.65, 0), Color("0a0a0c"))
+			Mk.box(self, Vector3(0.55, 0.38, 0.85), Vector3(0, 0.86, -0.22), Color("800010")) # Rouge Corse métallisé
+			Mk.box(self, Vector3(0.38, 0.18, 0.3), Vector3(0, 1.08, -0.45), Color("050508")) # Bulle profilée
+			Mk.box(self, Vector3(0.42, 0.18, 0.8), Vector3(0, 0.92, 0.35), Color("141416")) # Selle sport
+			Mk.box(self, Vector3(0.76, 0.07, 0.07), Vector3(0, 1.18, -0.65), Color("1c1d21")) # Demi-guidons bracelets
+			Mk.cyl(self, 0.05, 0.05, 0.6, Vector3(0, 0.95, -0.65), Color("ffb703"), false, 6) # Fourche inversée or
+			Mk.cyl(self, 0.06, 0.05, 0.7, Vector3(0.28, 0.52, 0.5), Color("dcdfe4"), false, 8) # Échappement titane
+			Mk.cyl(self, 0.06, 0.05, 0.7, Vector3(-0.28, 0.52, 0.5), Color("dcdfe4"), false, 8)
 			_add_rider()
 		"army":
 			_build_army(s)
@@ -439,19 +467,25 @@ func _build_model() -> void:
 		"charette":
 			_build_charette(s)
 		_:
+			# Berline & SUV VIP de Luxe : carrosserie aérodynamique, calandre chromée, toit panoramique teinté
 			var col: Color = CLANDO_COLORS[get_instance_id() % CLANDO_COLORS.size()]
-			Mk.box(self, Vector3(s.x, s.y * 0.5, s.z), Vector3(0, 0.4 + s.y * 0.25, 0), col)
-			Mk.box(self, Vector3(s.x * 0.9, s.y * 0.45, s.z * 0.5), Vector3(0, 0.4 + s.y * 0.72, 0.15), col.darkened(0.25))
-			Mk.box(self, Vector3(s.x * 0.92, s.y * 0.3, s.z * 0.46), Vector3(0, 0.4 + s.y * 0.7, 0.15), Color("10151c"))
+			Mk.box(self, Vector3(s.x, s.y * 0.48, s.z), Vector3(0, 0.4 + s.y * 0.24, 0), col) # Caisse profilée laquée
+			Mk.box(self, Vector3(s.x * 0.88, s.y * 0.42, s.z * 0.52), Vector3(0, 0.4 + s.y * 0.69, 0.1), col.darkened(0.15)) # Habitacle
+			Mk.box(self, Vector3(s.x * 0.9, s.y * 0.32, s.z * 0.48), Vector3(0, 0.4 + s.y * 0.68, 0.1), Color("050508")) # Vitres teintées VIP
+			Mk.box(self, Vector3(s.x * 0.6, 0.15, 0.05), Vector3(0, 0.55, -s.z / 2.0 - 0.01), Color("e2e8f0"), false, Mk.mat(Color("e2e8f0"), 1.0)) # Calandre chrome
+			# Double sortie d'échappement sport chromée à l'arrière
+			for sx in [-0.55, 0.55]:
+				Mk.cyl(self, 0.06, 0.06, 0.12, Vector3(sx, 0.35, s.z / 2.0 + 0.02), Color("f0f2f5"), false, 8)
 	# Phares (les modèles détaillés ont les leurs)
-	if vehicle_type in ["car_rapide", "clando", "police", "army", "van"]:
+	if vehicle_type in ["car_rapide", "clando", "suv", "police", "army", "van"]:
 		for sx in [-1, 1]:
-			Mk.box(self, Vector3(0.3, 0.15, 0.05), Vector3(sx * (s.x / 2.0 - 0.3), 0.75, -s.z / 2.0 - 0.01), Color("fff3b0"), false, Mk.mat(Color("fff3b0"), 1.5))
+			Mk.box(self, Vector3(0.3, 0.15, 0.05), Vector3(sx * (s.x / 2.0 - 0.3), 0.75, -s.z / 2.0 - 0.01), Color("f0f8ff"), false, Mk.mat(Color("f0f8ff"), 2.2))
 	elif vehicle_type == "jakarta":
-		Mk.box(self, Vector3(0.18, 0.12, 0.05), Vector3(0, 0.95, -0.8), Color("fff3b0"), false, Mk.mat(Color("fff3b0"), 1.5))
+		for sx in [-0.08, 0.08]:
+			Mk.box(self, Vector3(0.09, 0.08, 0.05), Vector3(sx, 1.0, -0.82), Color("f0f8ff"), false, Mk.mat(Color("f0f8ff"), 2.4))
 	elif vehicle_type == "grosse_moto":
 		for sx in [-0.12, 0.12]:
-			Mk.box(self, Vector3(0.1, 0.09, 0.05), Vector3(sx, 1.05, -s.z / 2.0 - 0.01), Color("ffffff"), false, Mk.mat(Color("ffffff"), 2.2))
+			Mk.box(self, Vector3(0.1, 0.09, 0.05), Vector3(sx, 1.05, -s.z / 2.0 - 0.01), Color("ffffff"), false, Mk.mat(Color("ffffff"), 2.8))
 	# Roues
 	var wheel_pos: Array = []
 	if vehicle_type in ["jakarta", "grosse_moto"]:

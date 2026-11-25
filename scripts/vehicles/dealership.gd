@@ -28,13 +28,23 @@ const INSURANCE_DAYS := 7
 const FUEL_PRICE := 50 ## FCFA par pour cent de réservoir (le plein complet : 5 000 FCFA)
 ## type → [nom, prix, permis exigé, description]
 const CATALOG := {
-	"jakarta": ["Moto Jakarta", 250000, false, "La moto des rues de Dakar : petite, rapide, pas chère en essence."],
-	"grosse_moto": ["Grosse moto sportive", 1200000, false, "Superbike puissante et ultra-rapide (1000cc). Fend les embouteillages de Dakar comme l'éclair."],
-	"clando": ["Berline d'occasion", 900000, true, "Une berline solide, venue d'Europe, quelques kilomètres au compteur."],
-	"taxi": ["Taxi jaune et noir", 1500000, true, "Ton propre taxi : en ligne, monte au volant pour prendre des clients."],
-	"van": ["Camionnette", 2000000, true, "Grande camionnette pour les livraisons et la famille."],
+	"jakarta": ["Maxi-Scooter T-MAX de Luxe", 2200000, false, "Le deux-roues de prestige de Dakar : finitions or et noir carbone, double optique LED, accélération vive et grand standing."],
+	"grosse_moto": ["Superbike de Luxe (1000cc V4)", 4500000, false, "Hyper-sportive de prestige : châssis carbone, jantes forgées, étriers Brembo et accélération foudroyante."],
+	"clando": ["Berline VIP de Luxe (BMW / Mercedes)", 5500000, true, "Grande berline de prestige : confort présidentiel, V8 bi-turbo, vitres teintées et sellerie cuir pleine fleur."],
+	"suv": ["SUV de Luxe (Range Rover / V8)", 7500000, true, "Le 4x4 de prestige ultime : imposant, suspension pneumatique, toit panoramique et puissance V8."],
+	"taxi": ["Taxi VIP Dakar", 2500000, true, "Taxi moderne grand confort : idéal pour transporter les clients VIP de Dakar."],
+	"van": ["Van VIP Grand Standing", 3200000, true, "Grand van tout confort pour les cortèges et les personnalités."],
 }
-const COLORS := {"Blanc": Color("f4f1ea"), "Noir": Color("1c1c1e"), "Gris": Color("8d99ae"), "Rouge": Color("c1121f"), "Bleu": Color("1d3557"), "Vert": Color("2d6a4f")}
+const COLORS := {
+	"Noir Onyx Métallisé": Color("0a0a0c"),
+	"Blanc Perle Nacré": Color("f8f9fa"),
+	"Gris Nardo Satin": Color("1c1d21"),
+	"Bleu Nuit Impérial": Color("0b2545"),
+	"Rouge Rubis Candy": Color("8b0000"),
+	"Or Champagne Royal": Color("c5a059"),
+	"Vert Émeraude Métallique": Color("133c2e"),
+	"Argent Diamant": Color("5c677d"),
+}
 
 var main
 var pos := Vector3.ZERO
@@ -60,7 +70,7 @@ func _ready() -> void:
 	h.global_position = Vector3(pos.x, 0.16, pos.z)
 	var desk := Mk.box(h, Vector3(1.8, 1.0, 0.6), Vector3(0, 0.5, 0) + n * 0.4, Color("2b2d42"))
 	desk.rotation.y = atan2(n.x, n.z)
-	Mk.label(h, "CONCESSION AUTO\nMotos, voitures, taxis", Vector3(0, 2.4, 0), Mk.SIGN_SIZE, Color("ffd166"))
+	Mk.label(h, "CONCESSION AUTO DE LUXE\nMotos sportives, Berlines VIP & SUV", Vector3(0, 2.4, 0), Mk.SIGN_SIZE, Color("ffd166"))
 
 
 # --- Véhicules à soi -----------------------------------------------------------------------

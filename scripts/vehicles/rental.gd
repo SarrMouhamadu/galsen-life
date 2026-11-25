@@ -17,14 +17,15 @@ const RANGE := 4.0
 const RETURN_RANGE := 20.0 ## le véhicule doit être garé à moins de 20 m de l'agence
 ## type → [nom, prix par heure de jeu, caution, permis exigé]
 const FLEET := {
-	"jakarta": ["Moto Jakarta", 600, 20000, false],
-	"grosse_moto": ["Grosse moto", 1200, 40000, false],
-	"clando": ["Berline", 1500, 60000, true],
-	"van": ["Camionnette", 2500, 90000, true],
+	"jakarta": ["Maxi-Scooter T-MAX de Luxe", 1200, 30000, false],
+	"grosse_moto": ["Superbike de Luxe V4", 2500, 60000, false],
+	"clando": ["Berline VIP de Luxe", 3500, 100000, true],
+	"suv": ["SUV de Luxe V8", 4500, 150000, true],
+	"van": ["Van VIP Grand Confort", 3000, 120000, true],
 }
 ## heures de jeu (1 h = 1 minute réelle) → remise (les longues locations coûtent moins cher à l'heure)
 const DURATIONS := {6: 1.0, 12: 0.85, 48: 0.5}
-const COLOR := Color("f4f1ea") ## flotte blanche de l'agence
+const COLOR := Color("f8f9fa") ## flotte blanche perle nacrée de prestige
 const LATE_RATE := 1.5 ## heure de retard facturée 1,5 fois
 const LATE_STOLEN := 24.0
 const FUEL_PRICE := 50 ## comme à la pompe (dealership.gd)
@@ -59,7 +60,7 @@ func _ready() -> void:
 		for sx in [-1, 1]:
 			Mk.box(h, Vector3(0.08, 2.4, 0.08), Vector3(sx * 1.1, 1.2, -0.1), Color("adb5bd"))
 		Mk.box(h, Vector3(2.6, 0.08, 1.4), Vector3(0, 2.4, 0.1), Color("e63946"))
-		Mk.label(h, "LOCATION DE VÉHICULES\nMotos, voitures, camionnettes", Vector3(0, 3.0, 0), Mk.SIGN_SIZE - 4, Color("ffffff"))
+		Mk.label(h, "LOCATION DE VÉHICULES DE LUXE\nMotos sportives, Berlines VIP & SUV", Vector3(0, 3.0, 0), Mk.SIGN_SIZE - 4, Color("ffd166"))
 	if active():
 		_spawn(_parking_pos(str(GameState.rental.get("agency", ""))), false)
 
