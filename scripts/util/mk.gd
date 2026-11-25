@@ -1,32 +1,41 @@
 extends RefCounted
-## Petites fonctions pour construire le monde avec des formes simples (aucun asset requis).
+## Petites fonctions pour construire le monde avec des formes et matériaux PBR réalistes.
 
 static var _mats := {}
 static var _window_tex: ImageTexture
 
 
-## Peinture de carrosserie : plus lisse, avec des reflets du ciel (profils Moyen et Élevé)
+## Peinture de carrosserie : vernis automobile brillant (clearcoat), reflets du ciel et du soleil
 static func paint(color: Color, glass := false) -> StandardMaterial3D:
 	var key := "paint|%s|%s" % [color.to_html(), glass]
 	if _mats.has(key):
 		return _mats[key]
 	var m := StandardMaterial3D.new()
 	m.albedo_color = color
-	m.roughness = 0.08 if glass else 0.3
-	m.metallic = 0.0 if glass else 0.35
-	m.metallic_specular = 0.9 if glass else 0.6
+	if glass:
+		m.roughness = 0.04
+		m.metallic = 0.05
+		m.metallic_specular = 0.95
+		if color.a < 1.0:
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	else:
+		m.roughness = 0.16
+		m.metallic = 0.42
+		m.metallic_specular = 0.75
+		m.clearcoat_enabled = true
+		m.clearcoat = 0.85
+		m.clearcoat_roughness = 0.12
 	_mats[key] = m
 	return m
 
 
-static func mat(color: Color, emission := 0.0, unshaded := false) -> StandardMaterial3D:
-	var key := "%s|%s|%s" % [color.to_html(), emission, unshaded]
+## Matériau PBR physique avec détection intelligente (métal, tissu, verre, maçonnerie)
+static func mat(color: Color, emission := 0.0, unshaded := false, roughness := -1.0, metallic := -1.0) -> StandardMaterial3D:
+	var key := "%s|%s|%s|%s|%s" % [color.to_html(), emission, unshaded, roughness, metallic]
 	if _mats.has(key):
 		return _mats[key]
 	var m := StandardMaterial3D.new()
 	m.albedo_color = color
-	m.roughness = 0.9
-	m.metallic_specular = 0.2
 	if color.a < 1.0:
 		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		m.cull_mode = BaseMaterial3D.CULL_DISABLED
@@ -36,12 +45,89 @@ static func mat(color: Color, emission := 0.0, unshaded := false) -> StandardMat
 		m.emission_enabled = true
 		m.emission = color
 		m.emission_energy_multiplier = emission
+
+	if roughness >= 0.0:
+		m.roughness = roughness
+		m.metallic = maxf(metallic, 0.0)
+		m.metallic_specular = 0.5
+	else:
+		# Détection automatique réaliste selon la couleur et l'opacité
+		if color.a < 0.95:
+			# Verre / surface transparente
+			m.roughness = 0.06
+			m.metallic_specular = 0.95
+		elif _is_metallic(color):
+			# Métaux (acier, fer, aluminium, chrome, or)
+			m.metallic = 0.75
+			m.roughness = 0.26
+			m.metallic_specular = 0.8
+		elif _is_fabric(color):
+			# Tissus, bâches, sièges, canopées (effet velouté rim light)
+			m.roughness = 0.78
+			m.metallic_specular = 0.3
+			m.rim_enabled = true
+			m.rim = 0.32
+			m.rim_tint = 0.45
+		else:
+			# Maçonnerie, béton, enduit, plastique, bois mat
+			m.roughness = 0.65
+			m.metallic = 0.02
+			m.metallic_specular = 0.38
+
 	_mats[key] = m
 	return m
 
 
-## Matériau photo (bois, tissu…) teinté, projeté en triplanaire dans le monde (pas d'UV à faire)
-static func textured(path: String, color: Color, scale := 1.0, roughness := 0.85) -> StandardMaterial3D:
+static func _is_metallic(c: Color) -> bool:
+	var max_diff: float = maxf(absf(c.r - c.g), maxf(absf(c.g - c.b), absf(c.r - c.b)))
+	# Teintes grises/acier (différence minime entre canaux)
+	if max_diff < 0.08 and c.r > 0.2 and c.r < 0.88:
+		return true
+	# Or / laiton (jaune doré soutenu)
+	if c.r > 0.7 and c.g > 0.5 and c.b < 0.35:
+		return true
+	return false
+
+
+static func _is_fabric(c: Color) -> bool:
+	var s: float = c.s
+	var v: float = c.v
+	# Couleurs vives saturées des boubous, parasols et étals de marché
+	return s > 0.45 and v > 0.4 and c.a >= 0.95
+
+
+## Matériaux spécifiques pour enrichir les scènes
+static func metal(color := Color("c9ccd1"), roughness := 0.22, metallic := 0.85) -> StandardMaterial3D:
+	return mat(color, 0.0, false, roughness, metallic)
+
+
+static func glass(color := Color(0.7, 0.85, 0.95, 0.35), roughness := 0.04) -> StandardMaterial3D:
+	return mat(color, 0.0, false, roughness, 0.05)
+
+
+static func wood(color := Color("6b4f3a"), roughness := 0.58) -> StandardMaterial3D:
+	return mat(color, 0.0, false, roughness, 0.0)
+
+
+static func fabric(color: Color, roughness := 0.8) -> StandardMaterial3D:
+	var m := mat(color, 0.0, false, roughness, 0.0)
+	m.rim_enabled = true
+	m.rim = 0.35
+	m.rim_tint = 0.5
+	return m
+
+
+static func grass(color := Color("237a2e"), roughness := 0.85) -> StandardMaterial3D:
+	var m := mat(color, 0.0, false, roughness, 0.0)
+	m.metallic_specular = 0.2
+	m.rim_enabled = true
+	m.rim = 0.22
+	m.rim_tint = 0.35
+	return m
+
+
+## Matériau photo (bois, tissu…) teinté, projeté en triplanaire dans le monde
+static func textured(path: String, color: Color, scale := 1.0, roughness := 0.75) -> StandardMaterial3D:
 	var key := "tex|%s|%s|%s" % [path, color.to_html(), scale]
 	if _mats.has(key):
 		return _mats[key]
@@ -49,7 +135,7 @@ static func textured(path: String, color: Color, scale := 1.0, roughness := 0.85
 	m.albedo_color = color
 	m.albedo_texture = load(path)
 	m.roughness = roughness
-	m.metallic_specular = 0.25
+	m.metallic_specular = 0.35
 	m.uv1_triplanar = true
 	m.uv1_world_triplanar = true
 	m.uv1_scale = Vector3.ONE / scale
@@ -57,7 +143,7 @@ static func textured(path: String, color: Color, scale := 1.0, roughness := 0.85
 	return m
 
 
-## Matériau de façade : fenêtres projetées en triplanaire (un étage = 3,2 m).
+## Matériau de façade haute définition : fenêtres architecturales avec appui, montants et reflets
 static func facade_mat(color: Color) -> StandardMaterial3D:
 	var key := "facade|" + color.to_html()
 	if _mats.has(key):
@@ -65,8 +151,8 @@ static func facade_mat(color: Color) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = color
 	m.albedo_texture = _windows()
-	m.roughness = 0.95
-	m.metallic_specular = 0.2
+	m.roughness = 0.68
+	m.metallic_specular = 0.35
 	m.uv1_triplanar = true
 	m.uv1_world_triplanar = true
 	m.uv1_scale = Vector3.ONE / 3.2
@@ -77,10 +163,41 @@ static func facade_mat(color: Color) -> StandardMaterial3D:
 static func _windows() -> ImageTexture:
 	if _window_tex:
 		return _window_tex
-	var img := Image.create_empty(64, 64, false, Image.FORMAT_RGBA8)
-	img.fill(Color.WHITE)
-	img.fill_rect(Rect2i(20, 14, 24, 30), Color(0.25, 0.3, 0.36))
-	img.fill_rect(Rect2i(18, 44, 28, 3), Color(0.8, 0.8, 0.8))
+	# Texture architecturale 128x128 : enduit clair, cadre sombre, double vitrage avec ciel et stores
+	var img := Image.create_empty(128, 128, false, Image.FORMAT_RGBA8)
+	# 1. Mur en enduit calcaire avec micro-variation
+	img.fill(Color(0.96, 0.95, 0.93))
+	for y in 128:
+		for x in 128:
+			var n: float = sin(float(x) * 0.4) * cos(float(y) * 0.4) * 0.02
+			var base_c := Color(0.96 + n, 0.95 + n, 0.93 + n)
+			img.set_pixel(x, y, base_c)
+
+	# 2. Encadrement architectural et ombre portée de linteau
+	img.fill_rect(Rect2i(28, 16, 72, 88), Color(0.22, 0.24, 0.28))
+	img.fill_rect(Rect2i(30, 18, 68, 84), Color(0.12, 0.14, 0.18))
+
+	# 3. Vitres avec dégradé de ciel et réflexion réaliste
+	for vy in range(22, 96):
+		var t: float = float(vy - 22) / 74.0
+		var glass_c := Color(0.24, 0.40, 0.55).lerp(Color(0.14, 0.22, 0.32), t)
+		for vx in range(34, 94):
+			# Séparation centrale (meneau)
+			if vx == 63 or vx == 64:
+				img.set_pixel(vx, vy, Color(0.28, 0.30, 0.34))
+			# Traverse horizontale à mi-hauteur
+			elif vy == 58:
+				img.set_pixel(vx, vy, Color(0.28, 0.30, 0.34))
+			else:
+				# Stores vénitiens subtils derrière le vitrage
+				var blind: float = 0.04 if (vy % 6 < 2) else 0.0
+				img.set_pixel(vx, vy, glass_c + Color(blind, blind, blind, 0.0))
+
+	# 4. Appui de fenêtre (rebord saillant en béton blanc)
+	img.fill_rect(Rect2i(24, 102, 80, 8), Color(0.88, 0.89, 0.91))
+	# Ombre portée sous l'appui
+	img.fill_rect(Rect2i(26, 110, 76, 5), Color(0.55, 0.54, 0.52))
+
 	img.generate_mipmaps()
 	_window_tex = ImageTexture.create_from_image(img)
 	return _window_tex

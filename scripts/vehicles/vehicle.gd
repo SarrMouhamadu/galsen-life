@@ -331,18 +331,37 @@ func _recolor_model(colors: Dictionary) -> void:
 				var m: StandardMaterial3D = _opaque(base.duplicate())
 				m.albedo_color = Color(col.r, col.g, col.b, 1.0)
 				var low := nm.to_lower()
-				if low == "windows":
-					m.roughness = 0.06 if glossy else 0.4
-					m.metallic_specular = 0.9
-				elif "light" in low:
-					# Phares et feux légèrement lumineux
+				if low == "windows" or "glass" in low or "vitre" in low:
+					m.roughness = 0.04 if glossy else 0.15
+					m.metallic_specular = 0.95
+				elif "light" in low or "phare" in low or "feu" in low:
+					# Phares et feux lumineux
 					m.emission_enabled = true
 					m.emission = col
-					m.emission_energy_multiplier = 0.8
+					m.emission_energy_multiplier = 1.4
 				elif nm == BODY.get(_model_file, "") or colors.has(nm):
-					m.roughness = 0.3 if glossy else 0.6
-					m.metallic = 0.35 if glossy else 0.0
-					m.metallic_specular = 0.6
+					# Vernis carrosserie haute brillance (clearcoat PBR)
+					m.roughness = 0.16 if glossy else 0.35
+					m.metallic = 0.45 if glossy else 0.15
+					m.metallic_specular = 0.8
+					if glossy:
+						m.clearcoat_enabled = true
+						m.clearcoat = 0.85
+						m.clearcoat_roughness = 0.12
+				elif "wheel" in low or "tire" in low or "pneu" in low:
+					# Gomme des pneus réaliste
+					m.roughness = 0.82
+					m.metallic = 0.0
+					m.metallic_specular = 0.2
+					m.albedo_color = Color("18191b")
+				elif "chrome" in low or "metal" in low or "aluminio" in low:
+					# Métaux chromés et jantes brillantes
+					m.roughness = 0.15
+					m.metallic = 0.88
+					m.metallic_specular = 0.9
+				else:
+					m.roughness = 0.4 if glossy else 0.6
+					m.metallic_specular = 0.4
 				_mat_cache[key] = m
 			mi.set_surface_override_material(s, _mat_cache[key])
 	# Le gyrophare rouge en premier, le bleu ensuite

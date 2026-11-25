@@ -428,7 +428,9 @@ func _apply_graphics() -> void:
 		env.tonemap_exposure = 0.95
 	sun.shadow_enabled = Graphics.get_value("shadows")
 	sun.directional_shadow_max_distance = maxf(Graphics.get_value("shadow_dist"), 1.0)
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if Graphics.profile == "eleve" else DirectionalLight3D.SHADOW_ORTHOGONAL
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS if Graphics.profile == "eleve" else (DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if Graphics.profile == "moyen" else DirectionalLight3D.SHADOW_ORTHOGONAL)
+	sun.directional_shadow_blend_splits = true
+	sun.shadow_normal_bias = 0.8
 	if camera_rig and camera_rig.camera:
 		camera_rig.camera.far = Graphics.get_value("view")
 	# Ajustement dynamique du volume de trafic selon le profil graphique
@@ -506,80 +508,85 @@ func _spawn_pedestrians() -> void:
 
 func _build_environment() -> void:
 	sky_mat = ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("3a7bd5")
-	sky_mat.sky_horizon_color = Color("f1d9a8")
-	sky_mat.ground_horizon_color = Color("e0c89a")
-	sky_mat.ground_bottom_color = Color("a08a60")
+	sky_mat.sky_top_color = Color("2264c2")
+	sky_mat.sky_horizon_color = Color("f4dcb0")
+	sky_mat.ground_horizon_color = Color("d9c094")
+	sky_mat.ground_bottom_color = Color("8c744e")
+	sky_mat.sun_angle_max = 24.0
+	sky_mat.sun_curve = 0.12
+	sky_mat.energy_multiplier = 1.15
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
 	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
-	# Lumière ambiante venue du ciel (plus claire en haut, rebond chaud du sol en bas) :
-	# les visages ont du relief au lieu d'un éclairage plat
+	# Lumière ambiante naturelle issue du ciel et du rebond chaud du sol dakarois
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_sky_contribution = 0.4
+	env.ambient_light_sky_contribution = 0.5
 	env.ambient_light_color = Color("fff1d6")
-	env.ambient_light_energy = 0.75
-	# Rendu « cinéma » (façon One State) : contraste franc, couleurs chaudes et saturées
+	env.ambient_light_energy = 0.85
+	# Rendu « cinéma » ACES : contraste franc, couleurs chaudes et saturées
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_exposure = 0.9
-	env.tonemap_white = 6.0
+	env.tonemap_exposure = 1.0
+	env.tonemap_white = 5.2
 	env.adjustment_enabled = true
-	env.adjustment_contrast = 1.06
-	env.adjustment_saturation = 1.12
-	# Halo autour des lumières (soleil sur la tôle, phares, fenêtres et lampadaires la nuit)
-	env.glow_intensity = 0.55
-	env.glow_strength = 0.9
-	env.glow_bloom = 0.04
-	env.glow_hdr_threshold = 1.1
+	env.adjustment_contrast = 1.08
+	env.adjustment_saturation = 1.15
+	# Halo lumineux subtil (soleil sur carrosseries, vitrines, phares la nuit)
+	env.glow_intensity = 0.6
+	env.glow_strength = 0.95
+	env.glow_bloom = 0.05
+	env.glow_hdr_threshold = 1.05
+	env.glow_hdr_scale = 1.6
 	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
-	# Occlusion ambiante : coins, pieds des murs, dessous des voitures plus sombres (PC)
-	env.ssao_radius = 1.4
-	env.ssao_intensity = 1.8
-	env.ssao_power = 1.3
-	env.ssao_detail = 0.5
+	# Occlusion ambiante : creux, dessous de voitures et angles de façades
+	env.ssao_radius = 1.5
+	env.ssao_intensity = 1.9
+	env.ssao_power = 1.35
+	env.ssao_detail = 0.55
 	# Reflets à l'écran : routes mouillées, vitrines, carrosseries (profil Élevé)
 	env.ssr_max_steps = 48
 	env.ssr_fade_in = 0.15
 	env.ssr_fade_out = 2.0
 	env.ssr_depth_tolerance = 0.4
 	# Brouillard volumétrique léger : rayons de soleil dans la poussière (profil Élevé)
-	env.volumetric_fog_density = 0.004
+	env.volumetric_fog_density = 0.003
 	env.volumetric_fog_albedo = Color("efe2c6")
-	env.volumetric_fog_anisotropy = 0.6
-	env.volumetric_fog_length = 120.0
-	# Brume de l'harmattan
+	env.volumetric_fog_anisotropy = 0.65
+	env.volumetric_fog_length = 130.0
+	# Brume atmosphérique
 	env.fog_enabled = true
 	env.fog_light_color = Color("e8d3a8")
-	env.fog_density = 0.002
-	env.fog_sky_affect = 0.3 # le ciel reste bleu malgré la brume
-	env.fog_aerial_perspective = 0.4
+	env.fog_density = 0.0018
+	env.fog_sky_affect = 0.25
+	env.fog_aerial_perspective = 0.45
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 	sun = DirectionalLight3D.new()
 	sun.shadow_enabled = true
-	sun.shadow_blur = 1.0
-	sun.light_angular_distance = 0.25 # ombres un peu adoucies, comme le vrai soleil
-	sun.directional_shadow_max_distance = 70.0
+	sun.shadow_blur = 1.2
+	sun.light_angular_distance = 0.35 # ombres douces et réalistes
+	sun.directional_shadow_max_distance = 80.0
+	sun.directional_shadow_blend_splits = true
+	sun.shadow_normal_bias = 0.8
+	sun.directional_shadow_fade_start = 0.85
 	add_child(sun)
 
 
-## Le moteur moderne éclaire plus fort l'ambiance : soleil renforcé, ambiance réduite pour garder du contraste
+## Gain d'éclairage selon le renderer
 func _sun_gain() -> float:
-	return 1.0 if RenderingServer.get_current_rendering_method() == "gl_compatibility" else 1.7
+	return 1.25 if RenderingServer.get_current_rendering_method() == "gl_compatibility" else 1.6
 
 
-## Lumière ambiante selon le moteur : Forward+ a l'occlusion et les reflets, les moteurs
-## des téléphones non (sans ce surplus, l'ombre des immeubles serait presque noire).
+## Lumière ambiante selon le moteur pour déboucher les ombres naturellement
 func _ambient_gain() -> float:
 	match RenderingServer.get_current_rendering_method():
 		"forward_plus":
-			return 0.6
+			return 0.65
 		"mobile":
-			return 1.1
-	return 1.6
+			return 1.15
+	return 1.35
 
 
 ## Soleil qui se lève à 6 h et se couche à 18 h ; la nuit, une lumière de lune bleutée.
@@ -590,15 +597,15 @@ func _update_daylight() -> void:
 	var day := clampf(elev * 2.0, 0.0, 1.0)
 	if elev >= 0.0:
 		sun.rotation = Vector3(-ang, deg_to_rad(30.0), 0.0)
-		sun.light_energy = lerpf(0.2, 0.75, day) * _sun_gain()
+		sun.light_energy = lerpf(0.3, 1.35, day) * _sun_gain()
 		sun.light_color = Color("ffb36b").lerp(Color("fff4e0"), day)
 		sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_AND_SKY
 	else:
 		sun.rotation = Vector3(-(ang - PI), deg_to_rad(30.0), 0.0)
-		sun.light_energy = 0.25
+		sun.light_energy = 0.3
 		sun.light_color = Color("9fb4ff")
 		sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
-	env.ambient_light_energy = 0.4 * _ambient_gain()
+	env.ambient_light_energy = 0.5 * _ambient_gain()
 	# Lumière d'ambiance : chaude tant que le soleil est haut (sinon les ombres de fin d'après-midi virent au bleu)
 	env.ambient_light_color = Color("6c7fb8").lerp(Color("fff1d6"), sqrt(day))
 	env.fog_light_color = Color("1c2340").lerp(Color("e8d3a8"), day)

@@ -28,13 +28,13 @@ const PROFILES := {
 		"glow": false, "ssao": false, "ssr": false, "vfog": false,
 	},
 	"moyen": {
-		"scale": 0.85, "msaa": Viewport.MSAA_2X, "shadows": true, "shadow_dist": 45.0, "shadow_size": 2048,
-		"view": 400.0, "peds": 22, "cars": 24, "lamp_lights": 4, "lamp_pools": 16, "rain": 1400, "puddles": true,
-		"reflections": true, "lod": 2.0, "char_range": 100.0, "car_range": 240.0, "window_lights": true,
+		"scale": 0.95, "msaa": Viewport.MSAA_2X, "shadows": true, "shadow_dist": 65.0, "shadow_size": 2048,
+		"view": 420.0, "peds": 22, "cars": 24, "lamp_lights": 4, "lamp_pools": 16, "rain": 1400, "puddles": true,
+		"reflections": true, "lod": 2.0, "char_range": 110.0, "car_range": 250.0, "window_lights": true,
 		"glow": true, "ssao": true, "ssr": false, "vfog": false,
 	},
 	"eleve": {
-		"scale": 1.0, "msaa": Viewport.MSAA_4X, "shadows": true, "shadow_dist": 90.0, "shadow_size": 4096,
+		"scale": 1.0, "msaa": Viewport.MSAA_2X, "shadows": true, "shadow_dist": 110.0, "shadow_size": 4096,
 		"view": 650.0, "peds": 30, "cars": 32, "lamp_lights": 8, "lamp_pools": 24, "rain": 3000, "puddles": true,
 		"reflections": true, "lod": 1.0, "char_range": 150.0, "car_range": 320.0, "window_lights": true,
 		"glow": true, "ssao": true, "ssr": true, "vfog": true,
@@ -101,10 +101,12 @@ static func profile_for_ram(gb: float) -> String:
 	if OS.has_feature("ios"):
 		# Sur iOS : adaptation fine à la mémoire des différentes générations d'iPhone/iPad
 		if gb < 2.5:
-			return "minimal" # iPhone 6s, 7, 8 (2 Go) : ultra-léger et fluide, évite la saturation
+			return "minimal" # iPhone 6s, 7, 8 (2 Go) : ultra-léger et fluide
 		elif gb < 3.5:
 			return "faible" # iPhone 7+, 8+, X, XR (3 Go)
-		return "moyen" # iPhone 11, 12, 13, 14, 15, 16 et iPad récents (4 Go+)
+		elif gb < 5.5:
+			return "moyen" # iPhone 11, 12, 13 (4 Go)
+		return "eleve" # iPhone 13 Pro, 14, 15, 16 et iPad Pro / Air récents (6 Go+)
 	if gb < 3.2: # téléphones de 2 et 3 Go (annoncés ~1,8 et ~2,7)
 		return "minimal"
 	if gb < 10.0: # 4, 6 et 8 Go (~3,6, ~5,4 et ~7,3)
@@ -225,7 +227,10 @@ func apply_viewport() -> void:
 	if DisplayServer.get_name() == "headless":
 		return
 	var vp := get_viewport()
-	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	# Mise à l'échelle FSR (FidelityFX Super Resolution) pour un rendu 3D haute netteté
+	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR
+	vp.fsr_sharpness = 0.2
+	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
 	vp.scaling_3d_scale = get_value("scale")
 	vp.msaa_3d = get_value("msaa")
 	vp.mesh_lod_threshold = get_value("lod")

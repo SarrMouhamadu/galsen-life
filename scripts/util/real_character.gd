@@ -446,29 +446,32 @@ func _material_for(m: StandardMaterial3D, kind: String, tint: Color, solid: bool
 				if d.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
 					d.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 					d.alpha_scissor_threshold = 0.3
-				d.roughness = 0.42 if solid else 0.88
-				d.metallic_specular = 0.55 if solid else 0.3
+				d.roughness = 0.36 if solid else 0.76
+				d.metallic_specular = 0.62 if solid else 0.35
 				d.rim_enabled = true
-				d.rim = 0.12
-				d.rim_tint = 0.3
+				d.rim = 0.35
+				d.rim_tint = 0.45
 			_:
 				if solid:
 					d.albedo_texture = null
-					d.normal_enabled = false
 					d.albedo_color = tint
-				# Tissu : mat, découpe nette si la texture a des trous (évite les taches noires)
+				# Tissu : découpe nette si la texture a des trous, éclairage de contour (rim)
 				if d.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
 					d.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 					d.alpha_scissor_threshold = 0.3
-				d.roughness = 0.88
-				d.metallic_specular = 0.3
+				d.roughness = 0.76
+				d.metallic_specular = 0.35
 				if solid and kind == "cloth" and tint in BOUBOU:
-					# Bazin riche : tissu damassé brillant
-					d.roughness = 0.42
-					d.metallic_specular = 0.55
-				d.rim_enabled = true
-				d.rim = 0.12
-				d.rim_tint = 0.3
+					# Bazin riche : tissu damassé lustré et brillant
+					d.roughness = 0.35
+					d.metallic_specular = 0.65
+					d.rim_enabled = true
+					d.rim = 0.45
+					d.rim_tint = 0.55
+				else:
+					d.rim_enabled = true
+					d.rim = 0.32
+					d.rim_tint = 0.45
 		out = d
 	_mat_cache[key] = out
 	return out
