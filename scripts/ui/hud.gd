@@ -527,6 +527,7 @@ func show_choices(title_text: String, options: Array, on_cancel: Callable) -> vo
 	var t := _label(26, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
 	t.text = title_text
 	v.add_child(t)
+	var first_btn: Button = null
 	for o in options:
 		var cb: Callable = o[1]
 		var b := _menu_button(o[0], func():
@@ -535,11 +536,18 @@ func show_choices(title_text: String, options: Array, on_cancel: Callable) -> vo
 		b.custom_minimum_size = Vector2(0, 46)
 		b.add_theme_font_size_override("font_size", 19)
 		v.add_child(b)
-	v.add_child(_menu_button("Annuler", func():
+		if first_btn == null:
+			first_btn = b
+	var cancel_btn := _menu_button("Annuler [B]", func():
 		close_choices()
-		on_cancel.call()))
+		on_cancel.call())
+	v.add_child(cancel_btn)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_touch.release_all()
+	if first_btn != null:
+		first_btn.grab_focus()
+	elif cancel_btn != null:
+		cancel_btn.grab_focus()
 
 
 func close_choices() -> void:
@@ -633,13 +641,21 @@ func _input(event: InputEvent) -> void:
 			_hide_intro()
 			get_viewport().set_input_as_handled()
 		return
+	if choices_open() and event.is_action_pressed("ui_cancel"):
+		close_choices()
+		get_viewport().set_input_as_handled()
+		return
 	if map_screen.visible:
-		if event.is_action_pressed("pause") or event.is_action_pressed("map"):
+		if event.is_action_pressed("pause") or event.is_action_pressed("map") or event.is_action_pressed("ui_cancel"):
 			map_screen.close()
 			get_viewport().set_input_as_handled()
 		return
-	if phone.visible and (event.is_action_pressed("pause") or event.is_action_pressed("phone")):
+	if phone.visible and (event.is_action_pressed("pause") or event.is_action_pressed("phone") or event.is_action_pressed("ui_cancel")):
 		phone.close()
+		get_viewport().set_input_as_handled()
+		return
+	if _chat_panel != null and _chat_panel.visible and event.is_action_pressed("ui_cancel"):
+		close_chat()
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("phone") and not get_tree().paused and not choices_open():
@@ -1189,6 +1205,11 @@ func _process(delta: float) -> void:
 	var nv = p._nearest_vehicle()
 	if in_foot:
 		_prompt.text = hint
+	elif GameState.gamepad_active:
+		if nv != null:
+			_prompt.text = "🎮 [Y/△] " + hint + "   [X/□] Voler"
+		else:
+			_prompt.text = "🎮 [Y/△] " + hint
 	elif nv != null:
 		var prefix: String = "Touche ici ou bouton [%s] : " % ("MOTO" if nv.vehicle_type in ["jakarta", "grosse_moto"] else "AUTO") if GameState.touch_ui else "[E] ou [G] "
 		_prompt.text = prefix + hint

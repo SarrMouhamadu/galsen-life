@@ -1109,12 +1109,18 @@ func _physics_process(delta: float) -> void:
 	_crime_cooldown -= delta
 	var steer := 0.0
 	if driver:
-		if Input.is_action_just_pressed("horn"):
+		if Input.is_action_just_pressed("horn") or Input.is_joy_button_pressed(0, JOY_BUTTON_LEFT_STICK):
 			Audio.play_sfx("horn")
 		if Input.is_action_just_pressed("radio") and vehicle_type in RADIO_TYPES:
 			Audio.toggle_radio()
 		var inp: Vector2 = GameState.get_move_input()
 		var throttle := -inp.y
+		# Gâchettes analogiques manette (R2/RT = accélérer, L2/LT = freiner / marche arrière)
+		var trig_accel: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT)
+		var trig_brake: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_LEFT)
+		if trig_accel > 0.05 or trig_brake > 0.05:
+			throttle = trig_accel - trig_brake
+			GameState.gamepad_active = true
 		# Essence : environ 15 km pour un réservoir plein ; à sec, le moteur ne tire plus
 		fuel = maxf(0.0, fuel - absf(speed) * delta * FUEL_PER_M)
 		GameState.add_skill("conduite", absf(speed) * delta / 400.0)
@@ -1137,7 +1143,8 @@ func _physics_process(delta: float) -> void:
 		var want := -inp.x
 		_steer_in = move_toward(_steer_in, want, delta * (4.5 if absf(want) > absf(_steer_in) else 7.0))
 		steer = _steer_in
-		_braking = (throttle < -0.05 and speed > 0.5) or (throttle > 0.05 and speed < -0.5) or Input.is_action_pressed("jump")
+		var handbrake: bool = Input.is_action_pressed("jump") or Input.is_joy_button_pressed(0, JOY_BUTTON_A) or Input.is_joy_button_pressed(0, JOY_BUTTON_RIGHT_SHOULDER)
+		_braking = (throttle < -0.05 and speed > 0.5) or (throttle > 0.05 and speed < -0.5) or handbrake
 		var target_speed := 0.0
 		var rate := accel
 		if throttle > 0.05:
@@ -1149,7 +1156,7 @@ func _physics_process(delta: float) -> void:
 				target_speed = max_speed * 0.35 * throttle
 		else:
 			rate = 4.0
-		if Input.is_action_pressed("jump"):
+		if handbrake:
 			target_speed = 0.0
 			rate = 30.0
 		speed = move_toward(speed, target_speed, rate * delta)
@@ -1297,6 +1304,7 @@ func _handle_collisions(pre: Vector3) -> void:
 			if driver and impact > 5.0 and _crash_cd <= 0.0:
 				_crash_cd = 0.8
 				Audio.play_sfx("crash", clampf(-16.0 + impact, -14.0, 0.0))
+				GameState.rumble(0.6, 0.8, 0.3)
 			if driver and impact > 8.0 and _crash_cd > 0.75:
 				var before := condition
 				condition = maxf(0.0, condition - impact * 1.2 * (1.0 - 0.05 * GameState.skill_level("conduite")))

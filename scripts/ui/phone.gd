@@ -278,6 +278,7 @@ func _home() -> void:
 	grid.add_theme_constant_override("v_separation", 6)
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content.add_child(grid)
+	var first_btn: Button = null
 	for a in APPS:
 		var id: String = a[1]
 		var text: String = a[0]
@@ -287,6 +288,10 @@ func _home() -> void:
 		b.custom_minimum_size = Vector2(120, 50)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_child(b)
+		if first_btn == null:
+			first_btn = b
+	if first_btn != null and GameState.gamepad_active:
+		first_btn.grab_focus()
 	_content.add_child(_label("Solde : %s" % GameState.fcfa(GameState.money), 14, Color("7cfc9a"), HORIZONTAL_ALIGNMENT_CENTER))
 	if not Net.online:
 		_content.add_child(_note("Mode solo : SMS et virements entre joueurs disponibles en ligne."))

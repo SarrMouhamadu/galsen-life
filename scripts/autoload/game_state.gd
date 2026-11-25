@@ -59,11 +59,25 @@ var typing := false ## le joueur écrit dans le chat : pas de déplacement
 var _is_fainted := false
 var faint_reason := "" ## "ko" : mis KO dans une bagarre, "soif" (sinon : faim)
 var _warned := {} ## besoins déjà signalés au joueur (soif, fatigue)
+var gamepad_active := false ## passe à true dès qu'une manette est utilisée ou connectée
 
 
 func _ready() -> void:
 	touch_ui = OS.has_feature("mobile") or DisplayServer.is_touchscreen_available() or "--touch" in OS.get_cmdline_user_args()
 	_setup_input()
+	# Détection initiale des manettes connectées
+	if not Input.get_connected_joypads().is_empty():
+		gamepad_active = true
+	Input.joy_connection_changed.connect(func(device: int, connected: bool):
+		if connected:
+			gamepad_active = true
+			var joy_name := Input.get_joy_name(device)
+			notify.emit("🎮 Manette connectée : " + (joy_name if joy_name != "" else "Manette sans fil"))
+		else:
+			gamepad_active = not Input.get_connected_joypads().is_empty()
+			if not gamepad_active:
+				notify.emit("Manette déconnectée.")
+	)
 	load_game()
 	# Quitter proprement : en ligne, la sauvegarde doit avoir le temps de partir vers le serveur
 	get_tree().auto_accept_quit = false
@@ -72,6 +86,22 @@ func _ready() -> void:
 	t.autostart = true
 	t.timeout.connect(save_game)
 	add_child(t)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventJoypadButton:
+		gamepad_active = true
+	elif event is InputEventJoypadMotion and absf(event.axis_value) > 0.25:
+		gamepad_active = true
+	elif event is InputEventScreenTouch or event is InputEventScreenDrag:
+		gamepad_active = false
+
+
+## Vibrations et retour haptique (manettes & smartphones)
+func rumble(weak := 0.4, strong := 0.5, duration := 0.2) -> void:
+	Input.start_joy_vibration(0, weak, strong, duration)
+	if OS.has_feature("mobile"):
+		Input.vibrate_handheld(int(duration * 1000.0))
 
 
 func _process(delta: float) -> void:
@@ -319,19 +349,52 @@ func _setup_input() -> void:
 	_bind_keys("voice", [KEY_V])
 	_bind_keys("voice_group", [KEY_B])
 	_bind_keys("camera_view", [KEY_X])
-	# Manette
+	# --- Mappage Manette Complet (PlayStation / Xbox / Switch / MFi / Backbone) ---
+	# Déplacement au Stick Gauche
 	_bind_axis("move_left", JOY_AXIS_LEFT_X, -1.0)
 	_bind_axis("move_right", JOY_AXIS_LEFT_X, 1.0)
 	_bind_axis("move_forward", JOY_AXIS_LEFT_Y, -1.0)
 	_bind_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
-	_bind_button("interact", JOY_BUTTON_Y)
-	_bind_button("jump", JOY_BUTTON_A)
-	_bind_button("sprint", JOY_BUTTON_B)
-	_bind_button("pause", JOY_BUTTON_START)
-	_bind_button("horn", JOY_BUTTON_LEFT_SHOULDER)
-	_bind_button("radio", JOY_BUTTON_RIGHT_SHOULDER)
-	_bind_button("steal", JOY_BUTTON_X)
-	_bind_button("map", JOY_BUTTON_BACK)
+	# Déplacement à la Croix Directionnelle (D-Pad)
+	_bind_button("move_forward", JOY_BUTTON_DPAD_UP)
+	_bind_button("move_back", JOY_BUTTON_DPAD_DOWN)
+	_bind_button("move_left", JOY_BUTTON_DPAD_LEFT)
+	_bind_button("move_right", JOY_BUTTON_DPAD_RIGHT)
+
+	# Boutons d'action principaux (layout universel GTA / Open-World)
+	_bind_button("interact", JOY_BUTTON_Y) # Triangle / Y : Monter/descendre de voiture, interagir, parler
+	_bind_button("jump", JOY_BUTTON_A) # Croix / A : Sauter à pied, Frein à main en voiture, Valider UI
+	_bind_button("sprint", JOY_BUTTON_B) # Rond / B : Courir, Annuler / Retour UI
+	_bind_button("sprint", JOY_BUTTON_LEFT_STICK) # L3 (clic stick gauche) : Sprint
+	_bind_button("attack", JOY_BUTTON_X) # Carré / X : Coup de poing / Tirer au foot / Attaquer
+	_bind_button("attack", JOY_BUTTON_RIGHT_SHOULDER) # R1 / RB : Coup de poing / Attaque
+	_bind_button("steal", JOY_BUTTON_X) # Carré / X : Voler véhicule / carjacking
+
+	# Véhicule & Conduite
+	_bind_button("horn", JOY_BUTTON_LEFT_SHOULDER) # L1 / LB : Klaxonner
+	_bind_button("horn", JOY_BUTTON_LEFT_STICK) # L3 (clic stick gauche) : Klaxonner
+	_bind_button("radio", JOY_BUTTON_RIGHT_SHOULDER) # R1 / RB : Changer radio
+	_bind_button("radio", JOY_BUTTON_DPAD_RIGHT) # D-Pad Droite : Changer radio
+	_bind_button("camera_view", JOY_BUTTON_RIGHT_STICK) # R3 (clic stick droit) : Vue capot / 3e personne
+
+	# Menus, Téléphone & Outils
+	_bind_button("phone", JOY_BUTTON_DPAD_UP) # D-Pad Haut : Ouvrir smartphone (GTA style)
+	_bind_button("chat", JOY_BUTTON_DPAD_LEFT) # D-Pad Gauche : Ouvrir tchat discussion
+	_bind_button("voice", JOY_BUTTON_DPAD_DOWN) # D-Pad Bas : Menu emotes / voix
+	_bind_button("map", JOY_BUTTON_BACK) # Select / View / Touchpad : Carte de Dakar
+	_bind_button("pause", JOY_BUTTON_START) # Start / Menu : Menu pause / Réglages
+
+	# Navigation UI universelle (Menus, Boîtes de choix, Dialogues, Inventaire)
+	_bind_button("ui_up", JOY_BUTTON_DPAD_UP)
+	_bind_axis("ui_up", JOY_AXIS_LEFT_Y, -1.0)
+	_bind_button("ui_down", JOY_BUTTON_DPAD_DOWN)
+	_bind_axis("ui_down", JOY_AXIS_LEFT_Y, 1.0)
+	_bind_button("ui_left", JOY_BUTTON_DPAD_LEFT)
+	_bind_axis("ui_left", JOY_AXIS_LEFT_X, -1.0)
+	_bind_button("ui_right", JOY_BUTTON_DPAD_RIGHT)
+	_bind_axis("ui_right", JOY_AXIS_LEFT_X, 1.0)
+	_bind_button("ui_accept", JOY_BUTTON_A) # Bouton A / Croix : Valider
+	_bind_button("ui_cancel", JOY_BUTTON_B) # Bouton B / Rond : Retour / Annuler
 
 
 func _ensure_action(action: String) -> void:

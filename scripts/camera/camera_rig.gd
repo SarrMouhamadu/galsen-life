@@ -55,6 +55,14 @@ func _process(delta: float) -> void:
 	if GameState.touch_look != Vector2.ZERO:
 		_rotate(GameState.touch_look * 0.006)
 		GameState.touch_look = Vector2.ZERO
+	# Rotation de la caméra au stick droit de la manette (Right Stick)
+	var joy_x := Input.get_joy_axis(0, JOY_AXIS_RIGHT_X)
+	var joy_y := Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
+	var joy_look := Vector2(joy_x, joy_y)
+	if joy_look.length() > 0.15:
+		GameState.gamepad_active = true
+		var sens: float = 2.8 * delta
+		_rotate(Vector2(joy_x * sens, joy_y * sens))
 	if target == null or not is_instance_valid(target):
 		return
 	var vsize = target.get("size")

@@ -231,6 +231,8 @@ func _input(event: InputEvent) -> void:
 		_edit_input(event)
 		return
 	if event is InputEventScreenTouch:
+		if GameState.gamepad_active:
+			GameState.gamepad_active = false
 		var le = make_input_local(event)
 		var p: Vector2 = le.position
 		var idx: int = le.index
@@ -277,6 +279,8 @@ func _input(event: InputEvent) -> void:
 func _edit_input(event: InputEvent) -> void:
 	var s := _scale()
 	if event is InputEventScreenTouch:
+		if GameState.gamepad_active:
+			GameState.gamepad_active = false
 		var le = make_input_local(event)
 		if le.pressed:
 			var b = _button_at(le.position, true)
@@ -341,7 +345,16 @@ func _a(c: Color) -> Color:
 	return Color(c.r, c.g, c.b, clampf(c.a * k, 0.0, 0.95))
 
 
+func _process(_delta: float) -> void:
+	if not editing:
+		var want_visible: bool = GameState.touch_ui and not GameState.gamepad_active
+		if visible != want_visible:
+			visible = want_visible
+
+
 func _draw() -> void:
+	if GameState.gamepad_active and not editing:
+		return
 	var s := _scale()
 	var font := get_theme_default_font()
 	var jr := BASE_JOY * s
