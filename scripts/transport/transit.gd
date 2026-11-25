@@ -124,7 +124,7 @@ func _shelter(pos: Vector3, dir: Vector3, line: Dictionary, stop_name: String) -
 	Mk.cyl(h, 0.04, 0.04, 2.8, Vector3(-0.5, 1.4, 1.9), Color("c9ccd1"), false, 6)
 	Mk.box(h, Vector3(0.05, 0.6, 0.6), Vector3(-0.5, 2.7, 1.9), col)
 	if line.get("type", "") == "brt":
-		Mk.label(h, "⚡ SUNUBRT (100% Électrique)\n%s — %s FCFA\nArrêt : %s" % [line["name"], BUS_FARE, stop_name], Vector3(0, 3.2, 0), Mk.SIGN_SIZE - 4, Color("00a896"))
+		Mk.label(h, "⚡ SUNUBRT (100%% Électrique)\n%s — %s FCFA\nArrêt : %s" % [line["name"], BUS_FARE, stop_name], Vector3(0, 3.2, 0), Mk.SIGN_SIZE - 4, Color("00a896"))
 	else:
 		Mk.label(h, "BUS\n%s — %s FCFA\n%s" % [line["name"], BUS_FARE, stop_name], Vector3(0, 3.2, 0), Mk.SIGN_SIZE - 4, Color.WHITE)
 

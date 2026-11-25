@@ -749,7 +749,7 @@ static func footballer_for(avatar: String) -> String:
 func _wear_kit(kit: String, number: int) -> void:
 	if _city_model == null:
 		_city_model = player.model
-		var fm = RealCharacter.create(player, footballer_for(Net.avatar if Net.online else RealCharacter.HERO))
+		var fm = RealCharacter.create(player, footballer_for(Net.avatar if Net.avatar != "" else RealCharacter.HERO))
 		fm.transform = _city_model.transform
 		_city_model.visible = false
 		player.model = fm

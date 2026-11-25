@@ -939,6 +939,15 @@ func disconnect_from_server() -> void:
 	roster.clear()
 
 
+func start_offline(p_pseudo: String = "", p_avatar: String = "heros") -> void:
+	disconnect_from_server()
+	online = false
+	pseudo = p_pseudo.strip_edges() if p_pseudo.strip_edges() != "" else "Galsenois"
+	avatar = p_avatar if p_avatar != "" else "heros"
+	friend_code = generate_friend_code(pseudo)
+	GameState.load_game()
+
+
 func _on_connected() -> void:
 	_patient(1)
 	connection_changed.emit("Connecté, identification...")

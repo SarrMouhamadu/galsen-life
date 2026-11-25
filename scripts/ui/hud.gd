@@ -903,7 +903,7 @@ func _process(delta: float) -> void:
 	var veh = p.current_vehicle
 	_speed.visible = veh != null
 	var on: bool = Net.online or preview_online
-	_online.visible = on
+	_online.visible = true
 	_chat_btn.visible = on
 	_mic_btn.visible = on
 	_radio_btn.visible = (Net.online and Net.social.my_group != "") or preview_online
@@ -955,6 +955,8 @@ func _process(delta: float) -> void:
 	_services_btn.visible = on and main.net_jobs != null
 	if Net.online:
 		_online.text = "En ligne : %d joueur(s) — %s" % [Net.players_online(), Net.pseudo]
+	else:
+		_online.text = "Mode Hors-ligne (Solo) — %s" % (Net.pseudo if Net.pseudo != "" else "Dakar")
 	if veh:
 		_speed.text = "%s — %d km/h" % [veh.display_name, int(absf(veh.speed) * 3.6)]
 		if veh.fuel >= 0.0:

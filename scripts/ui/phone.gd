@@ -1201,7 +1201,7 @@ func _bag_app() -> void:
 # --- Profil : compétences et parcours -------------------------------------------------------
 
 func _profile_app() -> void:
-	_title.text = "Profil — %s" % (Net.pseudo if Net.online else "Mon personnage")
+	_title.text = "Profil — %s" % (Net.pseudo if Net.pseudo != "" else "Mon personnage")
 	_content.add_child(_label("Compétences", 14, Color("e9ecef")))
 	var hints := {"conduite": "monte en roulant ; les accidents abîment moins le moteur",
 		"endurance": "monte en courant ; courir fatigue moins",

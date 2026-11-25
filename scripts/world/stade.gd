@@ -172,8 +172,8 @@ func _build_iba_mar_diop() -> void:
 			spot.light_color = Color("f8f9fa")
 			spot.spot_range = 95.0
 			spot.spot_angle = 50.0
-			spot.look_at(c + Vector3(0, 1.0, 0))
 			add_child(spot)
+			spot.look_at(c + Vector3(0, 1.0, 0))
 			_floodlights.append(spot)
 
 	# 7. Grand Panneau Officiel JOJ Dakar 2026

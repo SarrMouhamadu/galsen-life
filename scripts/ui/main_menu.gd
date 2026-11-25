@@ -21,6 +21,8 @@ var _friend_code: LineEdit
 var _create: CheckBox
 var _status: Label
 var _connect_btn: Button
+var _offline_btn: Button
+var _offline_fallback_btn: Button
 var _scroll: ScrollContainer
 var _margin: MarginContainer
 var _content_vbox: VBoxContainer
@@ -128,20 +130,6 @@ func _build() -> void:
 	sub.add_theme_font_size_override("font_size", 16)
 	v.add_child(sub)
 
-	var solo := _button("Jouer en solo", func(): get_tree().change_scene_to_file(MAIN))
-	solo.custom_minimum_size = Vector2(0, 46)
-	solo.add_theme_font_size_override("font_size", 19)
-	v.add_child(solo)
-
-	var sep := HSeparator.new()
-	v.add_child(sep)
-
-	var online_title := Label.new()
-	online_title.text = "Jouer en ligne"
-	online_title.add_theme_font_size_override("font_size", 20)
-	online_title.add_theme_color_override("font_color", Color("7cfc9a"))
-	v.add_child(online_title)
-
 	var cfg := ConfigFile.new()
 	cfg.load(SETTINGS)
 
@@ -160,24 +148,79 @@ func _build() -> void:
 	_channel.visible = false
 	v.add_child(_channel)
 
+	# --- 1. Profil du Joueur (partagé solo et en ligne) ---
+	var profile_box := VBoxContainer.new()
+	profile_box.add_theme_constant_override("separation", 6)
+	v.add_child(profile_box)
+
+	var p_hdr := Label.new()
+	p_hdr.text = "👤 Ton personnage à Dakar :"
+	p_hdr.add_theme_font_size_override("font_size", 15)
+	p_hdr.add_theme_color_override("font_color", Color("ffd166"))
+	profile_box.add_child(p_hdr)
+
 	var saved_p: String = str(cfg.get_value("net", "pseudo", ""))
 	var saved_pw: String = str(cfg.get_value("net", "password", ""))
 
-	_pseudo = _field(v, "Pseudo (3 à 16 caractères)", saved_p)
+	_pseudo = _field(profile_box, "Pseudo (ex: Moussa, Fatou...)", saved_p)
+
+	_avatar = OptionButton.new()
+	_avatar.custom_minimum_size = Vector2(0, 44)
+	_avatar.add_theme_font_size_override("font_size", 16)
+	for a in Net.AVATARS:
+		_avatar.add_item(AVATAR_NAMES.get(a, a))
+	_avatar.select(maxi(0, Net.AVATARS.find(cfg.get_value("net", "avatar", "heros"))))
+	profile_box.add_child(_avatar)
+
+	# --- 2. Bouton Mode Hors-Ligne (Solo) ---
+	var solo_box := VBoxContainer.new()
+	solo_box.add_theme_constant_override("separation", 4)
+	v.add_child(solo_box)
+
+	_offline_btn = Button.new()
+	_offline_btn.text = "🎮 JOUER HORS-LIGNE (SOLO)"
+	_offline_btn.custom_minimum_size = Vector2(0, 50)
+	_offline_btn.add_theme_font_size_override("font_size", 18)
+	var solo_st := StyleBoxFlat.new()
+	solo_st.bg_color = Color(0.12, 0.38, 0.28, 0.95)
+	solo_st.border_color = Color("7cfc9a")
+	solo_st.border_width_left = 2
+	solo_st.border_width_top = 2
+	solo_st.border_width_right = 2
+	solo_st.border_width_bottom = 2
+	solo_st.corner_radius_top_left = 8
+	solo_st.corner_radius_top_right = 8
+	solo_st.corner_radius_bottom_right = 8
+	solo_st.corner_radius_bottom_left = 8
+	_offline_btn.add_theme_stylebox_override("normal", solo_st)
+	_offline_btn.add_theme_stylebox_override("hover", solo_st)
+	_offline_btn.pressed.connect(_start_offline)
+	solo_box.add_child(_offline_btn)
+
+	var solo_desc := Label.new()
+	solo_desc.text = "✓ Tout Dakar en solo · Métiers · Véhicules · 100% Hors-ligne"
+	solo_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	solo_desc.add_theme_font_size_override("font_size", 12)
+	solo_desc.add_theme_color_override("font_color", Color("90e0ef"))
+	solo_box.add_child(solo_desc)
+
+	var sep := HSeparator.new()
+	v.add_child(sep)
+
+	# --- 3. Mode En Ligne (Multijoueur) ---
+	var online_title := Label.new()
+	online_title.text = "🌐 OU JOUER EN LIGNE (MULTIJOUEUR DAKAR)"
+	online_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	online_title.add_theme_font_size_override("font_size", 16)
+	online_title.add_theme_color_override("font_color", Color("7cfc9a"))
+	v.add_child(online_title)
+
 	_password = _field(v, "Mot de passe", saved_pw)
 	_password.secret = true
 
 	# Enchaînement rapide et naturel au clavier virtuel
 	_pseudo.text_submitted.connect(func(_t): _password.grab_focus())
 	_password.text_submitted.connect(func(_t): _on_connect())
-
-	_avatar = OptionButton.new()
-	_avatar.custom_minimum_size = Vector2(0, 44)
-	_avatar.add_theme_font_size_override("font_size", 17)
-	for a in Net.AVATARS:
-		_avatar.add_item(AVATAR_NAMES.get(a, a))
-	_avatar.select(maxi(0, Net.AVATARS.find(cfg.get_value("net", "avatar", "heros"))))
-	v.add_child(_avatar)
 
 	# Code ami optionnel pour rejoindre directement un ami à Dakar
 	var f_box := VBoxContainer.new()
@@ -310,6 +353,27 @@ func _build() -> void:
 		_status.text = "Saisis ton mot de passe pour %s." % saved_p
 	v.add_child(_status)
 
+	_offline_fallback_btn = Button.new()
+	_offline_fallback_btn.text = "🎮 Continuer en Mode Hors-Ligne (Solo)"
+	_offline_fallback_btn.custom_minimum_size = Vector2(0, 48)
+	_offline_fallback_btn.add_theme_font_size_override("font_size", 16)
+	var fb_st := StyleBoxFlat.new()
+	fb_st.bg_color = Color(0.14, 0.42, 0.30, 0.95)
+	fb_st.border_color = Color("7cfc9a")
+	fb_st.border_width_left = 2
+	fb_st.border_width_top = 2
+	fb_st.border_width_right = 2
+	fb_st.border_width_bottom = 2
+	fb_st.corner_radius_top_left = 8
+	fb_st.corner_radius_top_right = 8
+	fb_st.corner_radius_bottom_right = 8
+	fb_st.corner_radius_bottom_left = 8
+	_offline_fallback_btn.add_theme_stylebox_override("normal", fb_st)
+	_offline_fallback_btn.add_theme_stylebox_override("hover", fb_st)
+	_offline_fallback_btn.pressed.connect(_start_offline)
+	_offline_fallback_btn.visible = false
+	v.add_child(_offline_fallback_btn)
+
 	var note := Label.new()
 	note.text = "Ne réutilise pas un mot de passe important. Carte : © OpenStreetMap."
 	note.add_theme_font_size_override("font_size", 12)
@@ -420,13 +484,17 @@ func _on_connect() -> void:
 
 	_connect_btn.disabled = true
 	_status.text = "Connexion au serveur..."
+	if _offline_fallback_btn:
+		_offline_fallback_btn.visible = false
 
-	# Sécurité timeout connexion (10s) : réactive le bouton si le serveur met du temps à répondre
-	var conn_timer := get_tree().create_timer(10.0)
+	# Sécurité timeout connexion (7s) : réactive le bouton si le serveur met du temps à répondre
+	var conn_timer := get_tree().create_timer(7.0)
 	conn_timer.timeout.connect(func():
 		if not Net.online and _connect_btn and is_instance_valid(_connect_btn) and _connect_btn.disabled:
 			_connect_btn.disabled = false
-			_status.text = "Le serveur met du temps à répondre. Vérifie ta connexion ou réessaie."
+			_status.text = "Le serveur met du temps à répondre. Vérifie ta connexion ou joue en mode hors-ligne !"
+			if _offline_fallback_btn and is_instance_valid(_offline_fallback_btn):
+				_offline_fallback_btn.visible = true
 	)
 
 	Net.connect_and_login(target_host, _pseudo.text, _password.text, Net.AVATARS[_avatar.selected], _create.button_pressed, target_port)
@@ -436,6 +504,8 @@ func _on_login(ok: bool, message: String) -> void:
 	_status.text = message
 	_connect_btn.disabled = false
 	if not ok:
+		if _offline_fallback_btn and is_instance_valid(_offline_fallback_btn):
+			_offline_fallback_btn.visible = true
 		# Auto-correction intelligente pour guider immédiatement le joueur
 		if "Compte inconnu" in message or "inconnu" in message:
 			_create.button_pressed = true
@@ -454,3 +524,21 @@ func _on_login(ok: bool, message: String) -> void:
 		cfg.set_value("net", "password", _password.text.strip_edges())
 		cfg.save(SETTINGS)
 		get_tree().change_scene_to_file(MAIN)
+
+
+func _start_offline() -> void:
+	var chosen_p: String = _pseudo.text.strip_edges() if _pseudo else ""
+	var cfg := ConfigFile.new()
+	cfg.load(SETTINGS)
+	if chosen_p == "":
+		chosen_p = str(cfg.get_value("net", "pseudo", "Galsenois"))
+	if chosen_p == "":
+		chosen_p = "Galsenois"
+	var chosen_av: String = Net.AVATARS[_avatar.selected] if _avatar else str(cfg.get_value("net", "avatar", "heros"))
+
+	cfg.set_value("net", "pseudo", chosen_p)
+	cfg.set_value("net", "avatar", chosen_av)
+	cfg.save(SETTINGS)
+
+	Net.start_offline(chosen_p, chosen_av)
+	get_tree().change_scene_to_file(MAIN)

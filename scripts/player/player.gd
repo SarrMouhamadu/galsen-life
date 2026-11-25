@@ -49,7 +49,7 @@ func _ready() -> void:
 	cs.position.y = 0.9
 	add_child(cs)
 	# Le héros réaliste (MakeHuman) : polo crème, pantalon sombre, baskets, coupe courte
-	model = RealCharacter.create(self, Net.avatar if Net.online else RealCharacter.HERO)
+	model = RealCharacter.create(self, Net.avatar if Net.avatar != "" else RealCharacter.HERO)
 	model.set_outfit(GameState.tenue)
 
 
