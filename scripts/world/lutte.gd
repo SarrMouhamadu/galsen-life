@@ -680,7 +680,7 @@ func _start_live(j: Dictionary) -> void:
 	else:
 		_build_ring(centre, j["venue"])
 	GameState.notify.emit("La journée de lutte commence au %s ! Organisée par %s." % [VENUES[j["venue"]]["name"], "toi" if j["player"] else j["promoter"]])
-	Audio.set_radio_track(4)
+	Audio.set_radio_track(Audio.find_track("Sabar, Tama & Mbeur"))
 	Audio.set_radio(true)
 	_next_bout()
 

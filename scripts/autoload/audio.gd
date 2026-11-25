@@ -12,23 +12,63 @@ var _radio: AudioStreamPlayer
 var _radio_wanted := false
 var _radio_task := -1
 var _track_samples: Array = [[], [], []]
-var _track_streams: Array = [null, null, null, null, null, null, null]
+var _track_streams: Array = []
 var current_track_idx := 0
+
+# Morceaux privilégiés (Touré Kunda, Xalam, Souleymane Faye) : indices 0 à 7
+const PRIORITY_INDICES: Array[int] = [0, 1, 2, 3, 4, 5, 6, 7]
+
 const TRACK_NAMES := [
+	# --- Morceaux Prioritaires (Touré Kunda, Xalam, Souleymane Faye) ---
+	"⭐ 🇸🇳 Nobel — Souleymane Faye & Xalam",
+	"⭐ 🇸🇳 Fatou Yo — Touré Kunda",
+	"⭐ 🇸🇳 Fondinke — Touré Kunda",
+	"⭐ 🇸🇳 Em'ma — Touré Kunda",
+	"⭐ 🇸🇳 Is Do Si — Xalam",
+	"⭐ 🇸🇳 Ninki Nanka — Xalam",
+	"⭐ 🇸🇳 Natalia — Touré Kunda",
+	"⭐ 🇸🇳 Duunya — Touré Kunda",
+
+	# --- Grands Classiques & Musiques du Sénégal ---
+	"🇸🇳 Miniyamba — Coumba Gawlo",
+	"🇸🇳 Reference — Books feat. Jas (Prod. Ama Diop)",
+	"🇸🇳 Massa Thiono — Diogal Sakho",
+	"🇸🇳 Weet — El Hadji Ndiaye",
+	"🇸🇳 Sogni — Pape & Cheikh",
+	"🇸🇳 Chœurs du Sénégal — Wolof Song",
+
+	# --- JOJ Dakar 2026 & Lamb (Arènes) ---
 	"🏅 JOJ Dakar 2026 (Hymne Officiel) — Baaba Maal",
-	"🏅 Cérémonie d'Ouverture — JOJ Dakar 2026",
-	"🏅 Générique JOJ 2026 — Iss 814 Beats",
 	"🇸🇳 Niany Bagne Na — Kiné Lam",
+	"🏅 Générique JOJ 2026 — Iss 814 Beats",
 	"🥁 Sabar, Tama & Mbeur (Ambiance Lamb & Arène)",
+	"🏅 Cérémonie d'Ouverture — JOJ Dakar 2026",
+
+	# --- Synthèse Procédurale ---
 	"🇸🇳 Rythme Sabar & Tama (Bakk Sénégal)",
 	"📻 Galsen Mbalax FM (Hits Dakar)",
 ]
+
 const MUSIC_FILES := [
+	"res://audio/music/souleymane_faye_nobel.mp3",
+	"res://audio/music/toure_kunda_fatou_yo.mp3",
+	"res://audio/music/toure_kunda_fondinke.mp3",
+	"res://audio/music/toure_kunda_emma.mp3",
+	"res://audio/music/xalam_is_do_si.mp3",
+	"res://audio/music/xalam_ninki_nanka.mp3",
+	"res://audio/music/toure_kunda_natalia.mp3",
+	"res://audio/music/toure_kunda_duunya.mp3",
+	"res://audio/music/coumba_gawlo_miniyamba.mp3",
+	"res://audio/music/books_jas_reference.mp3",
+	"res://audio/music/diogal_sakho_massa_thiono.mp3",
+	"res://audio/music/el_hadji_ndiaye_weet.mp3",
+	"res://audio/music/pape_et_cheikh_sogni.mp3",
+	"res://audio/music/choeurs_senegal_wolof.mp3",
 	"res://audio/music/baaba_maal_joj.mp3",
-	"res://audio/music/dakar_2026_ceremony.mp3",
-	"res://audio/music/iss814_joj.mp3",
 	"res://audio/music/kine_lam_niany.mp3",
+	"res://audio/music/iss814_joj.mp3",
 	"res://audio/music/sabar_tama_mbeur.mp3",
+	"res://audio/music/dakar_2026_ceremony.mp3",
 ]
 var _ambient_task := -1
 var _ambient_samples := {}
@@ -64,6 +104,8 @@ func _ready() -> void:
 	add_child(_radio)
 
 	# Chargement des morceaux de musique officiels
+	_track_streams.resize(TRACK_NAMES.size())
+	_track_streams.fill(null)
 	for i in MUSIC_FILES.size():
 		var path: String = MUSIC_FILES[i]
 		var s: AudioStream = null
@@ -94,8 +136,8 @@ func _process(_delta: float) -> void:
 	if _radio_task != -1 and WorkerThreadPool.is_task_completed(_radio_task):
 		WorkerThreadPool.wait_for_task_completion(_radio_task)
 		_radio_task = -1
-		_track_streams[5] = _wav(_track_samples[0], true)
-		_track_streams[6] = _wav(_track_samples[2], true)
+		_track_streams[19] = _wav(_track_samples[0], false)
+		_track_streams[20] = _wav(_track_samples[2], false)
 		if _radio.stream == null and _track_streams[current_track_idx] != null:
 			_radio.stream = _track_streams[current_track_idx]
 			if _radio_wanted:
@@ -135,7 +177,10 @@ func stream(sound: String) -> AudioStream:
 
 
 func radio_ready() -> bool:
-	return _track_streams[0] != null
+	for s in _track_streams:
+		if s != null:
+			return true
+	return false
 
 
 func is_radio_playing() -> bool:
@@ -216,23 +261,34 @@ func next_radio_track() -> void:
 	set_radio_track((current_track_idx + 1) % _track_streams.size())
 
 
-## Sélectionne et joue un morceau aléatoire parmi les morceaux disponibles
+## Sélectionne et joue un morceau aléatoire parmi les morceaux disponibles (avec priorité aux morceaux phares)
 func play_random_track(avoid_current: bool = true) -> void:
 	var available: Array[int] = []
 	for i in _track_streams.size():
 		if _track_streams[i] != null:
 			if not avoid_current or i != current_track_idx:
-				available.append(i)
+				var weight: int = 3 if (i in PRIORITY_INDICES) else 1
+				for w in weight:
+					available.append(i)
 	# Si aucun autre morceau n'est disponible pour éviter la répétition, prendre tous les morceaux valides
 	if available.is_empty():
 		for i in _track_streams.size():
 			if _track_streams[i] != null:
-				available.append(i)
+				var weight: int = 3 if (i in PRIORITY_INDICES) else 1
+				for w in weight:
+					available.append(i)
 	if available.is_empty():
 		return
 	var rand_idx: int = available[randi() % available.size()]
 	_radio_wanted = true
 	set_radio_track(rand_idx)
+
+
+func find_track(keyword: String) -> int:
+	for i in TRACK_NAMES.size():
+		if keyword.to_lower() in TRACK_NAMES[i].to_lower():
+			return i
+	return 0
 
 
 func _on_radio_finished() -> void:

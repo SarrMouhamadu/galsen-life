@@ -1,112 +1,43 @@
-#!/usr/bin/env python3
-"""
-Télécharge et découpe les 4 musiques demandées par l'utilisateur :
-1. IklAfq4-o9A : Muet les 30 premières secondes (départ à 30s) -> Sabar, Tama & Mbeur
-2. Q54RfLqqpKE : Musique principale générique JOJ 2026 par Iss 814
-3. tmkblsttfVk : Départ à la 45e seconde -> Niany bagne na (Kiné Lam)
-4. wJvhycjb1-I : Musique principale par défaut au lancement -> Départ à la 57e seconde (Baaba Maal)
-"""
-
 import os
 import subprocess
-import tempfile
 import sys
 
 TRACKS = [
-    {
-        "id": "wJvhycjb1-I",
-        "name": "baaba_maal_joj",
-        "title": "Cérémonie JOJ 2026 — Prestation Baaba Maal (Musique Principale Lancement)",
-        "start_sec": 57,
-        "fade_in": 0.5,
-    },
-    {
-        "id": "Q54RfLqqpKE",
-        "name": "iss814_joj",
-        "title": "Générique JOJ 2026 — Iss 814 Beats (Musique Principale)",
-        "start_sec": 0,
-        "fade_in": 0.5,
-    },
-    {
-        "id": "tmkblsttfVk",
-        "name": "kine_lam_niany",
-        "title": "Niany Bagne Na — Prestation Kiné Lam",
-        "start_sec": 45,
-        "fade_in": 0.5,
-    },
-    {
-        "id": "IklAfq4-o9A",
-        "name": "sabar_tama_mbeur",
-        "title": "Ambiance Sabar, Tama & Mbeur — Cérémonie JOJ",
-        "start_sec": 30,
-        "fade_in": 0.5,
-    },
+    ("Dr8JR8EogT0", "audio/music/souleymane_faye_nobel.mp3", "Souleymane Faye & Xalam - Nobel"),
+    ("nO5aCDfV2ZQ", "audio/music/toure_kunda_fatou_yo.mp3", "Touré Kunda - Fatou Yo"),
+    ("OX4i1NXN_lQ", "audio/music/toure_kunda_fondinke.mp3", "Touré Kunda - Fondinke"),
+    ("tPQjw-rKrpc", "audio/music/toure_kunda_emma.mp3", "Touré Kunda - Em'ma"),
+    ("VshSexUMyzY", "audio/music/xalam_is_do_si.mp3", "Xalam - Is Do Si"),
+    ("XVzf5U36gBo", "audio/music/xalam_ninki_nanka.mp3", "Xalam - Ninki Nanka"),
+    ("bfC2F7o0kno", "audio/music/toure_kunda_natalia.mp3", "Touré Kunda - Natalia"),
+    ("10Uc-P0j06Y", "audio/music/toure_kunda_duunya.mp3", "Touré Kunda - Duunya"),
+    ("6uk6P5Tbrig", "audio/music/coumba_gawlo_miniyamba.mp3", "Coumba Gawlo - Miniyamba"),
+    ("ZV9PH593QRU", "audio/music/books_jas_reference.mp3", "Books feat. Jas - Reference"),
+    ("-RcgCDqVC9k", "audio/music/diogal_sakho_massa_thiono.mp3", "Diogal Sakho - Massa Thiono"),
+    ("glcij6-S11E", "audio/music/el_hadji_ndiaye_weet.mp3", "El Hadji Ndiaye - Weet"),
+    ("MIAf60xzjZo", "audio/music/pape_et_cheikh_sogni.mp3", "Pape & Cheikh - Sogni"),
+    ("k5eDy7N_zks", "audio/music/choeurs_senegal_wolof.mp3", "African Choirs - Wolof Song"),
 ]
 
-OUT_DIR = os.path.abspath("audio/music")
-os.makedirs(OUT_DIR, exist_ok=True)
+for video_id, out_path, title in TRACKS:
+    if os.path.exists(out_path):
+        print(f"[SKIP] {title} already exists at {out_path}")
+        continue
+    print(f"\n[DOWNLOADING] {title} ({video_id})...")
+    prefix = out_path.rsplit(".", 1)[0]
+    cmd = [
+        "/opt/homebrew/bin/yt-dlp",
+        "--js-runtimes", "node:/opt/homebrew/bin/node",
+        "--extractor-args", "youtube:player_client=android,ios,web",
+        "-x", "--audio-format", "mp3",
+        "--audio-quality", "128k",
+        "-o", f"{prefix}.%(ext)s",
+        f"https://www.youtube.com/watch?v={video_id}"
+    ]
+    res = subprocess.run(cmd)
+    if res.returncode != 0:
+        print(f"[ERROR] Failed to download {title}")
+    else:
+        print(f"[DONE] {title} saved to {out_path}")
 
-def process_track(track):
-    url = f"https://www.youtube.com/watch?v={track['id']}"
-    out_mp3 = os.path.join(OUT_DIR, f"{track['name']}.mp3")
-
-    print(f"\n=======================================================")
-    print(f"🎵 Traitement de : {track['title']}")
-    print(f"🔗 URL: {url} | Départ à: {track['start_sec']}s")
-    print(f"=======================================================")
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        raw_dl = os.path.join(tmpdir, "raw.%(ext)s")
-        
-        # 1. Téléchargement audio via yt-dlp
-        dl_cmd = [
-            "yt-dlp",
-            "--no-update",
-            "--extractor-args", "youtube:player_client=android",
-            "-f", "ba/b",
-            "-o", raw_dl,
-            url
-        ]
-        print("Téléchargement du flux audio...")
-        res = subprocess.run(dl_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if res.returncode != 0:
-            print(f"Erreur yt-dlp: {res.stderr}")
-            return False
-
-        files = os.listdir(tmpdir)
-        if not files:
-            print("Aucun fichier téléchargé dans le dossier temporaire.")
-            return False
-        dl_file = os.path.join(tmpdir, files[0])
-        print(f"Téléchargé avec succès: {files[0]} ({os.path.getsize(dl_file)} octets)")
-
-        # 2. Découpage et conversion MP3 avec ffmpeg
-        fade_filter = f"afade=t=in:ss=0:d={track['fade_in']}"
-
-        mp3_cmd = [
-            "ffmpeg", "-y",
-            "-ss", str(track["start_sec"]),
-            "-i", dl_file,
-            "-af", fade_filter,
-            "-vn",
-            "-c:a", "libmp3lame",
-            "-b:a", "160k",
-            out_mp3
-        ]
-        print(f"Conversion MP3 -> {out_mp3}")
-        subprocess.run(mp3_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True)
-
-        print(f"✅ Terminé : {out_mp3} ({os.path.getsize(out_mp3) // 1024} Ko)")
-        return True
-
-def main():
-    success = 0
-    for t in TRACKS:
-        if process_track(t):
-            success += 1
-    print(f"\n=======================================================")
-    print(f"🎉 {success}/{len(TRACKS)} morceaux traités avec succès dans {OUT_DIR}")
-    print(f"=======================================================")
-
-if __name__ == "__main__":
-    main()
+print("\n--- ALL DOWNLOADS FINISHED ---")

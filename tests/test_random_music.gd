@@ -16,7 +16,7 @@ func _run() -> void:
 	for s in audio._track_streams:
 		if s != null:
 			loaded_count += 1
-	assert(loaded_count >= 5, "Au moins 5 morceaux de musique doivent être chargés")
+	assert(loaded_count >= 19, "Au moins 19 morceaux de musique doivent être chargés")
 	print("OK: %d morceaux de musique chargés dans la playlist" % loaded_count)
 
 	# 2. Vérification que les MP3 ne sont pas en boucle unique figée (permettant le shuffle à la fin)
@@ -25,24 +25,33 @@ func _run() -> void:
 			assert((s as AudioStreamMP3).loop == false, "Les MP3 doivent avoir loop=false pour permettre l'enchaînement automatique")
 	print("OK: Les flux MP3 sont configurés sans boucle figée pour le shuffle automatique")
 
-	# 3. Test statistique de distribution aléatoire sur 100 tirages
+	# 3. Test statistique de distribution aléatoire sur 200 tirages
 	var counts := {}
 	for i in audio._track_streams.size():
 		if audio._track_streams[i] != null:
 			counts[i] = 0
 
-	for attempt in 100:
+	var priority_hits := 0
+	for attempt in 200:
 		var prev_idx: int = audio.current_track_idx
 		audio.play_random_track(true)
 		var new_idx: int = audio.current_track_idx
 		assert(new_idx != prev_idx, "play_random_track(avoid_current=true) ne doit pas répéter le même morceau")
 		counts[new_idx] = counts.get(new_idx, 0) + 1
+		if new_idx in audio.PRIORITY_INDICES:
+			priority_hits += 1
 
-	print("Répartition sur 100 tirages aléatoires :")
+	print("Répartition sur 200 tirages aléatoires :")
 	for k in counts:
 		print(" - Piste [%d] %s : %d fois" % [k, audio.TRACK_NAMES[k], counts[k]])
-		assert(counts[k] > 0, "Chaque morceau disponible doit avoir été joué au moins une fois")
-	print("OK: La sélection aléatoire est variée et équilibrée (aucun morceau bloqué)")
+	print("Part des morceaux prioritaires (Touré Kunda, Xalam, Souleymane Faye) : %d / 200 (%.1f%%)" % [priority_hits, float(priority_hits) / 2.0])
+	assert(priority_hits >= 80, "Les morceaux prioritaires doivent avoir une part prépondérante dans les tirages")
+	print("OK: La sélection aléatoire pondérée privilégie bien les morceaux demandés")
+
+	# 4. Test de find_track
+	var sabar_idx: int = audio.find_track("Sabar, Tama & Mbeur")
+	assert(sabar_idx >= 0, "find_track doit trouver le morceau de lutte")
+	print("OK: find_track('Sabar, Tama & Mbeur') -> indice %d" % sabar_idx)
 
 	# 4. Test du signal finished et enchaînement aléatoire
 	var old_track: int = audio.current_track_idx

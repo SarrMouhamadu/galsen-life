@@ -398,7 +398,7 @@ func _start_combat() -> void:
 	for k in 2:
 		_w[k].global_position = _w_home[k]
 		_w[k].play_clip("dance", 0.3)
-	Audio.set_radio_track(4)
+	Audio.set_radio_track(Audio.find_track("Sabar, Tama & Mbeur"))
 	Audio.set_radio(true)
 	GameState.notify.emit("Les lutteurs font leur bàkk au son du sabar !")
 
@@ -481,7 +481,7 @@ func _start_player_fight() -> void:
 	_w[1].global_position = ORIGIN + Vector3(0.6, 0.3, 0)
 	_w[1].play_clip("push", 0.3)
 	_w[0].visible = false
-	Audio.set_radio_track(4)
+	Audio.set_radio_track(Audio.find_track("Sabar, Tama & Mbeur"))
 	Audio.set_radio(true)
 	_build_bar()
 	GameState.notify.emit("Combat contre %s ! Appuie sur ACTION quand le curseur est dans la zone verte. 3 prises pour gagner !" % WRESTLERS[1][1])

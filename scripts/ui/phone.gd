@@ -1020,16 +1020,30 @@ func _music_app() -> void:
 	controls.add_child(btn_rand)
 
 	var track_descs := [
-		"Hymne officiel des JOJ Dakar 2026 interprété par Baaba Maal. Morceau phare de la playlist de Dakar !",
-		"Thème musical officiel de la Cérémonie d'Ouverture des Jeux Olympiques de la Jeunesse Dakar 2026.",
-		"Générique officiel JOJ Dakar 2026 composé par Iss 814 Beats. Rythme électro-mbalax énergique et moderne.",
+		"Nobel — Chef-d'œuvre acoustique et poétique de Souleymane Faye & Xalam. Un monument de la musique sénégalaise.",
+		"Fatou Yo — Le tube planétaire de Touré Kunda. Rythmes mandingues et percussions casamançaises légendaires.",
+		"Fondinke — Grand classique de Touré Kunda célébrant la jeunesse et l'énergie africaine.",
+		"Em'ma — Succès mondial intemporel de Touré Kunda aux grooves chaleureux et cuivres éclatants.",
+		"Is Do Si — Morceau culte du groupe Xalam fusionnant jazz, afrobeat et polyrythmies sénégalaises.",
+		"Ninki Nanka — Hymne mythique de Xalam inspiré de la légende du dragon Ninki Nanka.",
+		"Natalia — Balade afro-mandingue envoûtante et mélodique de Touré Kunda.",
+		"Duunya — Réflexion poétique et philosophique de Touré Kunda sur la vie et le destin.",
+		"Miniyamba — Le grand hymne traditionnel mandingue revisité avec la voix puissante de Coumba Gawlo.",
+		"Reference — Hip-hop mbalax sénégalais de Books feat. Jas, production signée Ama Diop.",
+		"Massa Thiono — Morceau acoustique profond de Diogal Sakho (Archive INA). Guitare folk et chant wolof.",
+		"Weet — La voix poétique et engagée d'El Hadji Ndiaye. Guitare acoustique et émotion pure.",
+		"Sogni — Le duo légendaire Pape & Cheikh aux accents folk acoustiques de Dakar.",
+		"Wolof Song — Polyphonies vocales traditionnelles du Sénégal et chœurs sacrés.",
+		"Hymne officiel des JOJ Dakar 2026 interprété par Baaba Maal.",
 		"Chant patriotique et traditionnel légendaire interprété par Kiné Lam lors de la cérémonie des JOJ Dakar 2026.",
+		"Générique officiel JOJ Dakar 2026 composé par Iss 814 Beats. Rythme électro-mbalax énergique et moderne.",
 		"Enregistrement live authentique de la cérémonie JOJ Dakar 2026 : percussions Sabar, Tama, chants des lutteurs et ambiance d'arène.",
+		"Thème musical officiel de la Cérémonie d'Ouverture des Jeux Olympiques de la Jeunesse Dakar 2026.",
 		"Rythme Sabar & Tama (Bakk Sénégal) : Synthèse polyrythmique des arènes avec Thiol, Mbëng-mbëng et kora.",
 		"Galsen Mbalax FM : Groove urbain dakarois non-stop avec balafon et guitare."
 	]
 
-	_content.add_child(_note("🎲 Playlist aléatoire : à chaque ouverture de l'application, une musique différente est choisie et chargée au hasard."))
+	_content.add_child(_note("🎲 Playlist aléatoire active : à chaque entrée dans le jeu, une musique est tirée au sort (avec priorité à Touré Kunda, Xalam et Souleymane Faye)."))
 
 	for i in Audio.TRACK_NAMES.size():
 		var box := VBoxContainer.new()
