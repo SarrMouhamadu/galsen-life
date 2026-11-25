@@ -15,12 +15,14 @@ const TYPES := {
 	"van": {"name": "Camionnette Jumbo", "size": Vector3(2.6, 2.7, 5.4), "speed": 21.0, "accel": 6.5, "steer": 1.8, "cam": 9.0},
 	"ndiaga": {"name": "Ndiaga Ndiaye", "size": Vector3(2.5, 2.6, 6.0), "speed": 19.0, "accel": 5.5, "steer": 1.7, "cam": 10.0},
 	"army": {"name": "Jeep militaire", "size": Vector3(2.3, 1.7, 4.7), "speed": 28.0, "accel": 11.0, "steer": 2.1, "cam": 8.0},
+	"brt": {"name": "SunuBRT 100% Électrique", "size": Vector3(2.65, 3.4, 14.5), "speed": 24.0, "accel": 6.0, "steer": 1.2, "cam": 16.0},
+	"charette": {"name": "Charrette traditionnelle", "size": Vector3(1.6, 1.8, 4.4), "speed": 14.0, "accel": 5.0, "steer": 2.4, "cam": 6.5},
 }
 const FUEL_PER_M := 100.0 / 15000.0 ## % de réservoir par mètre parcouru
-const RADIO_TYPES := ["taxi", "car_rapide", "clando", "police", "bus", "coach", "ndiaga"]
-const ENGINE_PITCH := {"army": 0.6, "taxi": 0.75, "car_rapide": 0.55, "jakarta": 1.5, "grosse_moto": 0.85, "clando": 0.7, "police": 0.8, "bus": 0.42, "coach": 0.42, "ndiaga": 0.5}
+const RADIO_TYPES := ["taxi", "car_rapide", "clando", "police", "bus", "coach", "ndiaga", "brt"]
+const ENGINE_PITCH := {"army": 0.6, "taxi": 0.75, "car_rapide": 0.55, "jakarta": 1.5, "grosse_moto": 0.85, "clando": 0.7, "police": 0.8, "bus": 0.42, "coach": 0.42, "ndiaga": 0.5, "brt": 0.35, "charette": 0.0}
 ## Les grands véhicules évitent les ruelles trop étroites.
-const MIN_ROAD := {"bus": 8.0, "coach": 8.0, "car_rapide": 6.0, "ndiaga": 6.0}
+const MIN_ROAD := {"bus": 8.0, "coach": 8.0, "car_rapide": 6.0, "ndiaga": 6.0, "brt": 9.0}
 ## Vrais modèles 3D : packs CC0 de Quaternius (tools/convert_vehicles.py) et modèles Sketchfab « sf_* »
 ## (tools/convert_sketchfab.py, auteurs crédités dans vehicles/CREDITS.md, gardent leurs propres couleurs).
 ## type → [fichiers possibles, {matériau: nouvelle couleur}]
@@ -88,6 +90,11 @@ var _siren_mats: Array = [] ## gyrophare des modèles 3D : [rouge, bleu]
 static var _model_scenes := {}
 static var _mat_cache := {}
 var _rider: Node3D
+var _horse_node: Node3D
+var _horse_head: Node3D
+var _horse_legs: Array = []
+var _charette_trot_t := 0.0
+var _trot_sfx_timer := 0.0
 var _crime_cooldown := 0.0
 var _light_check := 0.0
 var _last_light := -1
@@ -408,6 +415,10 @@ func _build_model() -> void:
 			for sx in [-1, 1]:
 				var txt := Mk.label(self, "POLICE", Vector3(sx * (s.x / 2.0 + 0.02), 0.4 + s.y * 0.3, 0), 44, Color.WHITE, false)
 				txt.rotation.y = sx * PI / 2.0
+		"brt":
+			_build_brt(s)
+		"charette":
+			_build_charette(s)
 		_:
 			var col: Color = CLANDO_COLORS[get_instance_id() % CLANDO_COLORS.size()]
 			Mk.box(self, Vector3(s.x, s.y * 0.5, s.z), Vector3(0, 0.4 + s.y * 0.25, 0), col)
@@ -432,16 +443,254 @@ func _build_model() -> void:
 		for sx in [-1, 1]:
 			for z in [-s.z / 2.0 + 2.4, s.z / 2.0 - 3.3, s.z / 2.0 - 1.95]:
 				wheel_pos.append(Vector3(sx * (s.x / 2.0 - 0.2), _wheel_r, z))
+	elif vehicle_type == "brt":
+		_wheel_r = 0.52
+		for sx in [-1, 1]:
+			for z in [-s.z / 2.0 + 2.5, 0.1, s.z / 2.0 - 2.2]:
+				wheel_pos.append(Vector3(sx * (s.x / 2.0 - 0.15), _wheel_r, z))
+	elif vehicle_type == "charette":
+		_wheel_r = 0.58
+		for sx in [-1, 1]:
+			wheel_pos.append(Vector3(sx * (s.x / 2.0 + 0.1), _wheel_r, 0.6))
 	else:
 		for sx in [-1, 1]:
 			for sz in [-1, 1]:
 				wheel_pos.append(Vector3(sx * s.x / 2.0, 0.35, sz * (s.z / 2.0 - 0.8)))
 	for wp in wheel_pos:
-		var w := Mk.cyl(self, _wheel_r, _wheel_r, 0.28, wp, Color("111111"), false, 14)
-		w.rotation.z = PI / 2.0
-		# Jante métallisée
-		Mk.cyl(w, _wheel_r * 0.62, _wheel_r * 0.62, 0.3, Vector3.ZERO, Color("c9ccd1"), false, 10)
-		_wheels.append(w)
+		if vehicle_type == "charette":
+			var w := Mk.cyl(self, _wheel_r, _wheel_r, 0.08, wp, Color("2b2b2b"), false, 18)
+			w.rotation.z = PI / 2.0
+			Mk.cyl(w, _wheel_r * 0.94, _wheel_r * 0.94, 0.1, Vector3.ZERO, Color("7c5335"), false, 18)
+			Mk.cyl(w, 0.14, 0.14, 0.2, Vector3.ZERO, Color("4a3525"), false, 10)
+			for spk in 4:
+				var spk_mesh := Mk.box(w, Vector3(_wheel_r * 1.8, 0.04, 0.04), Vector3.ZERO, Color("8d6748"))
+				spk_mesh.rotation.y = float(spk) * (PI / 4.0)
+			_wheels.append(w)
+		else:
+			var w := Mk.cyl(self, _wheel_r, _wheel_r, 0.28, wp, Color("111111"), false, 14)
+			w.rotation.z = PI / 2.0
+			# Jante métallisée
+			Mk.cyl(w, _wheel_r * 0.62, _wheel_r * 0.62, 0.3, Vector3.ZERO, Color("c9ccd1"), false, 10)
+			_wheels.append(w)
+
+
+## Bus électrique à haut niveau de service SunuBRT (articulé, livrée turquoise et blanche).
+func _build_brt(s: Vector3) -> void:
+	var turquoise := Color("00a896")
+	var white := Color("f8f9fa")
+	var dark := Color("121820")
+	var W := s.x
+	var L := s.z
+	var base := 0.45
+
+	# 1. Section avant (Caisse motrice)
+	var front_len := 6.6
+	var front_z := -L / 2.0 + front_len / 2.0 + 0.3
+	Mk.box(self, Vector3(W, 1.4, front_len), Vector3(0, base + 0.7, front_z), turquoise)
+	Mk.box(self, Vector3(W + 0.02, 1.25, front_len - 0.6), Vector3(0, base + 1.95, front_z + 0.2), dark)
+	Mk.box(self, Vector3(W, 0.45, front_len), Vector3(0, base + 2.75, front_z), white)
+
+	# 2. Section arrière (Remorque articulée)
+	var rear_len := 5.8
+	var rear_z := L / 2.0 - rear_len / 2.0
+	Mk.box(self, Vector3(W, 1.4, rear_len), Vector3(0, base + 0.7, rear_z), turquoise)
+	Mk.box(self, Vector3(W + 0.02, 1.25, rear_len - 0.4), Vector3(0, base + 1.95, rear_z - 0.1), dark)
+	Mk.box(self, Vector3(W, 0.45, rear_len), Vector3(0, base + 2.75, rear_z), white)
+
+	# 3. Soufflet d'articulation central (accordéon noir plissé)
+	Mk.box(self, Vector3(W - 0.08, 2.75, 1.6), Vector3(0, base + 1.4, -0.1), Color("1a1a1a"))
+	for k in 5:
+		Mk.box(self, Vector3(W - 0.04, 2.78, 0.08), Vector3(0, base + 1.4, -0.8 + k * 0.35), Color("2b2b2b"))
+
+	# 4. Face avant profilée et futuriste
+	var nose_z := -L / 2.0
+	var ws := Mk.box(self, Vector3(W - 0.12, 1.7, 0.08), Vector3(0, base + 1.85, nose_z + 0.15), dark)
+	ws.rotation.x = -0.12
+	Mk.box(self, Vector3(W - 0.1, 0.5, 0.3), Vector3(0, base + 2.85, nose_z + 0.2), turquoise)
+	Mk.box(self, Vector3(W - 0.2, 0.38, 0.15), Vector3(0, base + 0.4, nose_z - 0.05), Color("111111"))
+
+	for sx in [-0.95, 0.95]:
+		Mk.box(self, Vector3(0.35, 0.12, 0.08), Vector3(sx, base + 0.65, nose_z - 0.06), Color.WHITE, false, Mk.mat(Color.WHITE, 2.8))
+		Mk.box(self, Vector3(0.18, 0.08, 0.06), Vector3(sx * 0.75, base + 0.35, nose_z - 0.07), Color.WHITE, false, Mk.mat(Color.WHITE, 2.0))
+
+	# Girouette LED SunuBRT
+	Mk.box(self, Vector3(2.1, 0.36, 0.06), Vector3(0, base + 2.85, nose_z + 0.08), Color("111111"))
+	var front_sign := Mk.label(self, "SUNUBRT — 100% ÉLECTRIQUE", Vector3(0, base + 2.85, nose_z + 0.03), 32, Color("ffd166"), false)
+	front_sign.outline_size = 0
+
+	# 5. Inscriptions latérales et portes vitrées
+	for side in [-1, 1]:
+		var x: float = float(side) * (W / 2.0 + 0.02)
+		var lbl := Mk.label(self, "SunuBRT", Vector3(x, base + 0.85, front_z), 54, Color.WHITE, false)
+		lbl.rotation.y = float(side) * PI / 2.0
+		var lbl_sub := Mk.label(self, "Dakar Mobilité · 100% Électrique", Vector3(x, base + 0.48, front_z), 26, Color("ffd166"), false)
+		lbl_sub.rotation.y = float(side) * PI / 2.0
+		Mk.box(self, Vector3(0.12, 0.12, 0.45), Vector3(float(side) * (W / 2.0 + 0.15), base + 2.7, nose_z + 0.4), turquoise)
+		Mk.box(self, Vector3(0.08, 0.28, 0.12), Vector3(float(side) * (W / 2.0 + 0.25), base + 2.65, nose_z + 0.15), dark)
+
+	for pz in [front_z + 1.2, rear_z - 1.2, rear_z + 1.6]:
+		Mk.box(self, Vector3(0.04, 2.1, 1.4), Vector3(W / 2.0 + 0.015, base + 1.15, float(pz)), Color("00853f"))
+		Mk.box(self, Vector3(0.05, 1.2, 1.1), Vector3(W / 2.0 + 0.02, base + 1.45, float(pz)), dark)
+
+	# 6. Coffres batteries électriques sur le toit
+	Mk.box(self, Vector3(W - 0.4, 0.42, front_len * 0.75), Vector3(0, base + 3.12, front_z), white)
+	Mk.box(self, Vector3(W - 0.4, 0.42, rear_len * 0.75), Vector3(0, base + 3.12, rear_z), white)
+
+	# 7. Face arrière
+	var back_z := L / 2.0
+	Mk.box(self, Vector3(W - 0.15, 1.1, 0.06), Vector3(0, base + 2.0, back_z - 0.02), dark)
+	for sx in [-0.95, 0.95]:
+		Mk.box(self, Vector3(0.18, 0.7, 0.06), Vector3(sx, base + 1.3, back_z + 0.01), Color("d00000"), false, Mk.mat(Color("d00000"), 2.0))
+	var back_sign := Mk.label(self, "LIGNE 1 — PETERSEN / GUÉDIAWAYE", Vector3(0, base + 2.75, back_z + 0.02), 26, Color("ffd166"), false)
+	back_sign.outline_size = 0
+
+
+## Charrette sénégalaise traditionnelle : plateau en planches de bois, brancards,
+## cheval harnaché avec licol, rênes et gris-gris, mené par le charretier.
+func _build_charette(s: Vector3) -> void:
+	var wood := Color("7c5335")
+	var dark_wood := Color("523621")
+	var plank_wood := Color("8d633f")
+	var iron := Color("2b2b2b")
+	var horse_col := Color("5a3825")
+	var horse_dark := Color("1f130b")
+
+	var bed_z := 0.6
+	var bed_w := s.x
+	var bed_l := 2.2
+	var bed_y := 0.65
+
+	Mk.box(self, Vector3(bed_w * 0.9, 0.08, bed_l), Vector3(0, bed_y - 0.06, bed_z), iron)
+	var axle := Mk.cyl(self, 0.05, 0.05, bed_w + 0.35, Vector3(0, 0.58, bed_z), iron, false, 8)
+	axle.rotation.z = PI / 2.0
+
+	for k in 9:
+		var pz := bed_z - bed_l / 2.0 + 0.12 + k * 0.24
+		var c: Color = plank_wood if k % 2 == 0 else wood
+		Mk.box(self, Vector3(bed_w * 0.92, 0.04, 0.2), Vector3(0, bed_y, pz), c)
+
+	for side in [-1, 1]:
+		var x: float = float(side) * (bed_w / 2.0 - 0.04)
+		Mk.box(self, Vector3(0.05, 0.06, bed_l), Vector3(x, bed_y + 0.32, bed_z), dark_wood)
+		Mk.box(self, Vector3(0.05, 0.06, bed_l), Vector3(x, bed_y + 0.16, bed_z), wood)
+		for k in 5:
+			var pz := bed_z - bed_l / 2.0 + 0.15 + k * 0.46
+			Mk.box(self, Vector3(0.06, 0.38, 0.06), Vector3(x, bed_y + 0.18, pz), dark_wood)
+	Mk.box(self, Vector3(bed_w * 0.9, 0.28, 0.05), Vector3(0, bed_y + 0.16, bed_z + bed_l / 2.0), dark_wood)
+
+	var bench_z := bed_z - bed_l / 2.0 + 0.2
+	Mk.box(self, Vector3(bed_w * 0.85, 0.28, 0.35), Vector3(0, bed_y + 0.15, bench_z), wood)
+	Mk.box(self, Vector3(bed_w * 0.8, 0.08, 0.32), Vector3(0, bed_y + 0.32, bench_z), Color("c4a482"))
+
+	for side in [-1, 1]:
+		var x_horse: float = float(side) * 0.32
+		var shaft := Mk.box(self, Vector3(0.07, 0.07, 2.5), Vector3(x_horse, bed_y + 0.05, -0.65), dark_wood)
+		shaft.rotation.y = float(side) * -0.04
+
+	var lantern_pos := Vector3(-bed_w / 2.0 - 0.08, bed_y + 0.35, bench_z)
+	Mk.cyl(self, 0.01, 0.01, 0.16, lantern_pos + Vector3(0, 0.1, 0), iron, false, 4)
+	Mk.cyl(self, 0.06, 0.08, 0.18, lantern_pos, Color("222222"), false, 6)
+	Mk.cyl(self, 0.045, 0.045, 0.12, lantern_pos, Color("ffe066"), false, 6)
+	var l_lamp := OmniLight3D.new()
+	l_lamp.light_color = Color("ffcc66")
+	l_lamp.light_energy = 0.8
+	l_lamp.omni_range = 6.0
+	l_lamp.position = lantern_pos
+	add_child(l_lamp)
+
+	_horse_node = Node3D.new()
+	_horse_node.name = "Cheval"
+	_horse_node.position = Vector3(0, 0, -2.0)
+	add_child(_horse_node)
+
+	Mk.box(_horse_node, Vector3(0.56, 0.62, 1.3), Vector3(0, 0.88, 0.0), horse_col)
+	Mk.box(_horse_node, Vector3(0.54, 0.58, 0.45), Vector3(0, 0.9, 0.55), horse_col)
+	Mk.box(_horse_node, Vector3(0.54, 0.64, 0.45), Vector3(0, 0.88, -0.5), horse_col)
+
+	var neck := Mk.box(_horse_node, Vector3(0.3, 0.62, 0.5), Vector3(0, 1.25, -0.75), horse_col)
+	neck.rotation.x = 0.42
+	var mane := Mk.box(_horse_node, Vector3(0.08, 0.65, 0.45), Vector3(0, 1.32, -0.7), horse_dark)
+	mane.rotation.x = 0.42
+
+	_horse_head = Node3D.new()
+	_horse_head.name = "TeteCheval"
+	_horse_head.position = Vector3(0, 1.52, -1.05)
+	_horse_node.add_child(_horse_head)
+
+	Mk.box(_horse_head, Vector3(0.28, 0.32, 0.48), Vector3(0, 0, -0.05), horse_col).rotation.x = -0.35
+	Mk.box(_horse_head, Vector3(0.22, 0.22, 0.3), Vector3(0, -0.15, -0.32), horse_col).rotation.x = -0.1
+	Mk.box(_horse_head, Vector3(0.2, 0.1, 0.06), Vector3(0, -0.18, -0.47), horse_dark)
+	for side in [-1, 1]:
+		Mk.box(_horse_head, Vector3(0.04, 0.06, 0.06), Vector3(side * 0.14, 0.05, -0.12), horse_dark)
+		var ear := Mk.box(_horse_head, Vector3(0.06, 0.16, 0.06), Vector3(side * 0.09, 0.22, 0.1), horse_col)
+		ear.rotation.z = side * -0.15
+		ear.rotation.x = -0.15
+
+	var tail := Mk.box(_horse_node, Vector3(0.12, 0.65, 0.15), Vector3(0, 0.72, 0.85), horse_dark)
+	tail.rotation.x = -0.22
+
+	_horse_legs.clear()
+	var leg_defs := [
+		Vector3(-0.2, 0.45, -0.42),
+		Vector3(0.2, 0.45, -0.42),
+		Vector3(-0.2, 0.45, 0.5),
+		Vector3(0.2, 0.45, 0.5),
+	]
+	for idx in leg_defs.size():
+		var lp: Vector3 = leg_defs[idx]
+		var leg_pivot := Node3D.new()
+		leg_pivot.name = "Patte_%d" % idx
+		leg_pivot.position = Vector3(lp.x, 0.8, lp.z)
+		_horse_node.add_child(leg_pivot)
+		Mk.box(leg_pivot, Vector3(0.15, 0.52, 0.16), Vector3(0, -0.26, 0), horse_col)
+		Mk.cyl(leg_pivot, 0.08, 0.08, 0.12, Vector3(0, -0.52, 0), Color("151515"), false, 8)
+		_horse_legs.append(leg_pivot)
+
+	Mk.box(_horse_node, Vector3(0.58, 0.1, 0.08), Vector3(0, 0.95, -0.72), Color("8b2500"))
+	Mk.box(_horse_node, Vector3(0.58, 0.1, 0.18), Vector3(0, 1.1, 0.0), Color("8b2500"))
+	for k in 3:
+		var c: Color = [Color("00853f"), Color("fdef42"), Color("e31b23")][k]
+		Mk.box(_horse_node, Vector3(0.08, 0.08, 0.04), Vector3(-0.16 + k * 0.16, 0.82, -0.76), c)
+
+	for side in [-1, 1]:
+		var r_mesh := Mk.box(self, Vector3(0.02, 0.02, 1.8), Vector3(float(side) * 0.22, 1.05, -1.0), Color("4a2205"))
+		r_mesh.rotation.y = float(side) * 0.04
+
+	_add_charretier(Vector3(0, bed_y + 0.35, bench_z))
+
+
+func _add_charretier(pos: Vector3) -> void:
+	_rider = load("res://scripts/util/real_character.gd").create(self, "homme_tunique", 1)
+	_rider.position = pos
+	_rider.play_clip("sit", 0.0)
+	_rider.scale = Vector3.ONE * 0.95
+	_rider.visible = true
+	var hat := Mk.cyl(_rider, 0.32, 0.15, 0.12, Vector3(0, 1.52, 0), Color("d4a373"), false, 12)
+	Mk.cyl(hat, 0.48, 0.48, 0.02, Vector3(0, -0.05, 0), Color("c49363"), false, 16)
+
+
+func _update_horse_animation(delta: float) -> void:
+	var moving := absf(speed) > 0.15
+	if moving:
+		_charette_trot_t += delta * (absf(speed) * 2.2)
+		if _horse_head:
+			_horse_head.rotation.x = sin(_charette_trot_t * 2.0) * 0.12
+		for idx in _horse_legs.size():
+			var leg: Node3D = _horse_legs[idx]
+			var phase := float(idx % 2) * PI
+			if idx >= 2:
+				phase += PI * 0.5
+			leg.rotation.x = sin(_charette_trot_t + phase) * 0.4
+		if driver:
+			_trot_sfx_timer -= delta
+			if _trot_sfx_timer <= 0.0:
+				_trot_sfx_timer = clampf(0.55 / maxf(1.0, absf(speed)), 0.18, 0.5)
+				Audio.play_sfx("coin", -26.0)
+	else:
+		if _horse_head:
+			_horse_head.rotation.x = lerpf(_horse_head.rotation.x, 0.0, 5.0 * delta)
+		for leg in _horse_legs:
+			leg.rotation.x = lerpf(leg.rotation.x, 0.0, 5.0 * delta)
 
 
 ## Camionnette de livraison Jumbo : caisse blanche, bandeaux rouge et jaune.
@@ -592,7 +841,7 @@ func set_driver(d) -> void:
 		if _body:
 			_body.rotation = Vector3.ZERO
 	if _rider:
-		_rider.visible = d != null
+		_rider.visible = (d == null) if vehicle_type == "charette" else (d != null)
 
 
 ## Fait rouler le véhicule dans la circulation, à partir du tronçon from → to du réseau routier.
@@ -855,8 +1104,14 @@ func _physics_process(delta: float) -> void:
 		var r := clampf(absf(speed) / max_speed, 0.0, 1.0)
 		var gear := mini(int(r * 5.0), 4)
 		var in_gear := r * 5.0 - gear
-		Audio.set_engine(true, ENGINE_PITCH.get(vehicle_type, 0.75) + 0.25 + in_gear * 0.85 + gear * 0.1)
-		Audio.set_engine_load(absf(throttle))
+		if vehicle_type == "charette":
+			Audio.set_engine(false)
+		elif vehicle_type == "brt":
+			Audio.set_engine(true, 0.28 + r * 0.35)
+			Audio.set_engine_load(absf(throttle) * 0.4)
+		else:
+			Audio.set_engine(true, ENGINE_PITCH.get(vehicle_type, 0.75) + 0.25 + in_gear * 0.85 + gear * 0.1)
+			Audio.set_engine_load(absf(throttle))
 	elif hold:
 		speed = move_toward(speed, 0.0, 14.0 * delta)
 	elif route_active:
@@ -910,6 +1165,8 @@ func _physics_process(delta: float) -> void:
 		_check_stop_sign(delta)
 	for w in _wheels:
 		w.rotate_object_local(_wheel_axis, -speed * delta / _wheel_r)
+	if vehicle_type == "charette":
+		_update_horse_animation(delta)
 
 
 ## Sensations de conduite du joueur : carrosserie qui penche et plonge, crissement des pneus

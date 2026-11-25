@@ -150,9 +150,9 @@ func _interact() -> void:
 	if current_vehicle:
 		exit_vehicle()
 		return
-	# Si une moto est à portée, monter directement dessus
+	# Si une moto ou une charrette est à portée, monter directement dessus
 	var v = _nearest_vehicle()
-	if v and v.vehicle_type in ["jakarta", "grosse_moto"]:
+	if v and v.vehicle_type in ["jakarta", "grosse_moto", "charette"]:
 		enter_vehicle(v)
 		return
 	if transit and transit.try_interact():
@@ -187,6 +187,8 @@ func get_interaction_hint() -> String:
 		var stolen: bool = v.ai_enabled or v.route_active or v.vehicle_type in ["police", "army"]
 		if v.vehicle_type in ["jakarta", "grosse_moto"]:
 			return "Monter sur la moto : " + v.display_name
+		elif v.vehicle_type == "charette":
+			return "Monter sur la charrette"
 		elif stolen:
 			return "Prendre le volant : " + v.display_name
 		else:
@@ -207,6 +209,8 @@ func enter_vehicle(v) -> void:
 		pass # policier en service : sa voiture de patrouille
 	elif v.vehicle_type == "police":
 		GameState.add_wanted(2, "Tu voles une voiture de police ! Toute la ville te recherche.")
+	elif v.vehicle_type == "charette":
+		GameState.notify.emit("« Allez, avance ! » Tu prends les rênes de la charrette.")
 	elif v.ai_enabled or v.route_active:
 		GameState.add_wanted(1, "« Ndeysaan, sama oto bi ! » Le chauffeur s'enfuit et appelle la police...")
 	v.route_active = false

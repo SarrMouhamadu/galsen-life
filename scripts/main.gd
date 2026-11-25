@@ -43,17 +43,19 @@ const Fishing = preload("res://scripts/world/fishing.gd")
 const Cooking = preload("res://scripts/world/cooking.gd")
 const Tutorial = preload("res://scripts/jobs/tutorial.gd")
 const ShaderWarmup = preload("res://scripts/world/shader_warmup.gd")
+const Stade = preload("res://scripts/world/stade.gd")
+const Ter = preload("res://scripts/transport/ter.gd")
 
 const TRAFFIC := [
-	"taxi", "jakarta", "clando", "car_rapide", "grosse_moto",
+	"taxi", "jakarta", "clando", "car_rapide", "grosse_moto", "charette",
 	"taxi", "jakarta", "ndiaga", "clando", "police",
-	"jakarta", "taxi", "car_rapide", "grosse_moto", "clando",
+	"jakarta", "taxi", "car_rapide", "grosse_moto", "clando", "charette",
 	"taxi", "jakarta", "ndiaga", "car_rapide", "police",
 	"grosse_moto", "taxi", "jakarta", "clando", "car_rapide",
-	"jakarta", "taxi", "grosse_moto", "ndiaga", "clando",
+	"jakarta", "taxi", "grosse_moto", "ndiaga", "clando", "charette",
 	"car_rapide", "jakarta", "taxi", "police", "grosse_moto",
 	"clando", "jakarta", "taxi", "ndiaga", "car_rapide",
-	"coach", "jakarta", "grosse_moto", "taxi", "clando",
+	"coach", "jakarta", "grosse_moto", "taxi", "clando", "charette",
 	"car_rapide", "jakarta", "bus"
 ]
 ## Les voitures et piétons trop loin sont replacés près du joueur (comme dans GTA).
@@ -74,6 +76,8 @@ var business
 var gps
 var arena
 var foot ## complexe de mini-foot, hors de la ville (scripts/world/foot.gd)
+var stade ## stades Iba Mar Diop et Me Abdoulaye Wade (scripts/world/stade.gd)
+var ter ## train express régional de Dakar (scripts/transport/ter.gd)
 var street_fight ## bagarres de rue (scripts/world/street_fight.gd)
 var lutte ## écuries et journées de lutte (scripts/world/lutte.gd)
 var net_lutte_ui ## lutte entre joueurs (en ligne)
@@ -199,6 +203,21 @@ func _ready() -> void:
 	foot.hud = hud
 	add_child(foot)
 	transit.foot = foot
+
+	stade = Stade.new()
+	stade.main = self
+	stade.city = city
+	stade.player = player
+	stade.hud = hud
+	add_child(stade)
+
+	ter = Ter.new()
+	ter.main = self
+	ter.city = city
+	ter.player = player
+	ter.hud = hud
+	add_child(ter)
+
 	# Entreprises visitables : créées avant l'emploi (les patrons de ces entreprises sont dans leurs bureaux)
 	enterprises = Enterprises.new()
 	enterprises.main = self
@@ -208,7 +227,7 @@ func _ready() -> void:
 	add_child(employment)
 	jobs.employment = employment
 	business.employment = employment
-	player.providers = [enterprises, employment, arena, foot, business, market]
+	player.providers = [enterprises, employment, arena, foot, stade, ter, business, market]
 	# Mode en ligne : les autres joueurs
 	remote_players = RemotePlayers.new()
 	remote_players.main = self

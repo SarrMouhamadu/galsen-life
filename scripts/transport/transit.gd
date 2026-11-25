@@ -14,10 +14,12 @@ const LINES := [
 		"stops": ["Place de l'Indépendance", "Marché Sandaga", "Restaurant Maïga", "Gare routière Petersen", "Marché Tilène", "Grande Mosquée"]},
 	{"name": "Ligne 2", "type": "coach", "color": Color("2f7fc0"), "buses": 2,
 		"stops": ["Gare de Dakar", "Marché Kermel", "Hôpital Principal", "Assemblée nationale", "Cathédrale", "Porte du Millénaire"]},
+	{"name": "SunuBRT Ligne 1", "type": "brt", "color": Color("00a896"), "buses": 2,
+		"stops": ["Gare routière Petersen", "Marché Tilène", "Grande Mosquée", "Stade Iba Mar Diop", "Porte du Millénaire"]},
 ]
 const TAXI_PLACES := ["Place de l'Indépendance", "Marché Sandaga", "Grande Mosquée", "Hôpital Principal", "Gare de Dakar",
 	"Marché Kermel", "Marché Tilène", "Gare routière Petersen", "Cathédrale", "Assemblée nationale",
-	"Porte du Millénaire", "Chez Adja", "Dibiterie", "Restaurant Maïga", "Café Touba"]
+	"Porte du Millénaire", "Stade Iba Mar Diop", "Chez Adja", "Dibiterie", "Restaurant Maïga", "Café Touba"]
 
 var city
 var player
@@ -121,7 +123,10 @@ func _shelter(pos: Vector3, dir: Vector3, line: Dictionary, stop_name: String) -
 	Mk.box(h, Vector3(0.45, 0.08, 2.6), Vector3(0.45, 0.5, 0), Color("6b4f3a"), true)
 	Mk.cyl(h, 0.04, 0.04, 2.8, Vector3(-0.5, 1.4, 1.9), Color("c9ccd1"), false, 6)
 	Mk.box(h, Vector3(0.05, 0.6, 0.6), Vector3(-0.5, 2.7, 1.9), col)
-	Mk.label(h, "BUS\n%s — %s FCFA\n%s" % [line["name"], BUS_FARE, stop_name], Vector3(0, 3.2, 0), Mk.SIGN_SIZE - 4, Color.WHITE)
+	if line.get("type", "") == "brt":
+		Mk.label(h, "⚡ SUNUBRT (100% Électrique)\n%s — %s FCFA\nArrêt : %s" % [line["name"], BUS_FARE, stop_name], Vector3(0, 3.2, 0), Mk.SIGN_SIZE - 4, Color("00a896"))
+	else:
+		Mk.label(h, "BUS\n%s — %s FCFA\n%s" % [line["name"], BUS_FARE, stop_name], Vector3(0, 3.2, 0), Mk.SIGN_SIZE - 4, Color.WHITE)
 
 
 func _on_bus_stop(stop_name: String, bus) -> void:

@@ -684,7 +684,7 @@ func open_chat() -> void:
 		return
 	_chat_input.visible = true
 	_chat_input.text = ""
-	var vp := get_viewport_rect().size
+	var vp: Vector2 = get_viewport().get_visible_rect().size
 	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
 	var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
 	_chat_input.position = Vector2(16, vp.y - bot_m - 44.0)
@@ -866,7 +866,7 @@ func _on_notify(text: String) -> void:
 
 func _process(delta: float) -> void:
 	if _chat_input and _chat_input.visible:
-		var vp := get_viewport_rect().size
+		var vp: Vector2 = get_viewport().get_visible_rect().size
 		var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
 		var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
 		var target_y := vp.y - bot_m - _chat_input.size.y

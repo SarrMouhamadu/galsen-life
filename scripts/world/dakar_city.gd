@@ -105,6 +105,9 @@ func build_data_only() -> void:
 		if not places.has(required):
 			places[required] = node_pos[_drive_nodes[0]]
 			place_info[required] = [0, 0, 0.0, 1.0, 0.0]
+	if not places.has("Stade Iba Mar Diop"):
+		places["Stade Iba Mar Diop"] = Vector3(-730.0, 0.3, -532.0)
+		place_info["Stade Iba Mar Diop"] = [-730.0, -532.0, 0.0, 1.0, 0.0]
 
 
 func _load_graph(nodes: Array, edges: Array) -> void:

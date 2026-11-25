@@ -52,7 +52,7 @@ var _tick_frame := 0
 var _saving_task := -1
 var _peer_packets := {} ## id -> [count, window_start_msec]
 ## Véhicule conduit, envoyé sous forme d'indice
-const VEH := ["", "taxi", "bus", "coach", "car_rapide", "jakarta", "clando", "police", "van", "army", "ndiaga", "grosse_moto"]
+const VEH := ["", "taxi", "bus", "coach", "car_rapide", "jakarta", "clando", "police", "van", "army", "ndiaga", "grosse_moto", "charette", "brt"]
 const STRIDE := 8 ## entiers par joueur dans un instantané
 ## Un client renvoie son état au moins toutes les HEARTBEAT secondes, même immobile
 const HEARTBEAT := 1.0
