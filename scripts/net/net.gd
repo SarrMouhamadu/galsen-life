@@ -889,12 +889,12 @@ func _fail(msg: String) -> void:
 
 
 @rpc("authority", "reliable")
-func rpc_login_result(ok: bool, message: String, save: Dictionary, server_avatar: String, server_code := "") -> void:
+func rpc_login_result(ok: bool, message: String, save: Dictionary, server_avatar: String) -> void:
 	if ok:
 		online = true
 		pseudo = _pending_login.get("pseudo", "")
 		avatar = server_avatar
-		friend_code = server_code if server_code != "" else generate_friend_code(pseudo)
+		friend_code = generate_friend_code(pseudo)
 		GameState.start_online(save)
 		emotes.hello()
 		factions.hello()
@@ -1121,62 +1121,42 @@ func rpc_notice(text: String) -> void:
 
 
 ## Rejoindre un ami grâce à son Code Ami unique (ex: "GAL-12345")
-@rpc("any_peer", "reliable")
-func rpc_join_friend(code: String) -> void:
-	if not is_server:
+## Note : géré côté client pour compatibilité totale avec le serveur dédié officiel
+func join_by_friend_code(code: String) -> void:
+	var clean := code.strip_edges().to_upper()
+	if clean == "":
+		GameState.notify.emit("Entre un code ami.")
 		return
-	var id := multiplayer.get_remote_sender_id()
-	if not _sessions.has(id):
-		return
-	var my_who: String = _sessions[id]
-	var norm_code := code.strip_edges().to_upper()
-	if not norm_code.begins_with("GAL-") and not "-" in norm_code:
-		norm_code = "GAL-" + norm_code
-
-	var target_who: String = _code_to_account.get(norm_code, "")
-	if target_who == "":
-		for acc_name in _accounts:
-			var acc = _accounts[acc_name]
-			if acc is Dictionary:
-				if str(acc.get("friend_code", "")).to_upper() == norm_code or generate_friend_code(acc_name) == norm_code:
-					target_who = acc_name
-					_code_to_account[norm_code] = acc_name
-					break
-
-	if target_who == "":
-		rpc_friend_join_result.rpc_id(id, false, "Aucun joueur trouvé pour le code « %s »." % norm_code, "", Vector3.ZERO, -1, norm_code)
+	if not clean.begins_with("GAL-") and not "-" in clean:
+		clean = "GAL-" + clean
+	if not online:
+		pending_friend_join_code = clean
+		GameState.notify.emit("Code mémorisé. Connecte-toi pour rejoindre ton ami !")
 		return
 
-	if target_who.to_lower() == my_who.to_lower():
-		rpc_friend_join_result.rpc_id(id, false, "C'est ton propre code ami !", target_who, Vector3.ZERO, -1, norm_code)
-		return
-
-	var target_id := -1
-	for sid in _sessions:
-		if _sessions[sid].to_lower() == target_who.to_lower():
-			target_id = sid
+	# Recherche de l'ami dans les joueurs en ligne (roster)
+	var found_peer := -1
+	var found_name := ""
+	for pid in roster:
+		var p_name: String = str(roster[pid].get("pseudo", ""))
+		if generate_friend_code(p_name) == clean:
+			found_peer = pid
+			found_name = p_name
 			break
 
-	if target_id < 0:
-		rpc_friend_join_result.rpc_id(id, false, "%s n'est pas connecté à Dakar pour l'instant." % target_who, target_who, Vector3.ZERO, -1, norm_code)
+	if found_peer < 0:
+		friend_joined.emit(false, "Ce joueur n'est pas connecté à Dakar pour l'instant.", "", Vector3.ZERO, -1, clean)
+		GameState.notify.emit("Ami non trouvé ou hors ligne pour le code %s" % clean)
 		return
 
-	var pos: Vector3 = _pos.get(target_id, Vector3.ZERO)
-	if pos == Vector3.ZERO and _states.has(target_id):
-		var st: Dictionary = _states[target_id]
+	var pos := Vector3.ZERO
+	if remote.has(found_peer) and remote[found_peer].has("state"):
+		var st: Dictionary = remote[found_peer]["state"]
 		pos = Vector3(float(st.get("x", 0.0)), float(st.get("y", 0.0)), float(st.get("z", 0.0)))
 
-	rpc_friend_join_result.rpc_id(id, true, "Ami trouvé : %s est en ligne !" % target_who, target_who, pos, target_id, norm_code)
-	rpc_notice.rpc_id(target_id, "🤝 %s te rejoint avec ton code ami !" % my_who)
-	if _sessions.size() <= 100:
-		_broadcast_chat("Serveur", "%s a rejoint son ami %s à Dakar !" % [my_who, target_who])
-
-
-@rpc("authority", "reliable")
-func rpc_friend_join_result(ok: bool, message: String, friend_name: String, friend_pos: Vector3, friend_peer: int, code: String) -> void:
-	if ok:
-		save_friend(friend_name, code)
-	friend_joined.emit(ok, message, friend_name, friend_pos, friend_peer, code)
+	save_friend(found_name, clean)
+	friend_joined.emit(true, "Ami trouvé : %s est à Dakar !" % found_name, found_name, pos, found_peer, clean)
+	GameState.notify.emit("🤝 Tu as rejoint %s !" % found_name)
 
 
 static func generate_friend_code(who: String) -> String:
@@ -1190,20 +1170,6 @@ func get_my_friend_code() -> String:
 	if pseudo != "":
 		return generate_friend_code(pseudo)
 	return generate_friend_code(GameState.player_name if GameState.player_name != "" else "Joueur")
-
-
-func join_by_friend_code(code: String) -> void:
-	var clean := code.strip_edges().to_upper()
-	if clean == "":
-		GameState.notify.emit("Entre un code ami.")
-		return
-	if not clean.begins_with("GAL-") and not "-" in clean:
-		clean = "GAL-" + clean
-	if online:
-		rpc_join_friend.rpc_id(1, clean)
-	else:
-		pending_friend_join_code = clean
-		GameState.notify.emit("Code mémorisé. Connecte-toi pour rejoindre ton ami !")
 
 
 func load_saved_friends() -> void:
