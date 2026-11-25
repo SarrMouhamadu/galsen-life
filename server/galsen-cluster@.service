@@ -1,0 +1,16 @@
+[Unit]
+Description=Galsen-Life Shard Server sur port UDP %I
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=galsen
+WorkingDirectory=/opt/galsen-life
+ExecStart=/opt/galsen-life/Godot --headless --main-pack /opt/galsen-life/galsen-life.pck -- --server --port=%I --max-players=4096
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+LimitNPROC=65535
+
+[Install]
+WantedBy=multi-user.target

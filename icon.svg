@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="24" fill="#111111"/>
+  <rect x="14" y="24" width="34" height="66" fill="#00853f"/>
+  <rect x="48" y="24" width="33" height="66" fill="#fdef42"/>
+  <rect x="81" y="24" width="33" height="66" fill="#e31b23"/>
+  <polygon points="64,42 69,53 81,53 71,61 75,73 64,66 53,73 57,61 47,53 59,53" fill="#00853f"/>
+  <text x="64" y="114" font-family="Arial, sans-serif" font-weight="bold" font-size="15" text-anchor="middle" fill="#ffffff">GALSEN-LIFE</text>
+</svg>

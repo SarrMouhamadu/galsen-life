@@ -1,0 +1,14 @@
+[Unit]
+Description=Serveur Galsen-Life (Godot, UDP 7777)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=galsen
+WorkingDirectory=/opt/galsen-life
+ExecStart=/opt/galsen-life/Godot --headless --main-pack /opt/galsen-life/galsen-life.pck -- --server
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

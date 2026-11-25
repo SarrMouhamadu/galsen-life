@@ -1,0 +1,21 @@
+# Cache de l'éditeur Godot
+.godot/
+
+# Exports
+export/
+/android/
+*.apk
+*.aab
+*.keystore
+
+# Binaires iOS du module AdMob (téléchargés automatiquement, pas de version iOS)
+addons/admob/ios/bin/
+
+# Modèles Sketchfab téléchargés à la main (sources, convertis dans vehicles/)
+_vehicules_sketchfab/
+_construction_sketchfab/
+_personnages_sketchfab/
+
+# macOS
+.DS_Store
+*.DS_Store

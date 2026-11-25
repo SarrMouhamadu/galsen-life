@@ -1,0 +1,5124 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-21T13:16:35Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 61086357,
+  "lat": 14.6662875,
+  "lon": -17.4389721,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "traffic_signals",
+    "traffic_signals": "signal"
+  }
+},
+{
+  "type": "node",
+  "id": 61086366,
+  "lat": 14.6645510,
+  "lon": -17.4335560,
+  "tags": {
+    "highway": "traffic_signals",
+    "traffic_signals": "signal",
+    "traffic_signals:direction": "both"
+  }
+},
+{
+  "type": "node",
+  "id": 61086438,
+  "lat": 14.6656717,
+  "lon": -17.4369761,
+  "tags": {
+    "highway": "traffic_signals",
+    "traffic_signals": "signal",
+    "traffic_signals:direction": "both"
+  }
+},
+{
+  "type": "node",
+  "id": 61086549,
+  "lat": 14.6753580,
+  "lon": -17.4375008,
+  "tags": {
+    "highway": "traffic_signals",
+    "source": "Maplillary https://www.mapillary.com/app/?focus=photo&pKey=EJzNeVIpCkNgYf7QNscxAA&signs=true&points=true&lat=14.675653999972221&lng=-17.4375186&z=17&x=0.4632627272506691&y=0.6298898158384072&zoom=0"
+  }
+},
+{
+  "type": "node",
+  "id": 61086739,
+  "lat": 14.6673085,
+  "lon": -17.4325475,
+  "tags": {
+    "highway": "traffic_signals",
+    "traffic_signals": "signal",
+    "traffic_signals:direction": "both"
+  }
+},
+{
+  "type": "node",
+  "id": 61086865,
+  "lat": 14.6749513,
+  "lon": -17.4355288,
+  "tags": {
+    "highway": "traffic_signals",
+    "source": "Maplillary https://www.mapillary.com/app/?focus=photo&pKey=OqOc3_I4H34v3z-k5YRreA&signs=true&points=true&lat=14.674979599999999&lng=-17.435683099972223&z=17&x=0.5144049248677062&y=0.6499600028013108&zoom=0"
+  }
+},
+{
+  "type": "node",
+  "id": 299632113,
+  "lat": 14.6778533,
+  "lon": -17.4417581,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 299632114,
+  "lat": 14.6794062,
+  "lon": -17.4430335,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 553094458,
+  "lat": 14.6657997,
+  "lon": -17.4379608,
+  "tags": {
+    "leisure": "playground"
+  }
+},
+{
+  "type": "node",
+  "id": 553101856,
+  "lat": 14.6703771,
+  "lon": -17.4300677,
+  "tags": {
+    "leisure": "sports_centre",
+    "name": "Curves"
+  }
+},
+{
+  "type": "node",
+  "id": 559921997,
+  "lat": 14.6681692,
+  "lon": -17.4370247,
+  "tags": {
+    "amenity": "place_of_worship",
+    "religion": "muslim",
+    "wikidata": "Q92946523"
+  }
+},
+{
+  "type": "node",
+  "id": 1239141654,
+  "lat": 14.6826971,
+  "lon": -17.4395348,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1241487828,
+  "lat": 14.6678377,
+  "lon": -17.4432256,
+  "tags": {
+    "highway": "traffic_signals",
+    "traffic_signals": "signal",
+    "traffic_signals:direction": "both"
+  }
+},
+{
+  "type": "node",
+  "id": 1241488126,
+  "lat": 14.6718870,
+  "lon": -17.4472032,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1241488680,
+  "lat": 14.6719459,
+  "lon": -17.4471474,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1247664887,
+  "lat": 14.6838728,
+  "lon": -17.4446045,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1247665043,
+  "lat": 14.6779814,
+  "lon": -17.4415813,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1247665546,
+  "lat": 14.6803962,
+  "lon": -17.4436622,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1247665619,
+  "lat": 14.6875278,
+  "lon": -17.4461362,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1247665682,
+  "lat": 14.6837770,
+  "lon": -17.4448686,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1247665759,
+  "lat": 14.6779230,
+  "lon": -17.4416473,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1311222681,
+  "lat": 14.6670883,
+  "lon": -17.4369357,
+  "tags": {
+    "amenity": "place_of_worship",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "node",
+  "id": 1782511827,
+  "lat": 14.6653701,
+  "lon": -17.4369504,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1789044468,
+  "lat": 14.6782321,
+  "lon": -17.4333500,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 1867519604,
+  "lat": 14.6761934,
+  "lon": -17.4470537,
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2178592001,
+  "lat": 14.6837435,
+  "lon": -17.4546071,
+  "tags": {
+    "amenity": "place_of_worship",
+    "operational_status": "open",
+    "religion": "muslim",
+    "source": "bing; survey",
+    "source:date": "2013-02-28"
+  }
+},
+{
+  "type": "node",
+  "id": 2271236968,
+  "lat": 14.6715067,
+  "lon": -17.4260858,
+  "tags": {
+    "amenity": "place_of_worship",
+    "name": "Mosquée du Port",
+    "religion": "muslim",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 2639664135,
+  "lat": 14.6786125,
+  "lon": -17.4423543,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 2639664145,
+  "lat": 14.6787094,
+  "lon": -17.4422331,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3446387427,
+  "lat": 14.6620521,
+  "lon": -17.4396935,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3473236294,
+  "lat": 14.6630235,
+  "lon": -17.4377805,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3473284423,
+  "lat": 14.6847059,
+  "lon": -17.4408737,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3664148065,
+  "lat": 14.6659302,
+  "lon": -17.4388284,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3664148084,
+  "lat": 14.6660455,
+  "lon": -17.4382333,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "traffic_signals",
+    "traffic_signals": "signal",
+    "traffic_signals:direction": "both"
+  }
+},
+{
+  "type": "node",
+  "id": 3664174159,
+  "lat": 14.6632417,
+  "lon": -17.4375801,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3664201003,
+  "lat": 14.6774011,
+  "lon": -17.4459778,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3664201012,
+  "lat": 14.6774648,
+  "lon": -17.4458931,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3664201022,
+  "lat": 14.6773131,
+  "lon": -17.4459138,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 3664207328,
+  "lat": 14.6770805,
+  "lon": -17.4458411,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 3664207341,
+  "lat": 14.6773783,
+  "lon": -17.4456634,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 3962630264,
+  "lat": 14.6697338,
+  "lon": -17.4283802,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3962630663,
+  "lat": 14.6662270,
+  "lon": -17.4383285,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 3962630673,
+  "lat": 14.6697512,
+  "lon": -17.4281132,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4007603390,
+  "lat": 14.6633502,
+  "lon": -17.4395602,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4007603689,
+  "lat": 14.6667596,
+  "lon": -17.4403660,
+  "tags": {
+    "crossing": "traffic_signals",
+    "crossing:island": "no",
+    "crossing:markings": "zebra",
+    "crossing_ref": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4010257892,
+  "lat": 14.6719241,
+  "lon": -17.4290477,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4041003248,
+  "lat": 14.6678648,
+  "lon": -17.4324081,
+  "tags": {
+    "highway": "traffic_signals",
+    "traffic_signals": "signal",
+    "traffic_signals:direction": "both"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961677,
+  "lat": 14.6628754,
+  "lon": -17.4341302,
+  "tags": {
+    "crossing": "marked",
+    "crossing:island": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961678,
+  "lat": 14.6633033,
+  "lon": -17.4339897,
+  "tags": {
+    "crossing": "marked",
+    "crossing:island": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961683,
+  "lat": 14.6642881,
+  "lon": -17.4336522,
+  "tags": {
+    "crossing": "marked",
+    "crossing:island": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961684,
+  "lat": 14.6660784,
+  "lon": -17.4330011,
+  "tags": {
+    "crossing": "marked",
+    "crossing:island": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961685,
+  "lat": 14.6674278,
+  "lon": -17.4325045,
+  "tags": {
+    "crossing": "traffic_signals",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961688,
+  "lat": 14.6703654,
+  "lon": -17.4324451,
+  "tags": {
+    "crossing": "marked",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961689,
+  "lat": 14.6703674,
+  "lon": -17.4324883,
+  "tags": {
+    "crossing": "marked",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961690,
+  "lat": 14.6703792,
+  "lon": -17.4317013,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961692,
+  "lat": 14.6705765,
+  "lon": -17.4320952,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961695,
+  "lat": 14.6706926,
+  "lon": -17.4320653,
+  "tags": {
+    "crossing:markings": "yes",
+    "crossing:signals": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4257961696,
+  "lat": 14.6706946,
+  "lon": -17.4321351,
+  "tags": {
+    "crossing:markings": "yes",
+    "crossing:signals": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4336756231,
+  "lat": 14.6595031,
+  "lon": -17.4340078,
+  "tags": {
+    "name": "Anse Bernard",
+    "natural": "beach",
+    "surface": "sand"
+  }
+},
+{
+  "type": "node",
+  "id": 4514445390,
+  "lat": 14.6671095,
+  "lon": -17.4358289,
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "denomination": "sunni",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "node",
+  "id": 4549849148,
+  "lat": 14.6745525,
+  "lon": -17.4530849,
+  "tags": {
+    "leisure": "pitch",
+    "sport": "skateboard"
+  }
+},
+{
+  "type": "node",
+  "id": 4692369986,
+  "lat": 14.6831012,
+  "lon": -17.4390694,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing_ref": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4692462878,
+  "lat": 14.6798311,
+  "lon": -17.4431813,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4692462880,
+  "lat": 14.6796564,
+  "lon": -17.4433822,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "crossing_ref": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4692462884,
+  "lat": 14.6804380,
+  "lon": -17.4435052,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696783352,
+  "lat": 14.6804594,
+  "lon": -17.4434245,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696835279,
+  "lat": 14.6869393,
+  "lon": -17.4456104,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696835283,
+  "lat": 14.6859787,
+  "lon": -17.4453903,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696835284,
+  "lat": 14.6859260,
+  "lon": -17.4455642,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696835286,
+  "lat": 14.6868842,
+  "lon": -17.4457996,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836089,
+  "lat": 14.6849603,
+  "lon": -17.4451535,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836091,
+  "lat": 14.6859508,
+  "lon": -17.4454824,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836094,
+  "lat": 14.6849335,
+  "lon": -17.4452344,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836096,
+  "lat": 14.6868587,
+  "lon": -17.4458872,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836105,
+  "lat": 14.6838460,
+  "lon": -17.4446784,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836107,
+  "lat": 14.6860012,
+  "lon": -17.4453163,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836111,
+  "lat": 14.6869100,
+  "lon": -17.4457111,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836117,
+  "lat": 14.6849897,
+  "lon": -17.4450643,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836120,
+  "lat": 14.6850184,
+  "lon": -17.4449776,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4696836122,
+  "lat": 14.6838144,
+  "lon": -17.4447655,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920632,
+  "lat": 14.6875655,
+  "lon": -17.4460370,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920636,
+  "lat": 14.6888273,
+  "lon": -17.4463599,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920637,
+  "lat": 14.6876322,
+  "lon": -17.4458708,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920639,
+  "lat": 14.6887964,
+  "lon": -17.4464557,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920642,
+  "lat": 14.6887718,
+  "lon": -17.4465321,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920647,
+  "lat": 14.6888512,
+  "lon": -17.4462857,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4697920648,
+  "lat": 14.6876041,
+  "lon": -17.4459408,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4700720775,
+  "lat": 14.6743840,
+  "lon": -17.4319036,
+  "tags": {
+    "crossing": "uncontrolled",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 4700781880,
+  "lat": 14.6746199,
+  "lon": -17.4326140,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing_ref": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 5245896519,
+  "lat": 14.6856077,
+  "lon": -17.4428338,
+  "tags": {
+    "adress": "Rue Gib-40",
+    "amenity": "place_of_worship",
+    "denomination": "sunni",
+    "fixme": "Approximate position, using address... Former position was in the ocean.",
+    "name": "Mosquée Gibraltar 1",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "node",
+  "id": 5352138225,
+  "lat": 14.6849328,
+  "lon": -17.4518537,
+  "tags": {
+    "amenity": "place_of_worship",
+    "check_date": "2026-03-19",
+    "denomination": "jehovahs_witness",
+    "name": "Salle du Royaume des Témoins de Jéhovah",
+    "religion": "christian"
+  }
+},
+{
+  "type": "node",
+  "id": 6056874923,
+  "lat": 14.6826088,
+  "lon": -17.4394589,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6057106000,
+  "lat": 14.6776432,
+  "lon": -17.4416057,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6057302123,
+  "lat": 14.6831763,
+  "lon": -17.4449124,
+  "tags": {
+    "crossing:signals": "yes",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6351036083,
+  "lat": 14.6875337,
+  "lon": -17.4455724,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6351036486,
+  "lat": 14.6869269,
+  "lon": -17.4461784,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6351036504,
+  "lat": 14.6794591,
+  "lon": -17.4428544,
+  "tags": {
+    "crossing:signals": "yes",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6351036505,
+  "lat": 14.6793550,
+  "lon": -17.4429850,
+  "tags": {
+    "crossing:signals": "yes",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 6417668421,
+  "lat": 14.6747329,
+  "lon": -17.4538987,
+  "tags": {
+    "leisure": "pitch",
+    "sport": "skateboard"
+  }
+},
+{
+  "type": "node",
+  "id": 6973649239,
+  "lat": 14.6844683,
+  "lon": -17.4532400,
+  "tags": {
+    "amenity": "place_of_worship",
+    "name": "Mosquee Abdoul Azize Sy Dabakh Medina",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "node",
+  "id": 6973669483,
+  "lat": 14.6876035,
+  "lon": -17.4517299,
+  "tags": {
+    "highway": "traffic_signals",
+    "note": "Feu piétons",
+    "traffic_signals": "signal"
+  }
+},
+{
+  "type": "node",
+  "id": 6973682508,
+  "lat": 14.6875397,
+  "lon": -17.4519691,
+  "tags": {
+    "highway": "traffic_signals",
+    "note": "Feu piétons",
+    "traffic_signals": "signal"
+  }
+},
+{
+  "type": "node",
+  "id": 6973689738,
+  "lat": 14.6821742,
+  "lon": -17.4508761,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 6973697741,
+  "lat": 14.6836259,
+  "lon": -17.4524803,
+  "tags": {
+    "highway": "traffic_signals",
+    "name": "Feux pietons"
+  }
+},
+{
+  "type": "node",
+  "id": 6973768986,
+  "lat": 14.6841239,
+  "lon": -17.4462706,
+  "tags": {
+    "amenity": "place_of_worship",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "node",
+  "id": 6973771031,
+  "lat": 14.6773479,
+  "lon": -17.4537295,
+  "tags": {
+    "amenity": "place_of_worship",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "node",
+  "id": 7399576561,
+  "lat": 14.6692077,
+  "lon": -17.4374513,
+  "tags": {
+    "crossing": "marked",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067803,
+  "lat": 14.6763213,
+  "lon": -17.4343957,
+  "tags": {
+    "highway": "stop"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067809,
+  "lat": 14.6763355,
+  "lon": -17.4344672,
+  "tags": {
+    "highway": "stop"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067812,
+  "lat": 14.6762694,
+  "lon": -17.4343297,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067813,
+  "lat": 14.6762817,
+  "lon": -17.4345602,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067819,
+  "lat": 14.6764886,
+  "lon": -17.4341333,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067826,
+  "lat": 14.6760235,
+  "lon": -17.4338610,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 7554067837,
+  "lat": 14.6762564,
+  "lon": -17.4345081,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 7554124193,
+  "lat": 14.6837694,
+  "lon": -17.4442890,
+  "tags": {
+    "crossing:island": "no",
+    "crossing:signals": "yes",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 9696849634,
+  "lat": 14.6706824,
+  "lon": -17.4292358,
+  "tags": {
+    "amenity": "marketplace"
+  }
+},
+{
+  "type": "node",
+  "id": 10269991677,
+  "lat": 14.6844575,
+  "lon": -17.4439070,
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "chapel",
+    "check_date": "2026-03-19",
+    "name": "Saint-Laurent de Gibraltar",
+    "religion": "christian"
+  }
+},
+{
+  "type": "node",
+  "id": 11386195269,
+  "lat": 14.6873396,
+  "lon": -17.4549420,
+  "tags": {
+    "leisure": "playground"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796128,
+  "lat": 14.6796369,
+  "lon": -17.4433515,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796129,
+  "lat": 14.6794983,
+  "lon": -17.4428872,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796130,
+  "lat": 14.6743219,
+  "lon": -17.4491289,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796132,
+  "lat": 14.6799139,
+  "lon": -17.4428154,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796134,
+  "lat": 14.6743609,
+  "lon": -17.4490822,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796136,
+  "lat": 14.6795073,
+  "lon": -17.4433447,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796139,
+  "lat": 14.6743565,
+  "lon": -17.4491208,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 11922796140,
+  "lat": 14.6790910,
+  "lon": -17.4375583,
+  "tags": {
+    "crossing:signals": "no",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 12238461195,
+  "lat": 14.6794697,
+  "lon": -17.4432967,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 12728597430,
+  "lat": 14.6797096,
+  "lon": -17.4433318,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "crossing:signals": "yes",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13136558879,
+  "lat": 14.6827285,
+  "lon": -17.4395633,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264889111,
+  "lat": 14.6838324,
+  "lon": -17.4447157,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264889112,
+  "lat": 14.6849769,
+  "lon": -17.4451031,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264889113,
+  "lat": 14.6859636,
+  "lon": -17.4454400,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264889114,
+  "lat": 14.6868976,
+  "lon": -17.4457538,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264889115,
+  "lat": 14.6875844,
+  "lon": -17.4459898,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264889116,
+  "lat": 14.6888106,
+  "lon": -17.4464116,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264893800,
+  "lat": 14.6817647,
+  "lon": -17.4440841,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264907102,
+  "lat": 14.6817964,
+  "lon": -17.4439826,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264909165,
+  "lat": 14.6762322,
+  "lon": -17.4402934,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264909169,
+  "lat": 14.6761918,
+  "lon": -17.4403591,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264909171,
+  "lat": 14.6778974,
+  "lon": -17.4416803,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264909173,
+  "lat": 14.6786600,
+  "lon": -17.4422967,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264909178,
+  "lat": 14.6760257,
+  "lon": -17.4418291,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264909183,
+  "lat": 14.6777489,
+  "lon": -17.4414700,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264948307,
+  "lat": 14.6830815,
+  "lon": -17.4445182,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13264948326,
+  "lat": 14.6797868,
+  "lon": -17.4432458,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055980,
+  "lat": 14.6800916,
+  "lon": -17.4488188,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055981,
+  "lat": 14.6821966,
+  "lon": -17.4510343,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055982,
+  "lat": 14.6801499,
+  "lon": -17.4486793,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055983,
+  "lat": 14.6771887,
+  "lon": -17.4455808,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055985,
+  "lat": 14.6822619,
+  "lon": -17.4508830,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055987,
+  "lat": 14.6800007,
+  "lon": -17.4488209,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055989,
+  "lat": 14.6771276,
+  "lon": -17.4455996,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13356055990,
+  "lat": 14.6800746,
+  "lon": -17.4486748,
+  "tags": {
+    "highway": "traffic_signals"
+  }
+},
+{
+  "type": "node",
+  "id": 13376764700,
+  "lat": 14.6776907,
+  "lon": -17.4415447,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766701,
+  "lat": 14.6777931,
+  "lon": -17.4414133,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766713,
+  "lat": 14.6761978,
+  "lon": -17.4401252,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766714,
+  "lat": 14.6762484,
+  "lon": -17.4400600,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766720,
+  "lat": 14.6759414,
+  "lon": -17.4405237,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766732,
+  "lat": 14.6754943,
+  "lon": -17.4408016,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766741,
+  "lat": 14.6757177,
+  "lon": -17.4408160,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766742,
+  "lat": 14.6756052,
+  "lon": -17.4408116,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766746,
+  "lat": 14.6760638,
+  "lon": -17.4405405,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766747,
+  "lat": 14.6759923,
+  "lon": -17.4405462,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766748,
+  "lat": 14.6758970,
+  "lon": -17.4405041,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766749,
+  "lat": 14.6758616,
+  "lon": -17.4404885,
+  "tags": {
+    "crossing": "uncontrolled",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766843,
+  "lat": 14.6795225,
+  "lon": -17.4429079,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766844,
+  "lat": 14.6794561,
+  "lon": -17.4429811,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766845,
+  "lat": 14.6804205,
+  "lon": -17.4435707,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766846,
+  "lat": 14.6817447,
+  "lon": -17.4441484,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766847,
+  "lat": 14.6818182,
+  "lon": -17.4439126,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766854,
+  "lat": 14.6830562,
+  "lon": -17.4445926,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766855,
+  "lat": 14.6831135,
+  "lon": -17.4444239,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766856,
+  "lat": 14.6831329,
+  "lon": -17.4443669,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766857,
+  "lat": 14.6831608,
+  "lon": -17.4442849,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766868,
+  "lat": 14.6837873,
+  "lon": -17.4448402,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766879,
+  "lat": 14.6869322,
+  "lon": -17.4456349,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13376766886,
+  "lat": 14.6875415,
+  "lon": -17.4461003,
+  "tags": {
+    "crossing": "marked",
+    "crossing:markings": "zebra",
+    "highway": "crossing"
+  }
+},
+{
+  "type": "node",
+  "id": 13907669213,
+  "lat": 14.6833673,
+  "lon": -17.4307558,
+  "tags": {
+    "highway": "crossing"
+  }
+},
+{
+  "type": "way",
+  "id": 27293972,
+  "bounds": {
+    "minlat": 14.6781275,
+    "minlon": -17.4481818,
+    "maxlat": 14.6806985,
+    "maxlon": -17.4455206
+  },
+  "nodes": [
+    299622339,
+    2185763597,
+    2185763585,
+    2185763574,
+    299622341,
+    2185763551,
+    2185763528,
+    2185763512,
+    299622347,
+    299622348,
+    2185763545,
+    2185763561,
+    2185763572,
+    2185763573,
+    2185763575,
+    2185763598,
+    299622349,
+    299622350,
+    299622351,
+    299622352,
+    299622353,
+    299622354,
+    2185763609,
+    299622339
+  ],
+  "geometry": [
+    { "lat": 14.6804944, "lon": -17.4474346 },
+    { "lat": 14.6802488, "lon": -17.4476875 },
+    { "lat": 14.6801627, "lon": -17.4477823 },
+    { "lat": 14.6797904, "lon": -17.4481671 },
+    { "lat": 14.6797117, "lon": -17.4481818 },
+    { "lat": 14.6791984, "lon": -17.4476346 },
+    { "lat": 14.6790098, "lon": -17.4474242 },
+    { "lat": 14.6788145, "lon": -17.4472063 },
+    { "lat": 14.6787535, "lon": -17.4471382 },
+    { "lat": 14.6781275, "lon": -17.4464794 },
+    { "lat": 14.6791203, "lon": -17.4455206 },
+    { "lat": 14.6794505, "lon": -17.4459371 },
+    { "lat": 14.6796545, "lon": -17.4459371 },
+    { "lat": 14.6796994, "lon": -17.4457977 },
+    { "lat": 14.6798740, "lon": -17.4459978 },
+    { "lat": 14.6802611, "lon": -17.4460193 },
+    { "lat": 14.6802556, "lon": -17.4460683 },
+    { "lat": 14.6803701, "lon": -17.4461391 },
+    { "lat": 14.6804137, "lon": -17.4460660 },
+    { "lat": 14.6806985, "lon": -17.4464306 },
+    { "lat": 14.6806003, "lon": -17.4465422 },
+    { "lat": 14.6804482, "lon": -17.4469518 },
+    { "lat": 14.6804339, "lon": -17.4473682 },
+    { "lat": 14.6804944, "lon": -17.4474346 }
+  ],
+  "tags": {
+    "leisure": "stadium",
+    "name": "Stade Iba Mar Diop",
+    "operator_type": "government",
+    "sport": "soccer;handball;wrestling;basketball;volleyball",
+    "wikidata": "Q3495627"
+  }
+},
+{
+  "type": "way",
+  "id": 27811247,
+  "bounds": {
+    "minlat": 14.6686067,
+    "minlon": -17.4322937,
+    "maxlat": 14.6704615,
+    "maxlon": -17.4318169
+  },
+  "nodes": [
+    305374223,
+    2281129509,
+    2281129511,
+    305374224,
+    2281129513,
+    305374225,
+    305374226,
+    2281129512,
+    2281129510,
+    2281129508,
+    3793843461,
+    305374229,
+    2281129507,
+    305374230,
+    305374231,
+    305374232,
+    3793843460,
+    305374223
+  ],
+  "geometry": [
+    { "lat": 14.6703778, "lon": -17.4322937 },
+    { "lat": 14.6704005, "lon": -17.4322851 },
+    { "lat": 14.6704115, "lon": -17.4322711 },
+    { "lat": 14.6704106, "lon": -17.4322234 },
+    { "lat": 14.6704577, "lon": -17.4322233 },
+    { "lat": 14.6704615, "lon": -17.4319671 },
+    { "lat": 14.6704169, "lon": -17.4319664 },
+    { "lat": 14.6704173, "lon": -17.4319196 },
+    { "lat": 14.6704089, "lon": -17.4319022 },
+    { "lat": 14.6703921, "lon": -17.4318916 },
+    { "lat": 14.6695451, "lon": -17.4318551 },
+    { "lat": 14.6686582, "lon": -17.4318169 },
+    { "lat": 14.6686199, "lon": -17.4318453 },
+    { "lat": 14.6686178, "lon": -17.4318743 },
+    { "lat": 14.6686067, "lon": -17.4321620 },
+    { "lat": 14.6686510, "lon": -17.4322235 },
+    { "lat": 14.6695203, "lon": -17.4322588 },
+    { "lat": 14.6703778, "lon": -17.4322937 }
+  ],
+  "tags": {
+    "leisure": "park",
+    "name": "Place de l’Indépendance",
+    "old_name": "Place Protet",
+    "source:old_name": "http://gallica.bnf.fr/ark:/12148/btv1b53064951c/",
+    "wikidata": "Q49543726"
+  }
+},
+{
+  "type": "way",
+  "id": 43720257,
+  "bounds": {
+    "minlat": 14.6695953,
+    "minlon": -17.4384234,
+    "maxlat": 14.6703216,
+    "maxlon": -17.4374186
+  },
+  "nodes": [
+    553326757,
+    553326758,
+    553326759,
+    1795915990,
+    553326760,
+    1795915992,
+    1795915995,
+    553326757
+  ],
+  "geometry": [
+    { "lat": 14.6702839, "lon": -17.4384234 },
+    { "lat": 14.6703216, "lon": -17.4374295 },
+    { "lat": 14.6696369, "lon": -17.4374186 },
+    { "lat": 14.6695953, "lon": -17.4376102 },
+    { "lat": 14.6698015, "lon": -17.4378450 },
+    { "lat": 14.6700423, "lon": -17.4381804 },
+    { "lat": 14.6701975, "lon": -17.4383680 },
+    { "lat": 14.6702839, "lon": -17.4384234 }
+  ],
+  "tags": {
+    "amenity": "marketplace",
+    "building": "yes",
+    "name": "Marché Sandaga",
+    "tourism": "attraction",
+    "wikidata": "Q36157286",
+    "wikimedia_commons": "Category:Marché Sandaga"
+  }
+},
+{
+  "type": "way",
+  "id": 43720258,
+  "bounds": {
+    "minlat": 14.6659592,
+    "minlon": -17.4315755,
+    "maxlat": 14.6664779,
+    "maxlon": -17.4311584
+  },
+  "nodes": [
+    553326761,
+    553326762,
+    553326763,
+    553326764,
+    553326761
+  ],
+  "geometry": [
+    { "lat": 14.6659592, "lon": -17.4314588 },
+    { "lat": 14.6660295, "lon": -17.4315755 },
+    { "lat": 14.6664779, "lon": -17.4313180 },
+    { "lat": 14.6663992, "lon": -17.4311584 },
+    { "lat": 14.6659592, "lon": -17.4314588 }
+  ],
+  "tags": {
+    "building": "yes",
+    "leisure": "sports_centre",
+    "name": "Gymnasium",
+    "sport": "multi"
+  }
+},
+{
+  "type": "way",
+  "id": 43759874,
+  "bounds": {
+    "minlat": 14.6651363,
+    "minlon": -17.4378218,
+    "maxlat": 14.6656618,
+    "maxlon": -17.4374020
+  },
+  "nodes": [
+    554166712,
+    3664057716,
+    554166713,
+    2312975660,
+    1782511829,
+    554166714,
+    3664160254,
+    3664160255,
+    2312975667,
+    2312975671,
+    554166715,
+    2312975669,
+    2312975665,
+    3664160253,
+    554166716,
+    2312975662,
+    2312975664,
+    554166712
+  ],
+  "geometry": [
+    { "lat": 14.6656618, "lon": -17.4376425 },
+    { "lat": 14.6656266, "lon": -17.4375351 },
+    { "lat": 14.6655961, "lon": -17.4374420 },
+    { "lat": 14.6655621, "lon": -17.4374530 },
+    { "lat": 14.6655464, "lon": -17.4374020 },
+    { "lat": 14.6652312, "lon": -17.4374958 },
+    { "lat": 14.6651899, "lon": -17.4375242 },
+    { "lat": 14.6651646, "lon": -17.4375553 },
+    { "lat": 14.6651427, "lon": -17.4376149 },
+    { "lat": 14.6651363, "lon": -17.4376685 },
+    { "lat": 14.6651490, "lon": -17.4377230 },
+    { "lat": 14.6651846, "lon": -17.4377743 },
+    { "lat": 14.6652396, "lon": -17.4378061 },
+    { "lat": 14.6653047, "lon": -17.4378218 },
+    { "lat": 14.6653503, "lon": -17.4378199 },
+    { "lat": 14.6656470, "lon": -17.4377251 },
+    { "lat": 14.6656255, "lon": -17.4376518 },
+    { "lat": 14.6656618, "lon": -17.4376425 }
+  ],
+  "tags": {
+    "addr:city": "Dakar",
+    "addr:postcode": "99341",
+    "addr:suburb": "Dakar-Plateau",
+    "alt_name": "Cathédrale de Dakar",
+    "amenity": "place_of_worship",
+    "architect": "Charles-Albert Wulffleff",
+    "building": "cathedral",
+    "building:architecture": "neo-byzantine",
+    "denomination": "catholic",
+    "diocese": "Archidiocèse de Dakar",
+    "name": "Cathédrale du Souvenir africain",
+    "religion": "christian",
+    "start_date": "1936",
+    "tourism": "attraction",
+    "wheelchair": "yes",
+    "wikidata": "Q1670193",
+    "wikipedia": "fr:Cathédrale du Souvenir africain de Dakar"
+  }
+},
+{
+  "type": "way",
+  "id": 43760361,
+  "bounds": {
+    "minlat": 14.6735686,
+    "minlon": -17.4491020,
+    "maxlat": 14.6740341,
+    "maxlon": -17.4485119
+  },
+  "nodes": [
+    554172902,
+    554172903,
+    554172904,
+    554172905,
+    554172902
+  ],
+  "geometry": [
+    { "lat": 14.6739573, "lon": -17.4491020 },
+    { "lat": 14.6740341, "lon": -17.4485728 },
+    { "lat": 14.6736236, "lon": -17.4485119 },
+    { "lat": 14.6735686, "lon": -17.4490530 },
+    { "lat": 14.6739573, "lon": -17.4491020 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "name": "Mosquée Seydou Nourou Tall",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 43765748,
+  "bounds": {
+    "minlat": 14.6614577,
+    "minlon": -17.4328476,
+    "maxlat": 14.6622009,
+    "maxlon": -17.4317495
+  },
+  "nodes": [
+    6422804822,
+    554251281,
+    554251283,
+    554251284,
+    11584676953,
+    554251286,
+    554251287,
+    554251288,
+    554251289,
+    554251292,
+    554251294,
+    554251295,
+    554251297,
+    6413304199,
+    6422804822
+  ],
+  "geometry": [
+    { "lat": 14.6617600, "lon": -17.4317495 },
+    { "lat": 14.6618734, "lon": -17.4319628 },
+    { "lat": 14.6619521, "lon": -17.4322232 },
+    { "lat": 14.6620158, "lon": -17.4322097 },
+    { "lat": 14.6620523, "lon": -17.4323427 },
+    { "lat": 14.6621291, "lon": -17.4323195 },
+    { "lat": 14.6622009, "lon": -17.4324920 },
+    { "lat": 14.6619911, "lon": -17.4326759 },
+    { "lat": 14.6618831, "lon": -17.4327617 },
+    { "lat": 14.6617503, "lon": -17.4328476 },
+    { "lat": 14.6616589, "lon": -17.4326759 },
+    { "lat": 14.6615344, "lon": -17.4322983 },
+    { "lat": 14.6615178, "lon": -17.4321609 },
+    { "lat": 14.6614577, "lon": -17.4318413 },
+    { "lat": 14.6617600, "lon": -17.4317495 }
+  ],
+  "tags": {
+    "leisure": "sports_centre",
+    "name": "Les Caïmans",
+    "sport": "squasch"
+  }
+},
+{
+  "type": "way",
+  "id": 43765751,
+  "bounds": {
+    "minlat": 14.6607603,
+    "minlon": -17.4331453,
+    "maxlat": 14.6617087,
+    "maxlon": -17.4320371
+  },
+  "nodes": [
+    554251305,
+    554251307,
+    554251308,
+    554251310,
+    554251319,
+    554251322,
+    14246494005,
+    14246494004,
+    554251305
+  ],
+  "geometry": [
+    { "lat": 14.6614596, "lon": -17.4321953 },
+    { "lat": 14.6617087, "lon": -17.4328562 },
+    { "lat": 14.6616340, "lon": -17.4329420 },
+    { "lat": 14.6612094, "lon": -17.4331453 },
+    { "lat": 14.6609549, "lon": -17.4331311 },
+    { "lat": 14.6607603, "lon": -17.4323917 },
+    { "lat": 14.6611584, "lon": -17.4322964 },
+    { "lat": 14.6613069, "lon": -17.4320371 },
+    { "lat": 14.6614596, "lon": -17.4321953 }
+  ],
+  "tags": {
+    "leisure": "sports_centre",
+    "name": "Océanium",
+    "note": "Club de plongée et association de protection de l'environnement",
+    "sport": "canoe",
+    "website": "https://www.oceaniumdc.com"
+  }
+},
+{
+  "type": "way",
+  "id": 44097426,
+  "bounds": {
+    "minlat": 14.6833484,
+    "minlon": -17.4420858,
+    "maxlat": 14.6841230,
+    "maxlon": -17.4411044
+  },
+  "nodes": [
+    560430252,
+    560430254,
+    560430257,
+    560430258,
+    560430252
+  ],
+  "geometry": [
+    { "lat": 14.6838436, "lon": -17.4411044 },
+    { "lat": 14.6833484, "lon": -17.4418999 },
+    { "lat": 14.6836278, "lon": -17.4420858 },
+    { "lat": 14.6841230, "lon": -17.4412902 },
+    { "lat": 14.6838436, "lon": -17.4411044 }
+  ],
+  "tags": {
+    "leisure": "sports_centre",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 44097429,
+  "bounds": {
+    "minlat": 14.6843603,
+    "minlon": -17.4421181,
+    "maxlat": 14.6852913,
+    "maxlon": -17.4411956
+  },
+  "nodes": [
+    560430273,
+    560430276,
+    560430278,
+    560430280,
+    560430273
+  ],
+  "geometry": [
+    { "lat": 14.6846820, "lon": -17.4411956 },
+    { "lat": 14.6843603, "lon": -17.4415996 },
+    { "lat": 14.6849696, "lon": -17.4421181 },
+    { "lat": 14.6852913, "lon": -17.4417142 },
+    { "lat": 14.6846820, "lon": -17.4411956 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer",
+    "surface": "ground"
+  }
+},
+{
+  "type": "way",
+  "id": 166699624,
+  "bounds": {
+    "minlat": 14.6854796,
+    "minlon": -17.4418366,
+    "maxlat": 14.6859039,
+    "maxlon": -17.4415159
+  },
+  "nodes": [
+    1781504112,
+    1781504113,
+    1781504111,
+    1781504110,
+    1781504112
+  ],
+  "geometry": [
+    { "lat": 14.6858711, "lon": -17.4418366 },
+    { "lat": 14.6859039, "lon": -17.4416195 },
+    { "lat": 14.6855267, "lon": -17.4415159 },
+    { "lat": 14.6854796, "lon": -17.4417474 },
+    { "lat": 14.6858711, "lon": -17.4418366 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer",
+    "surface": "ground"
+  }
+},
+{
+  "type": "way",
+  "id": 203855464,
+  "bounds": {
+    "minlat": 14.6585152,
+    "minlon": -17.4390823,
+    "maxlat": 14.6587949,
+    "maxlon": -17.4386771
+  },
+  "nodes": [
+    2138661364,
+    2138661370,
+    2138661365,
+    2138661402,
+    2138661364
+  ],
+  "geometry": [
+    { "lat": 14.6587949, "lon": -17.4390245 },
+    { "lat": 14.6586277, "lon": -17.4390823 },
+    { "lat": 14.6585152, "lon": -17.4387349 },
+    { "lat": 14.6586825, "lon": -17.4386771 },
+    { "lat": 14.6587949, "lon": -17.4390245 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "source": "Bing"
+  }
+},
+{
+  "type": "way",
+  "id": 203855467,
+  "bounds": {
+    "minlat": 14.6627669,
+    "minlon": -17.4420694,
+    "maxlat": 14.6631205,
+    "maxlon": -17.4418664
+  },
+  "nodes": [
+    2138661367,
+    2138661403,
+    2138661371,
+    2138661413,
+    2138661367
+  ],
+  "geometry": [
+    { "lat": 14.6631205, "lon": -17.4420463 },
+    { "lat": 14.6627783, "lon": -17.4420694 },
+    { "lat": 14.6627669, "lon": -17.4418895 },
+    { "lat": 14.6631091, "lon": -17.4418664 },
+    { "lat": 14.6631205, "lon": -17.4420463 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "source": "Bing",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 203855474,
+  "bounds": {
+    "minlat": 14.6624058,
+    "minlon": -17.4420886,
+    "maxlat": 14.6627643,
+    "maxlon": -17.4418851
+  },
+  "nodes": [
+    2138661358,
+    2138661408,
+    2138661385,
+    2138661390,
+    2138661358
+  ],
+  "geometry": [
+    { "lat": 14.6624171, "lon": -17.4420886 },
+    { "lat": 14.6624058, "lon": -17.4419083 },
+    { "lat": 14.6627531, "lon": -17.4418851 },
+    { "lat": 14.6627643, "lon": -17.4420653 },
+    { "lat": 14.6624171, "lon": -17.4420886 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "source": "Bing",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 203855478,
+  "bounds": {
+    "minlat": 14.6625180,
+    "minlon": -17.4422695,
+    "maxlat": 14.6628826,
+    "maxlon": -17.4420809
+  },
+  "nodes": [
+    2138661415,
+    2138661398,
+    2138661396,
+    2138661412,
+    2138661415
+  ],
+  "geometry": [
+    { "lat": 14.6628826, "lon": -17.4422485 },
+    { "lat": 14.6625273, "lon": -17.4422695 },
+    { "lat": 14.6625180, "lon": -17.4421018 },
+    { "lat": 14.6628733, "lon": -17.4420809 },
+    { "lat": 14.6628826, "lon": -17.4422485 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "source": "Bing",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 203855645,
+  "bounds": {
+    "minlat": 14.6597492,
+    "minlon": -17.4357741,
+    "maxlat": 14.6600866,
+    "maxlon": -17.4355515
+  },
+  "nodes": [
+    2138662836,
+    2138662843,
+    2138662838,
+    2138662834,
+    2138662836
+  ],
+  "geometry": [
+    { "lat": 14.6600866, "lon": -17.4357116 },
+    { "lat": 14.6597797, "lon": -17.4357741 },
+    { "lat": 14.6597492, "lon": -17.4356140 },
+    { "lat": 14.6600561, "lon": -17.4355515 },
+    { "lat": 14.6600866, "lon": -17.4357116 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "source": "Bing",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 204247259,
+  "bounds": {
+    "minlat": 14.6852389,
+    "minlon": -17.4547277,
+    "maxlat": 14.6853975,
+    "maxlon": -17.4544498
+  },
+  "nodes": [
+    2142578885,
+    2142578911,
+    2142579123,
+    2142579001,
+    2142578885
+  ],
+  "geometry": [
+    { "lat": 14.6853975, "lon": -17.4547083 },
+    { "lat": 14.6852784, "lon": -17.4547277 },
+    { "lat": 14.6852389, "lon": -17.4544692 },
+    { "lat": 14.6853581, "lon": -17.4544498 },
+    { "lat": 14.6853975, "lon": -17.4547083 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "religion": "muslim",
+    "source": "bing"
+  }
+},
+{
+  "type": "way",
+  "id": 204247290,
+  "bounds": {
+    "minlat": 14.6748612,
+    "minlon": -17.4501914,
+    "maxlat": 14.6750029,
+    "maxlon": -17.4500405
+  },
+  "nodes": [
+    2142579014,
+    2142579015,
+    2142579030,
+    2142579038,
+    2142579014
+  ],
+  "geometry": [
+    { "lat": 14.6749082, "lon": -17.4501914 },
+    { "lat": 14.6748612, "lon": -17.4501382 },
+    { "lat": 14.6749415, "lon": -17.4500405 },
+    { "lat": 14.6750029, "lon": -17.4501007 },
+    { "lat": 14.6749082, "lon": -17.4501914 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "Mosquée Seydou Nourou Tall",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 204247304,
+  "bounds": {
+    "minlat": 14.6733905,
+    "minlon": -17.4489128,
+    "maxlat": 14.6735070,
+    "maxlon": -17.4487863
+  },
+  "nodes": [
+    2142578917,
+    2142579048,
+    2142579111,
+    2142579060,
+    2142578917
+  ],
+  "geometry": [
+    { "lat": 14.6735070, "lon": -17.4488964 },
+    { "lat": 14.6734075, "lon": -17.4489128 },
+    { "lat": 14.6733905, "lon": -17.4488027 },
+    { "lat": 14.6734900, "lon": -17.4487863 },
+    { "lat": 14.6735070, "lon": -17.4488964 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "Mosquée Seydou Nourou Tall",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 207440347,
+  "bounds": {
+    "minlat": 14.6831937,
+    "minlon": -17.4508926,
+    "maxlat": 14.6833913,
+    "maxlon": -17.4506872
+  },
+  "nodes": [
+    2176943633,
+    2176943631,
+    2176937250,
+    2176943629,
+    2176943630,
+    2176943633
+  ],
+  "geometry": [
+    { "lat": 14.6833913, "lon": -17.4507752 },
+    { "lat": 14.6833019, "lon": -17.4506872 },
+    { "lat": 14.6831937, "lon": -17.4508046 },
+    { "lat": 14.6832831, "lon": -17.4508926 },
+    { "lat": 14.6832992, "lon": -17.4508752 },
+    { "lat": 14.6833913, "lon": -17.4507752 }
+  ],
+  "tags": {
+    "addr:street": "rue 27 X 18",
+    "amenity": "place_of_worship",
+    "building_base_material:concrete": "yes",
+    "building_roof_material:concrete": "yes",
+    "building_status": "medium",
+    "name": "Diacké Laobé",
+    "operational_status": "open",
+    "place:area_alternate": "Médina",
+    "religion": "muslim",
+    "source": "bing; survey",
+    "source:date": "28-02-2013"
+  }
+},
+{
+  "type": "way",
+  "id": 207456242,
+  "bounds": {
+    "minlat": 14.6882073,
+    "minlon": -17.4473044,
+    "maxlat": 14.6882747,
+    "maxlon": -17.4471495
+  },
+  "nodes": [
+    2177089912,
+    2177089904,
+    2177089903,
+    2177089902,
+    2177089911,
+    2177089919,
+    2177089920,
+    2177089915,
+    2177089912
+  ],
+  "geometry": [
+    { "lat": 14.6882604, "lon": -17.4471495 },
+    { "lat": 14.6882104, "lon": -17.4471495 },
+    { "lat": 14.6882080, "lon": -17.4472448 },
+    { "lat": 14.6882073, "lon": -17.4472576 },
+    { "lat": 14.6882600, "lon": -17.4473044 },
+    { "lat": 14.6882740, "lon": -17.4472832 },
+    { "lat": 14.6882747, "lon": -17.4471965 },
+    { "lat": 14.6882652, "lon": -17.4471940 },
+    { "lat": 14.6882604, "lon": -17.4471495 }
+  ],
+  "tags": {
+    "addr:city": "dakar",
+    "addr:street": "rue Cheikh Sidiya (ME-31*30)",
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "Diack Bambara",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 207458502,
+  "bounds": {
+    "minlat": 14.6751848,
+    "minlon": -17.4478415,
+    "maxlat": 14.6752800,
+    "maxlon": -17.4477084
+  },
+  "nodes": [
+    2177109309,
+    2177109300,
+    2177109303,
+    2177109311,
+    2177109309
+  ],
+  "geometry": [
+    { "lat": 14.6752528, "lon": -17.4478415 },
+    { "lat": 14.6751848, "lon": -17.4478133 },
+    { "lat": 14.6752120, "lon": -17.4477084 },
+    { "lat": 14.6752800, "lon": -17.4477290 },
+    { "lat": 14.6752528, "lon": -17.4478415 }
+  ],
+  "tags": {
+    "addr:street": "Avenue Malick Sy",
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "denomination": "sunni",
+    "name": "Mosquée El Hadji Oumar Kane",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 207460811,
+  "bounds": {
+    "minlat": 14.6839034,
+    "minlon": -17.4515632,
+    "maxlat": 14.6840396,
+    "maxlon": -17.4514246
+  },
+  "nodes": [
+    2177128892,
+    2177128888,
+    2177128883,
+    2177128878,
+    2177128887,
+    2177128892
+  ],
+  "geometry": [
+    { "lat": 14.6840396, "lon": -17.4514760 },
+    { "lat": 14.6840048, "lon": -17.4515101 },
+    { "lat": 14.6839505, "lon": -17.4515632 },
+    { "lat": 14.6839034, "lon": -17.4515118 },
+    { "lat": 14.6839926, "lon": -17.4514246 },
+    { "lat": 14.6840396, "lon": -17.4514760 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "operational_status": "open",
+    "religion": "muslim",
+    "source": "bing;survey",
+    "source:date": "2013-02-28"
+  }
+},
+{
+  "type": "way",
+  "id": 207480844,
+  "bounds": {
+    "minlat": 14.6826595,
+    "minlon": -17.4472046,
+    "maxlat": 14.6827756,
+    "maxlon": -17.4469350
+  },
+  "nodes": [
+    2177342270,
+    2177342274,
+    2177342275,
+    2177342273,
+    2177342272,
+    2177342271,
+    2177342270
+  ],
+  "geometry": [
+    { "lat": 14.6826595, "lon": -17.4472019 },
+    { "lat": 14.6827508, "lon": -17.4472046 },
+    { "lat": 14.6827756, "lon": -17.4469754 },
+    { "lat": 14.6827495, "lon": -17.4469403 },
+    { "lat": 14.6827234, "lon": -17.4469350 },
+    { "lat": 14.6826686, "lon": -17.4469848 },
+    { "lat": 14.6826595, "lon": -17.4472019 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 207606110,
+  "bounds": {
+    "minlat": 14.6785019,
+    "minlon": -17.4550590,
+    "maxlat": 14.6787441,
+    "maxlon": -17.4548204
+  },
+  "nodes": [
+    2178597864,
+    2179743519,
+    2178597855,
+    2178597857,
+    2178597858,
+    2178597860,
+    2178597862,
+    2178597866,
+    2178597864
+  ],
+  "geometry": [
+    { "lat": 14.6786328, "lon": -17.4548204 },
+    { "lat": 14.6785847, "lon": -17.4548690 },
+    { "lat": 14.6785019, "lon": -17.4549527 },
+    { "lat": 14.6785545, "lon": -17.4550084 },
+    { "lat": 14.6785659, "lon": -17.4549969 },
+    { "lat": 14.6786158, "lon": -17.4550498 },
+    { "lat": 14.6786245, "lon": -17.4550590 },
+    { "lat": 14.6787441, "lon": -17.4549382 },
+    { "lat": 14.6786328, "lon": -17.4548204 }
+  ],
+  "tags": {
+    "addr:street": "Rue 27x4",
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "building:levels": "2",
+    "building_base_material:concrete": "yes",
+    "building_roof_material:concrete": "yes",
+    "building_status": "good",
+    "name": "Mosquée G. Mariama Pl Diagne",
+    "religion": "muslim",
+    "source": "bing,survey",
+    "source:date": "2013-02-28"
+  }
+},
+{
+  "type": "way",
+  "id": 207716544,
+  "bounds": {
+    "minlat": 14.6876582,
+    "minlon": -17.4500015,
+    "maxlat": 14.6878419,
+    "maxlon": -17.4497943
+  },
+  "nodes": [
+    2179704063,
+    2179704080,
+    2179704064,
+    2179704043,
+    2179704063
+  ],
+  "geometry": [
+    { "lat": 14.6877380, "lon": -17.4500015 },
+    { "lat": 14.6878419, "lon": -17.4498896 },
+    { "lat": 14.6877385, "lon": -17.4497943 },
+    { "lat": 14.6876582, "lon": -17.4498943 },
+    { "lat": 14.6877380, "lon": -17.4500015 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "religion": "muslim",
+    "source": "bing"
+  }
+},
+{
+  "type": "way",
+  "id": 207728483,
+  "bounds": {
+    "minlat": 14.6812437,
+    "minlon": -17.4501568,
+    "maxlat": 14.6821626,
+    "maxlon": -17.4491854
+  },
+  "nodes": [
+    2179801490,
+    2179801494,
+    2179801492,
+    2179801487,
+    2179801490
+  ],
+  "geometry": [
+    { "lat": 14.6815554, "lon": -17.4501568 },
+    { "lat": 14.6821626, "lon": -17.4494885 },
+    { "lat": 14.6818810, "lon": -17.4491854 },
+    { "lat": 14.6812437, "lon": -17.4498226 },
+    { "lat": 14.6815554, "lon": -17.4501568 }
+  ],
+  "tags": {
+    "amenity": "marketplace",
+    "name": "Marché Tilène",
+    "source": "bing",
+    "source:date": "2013-03-01"
+  }
+},
+{
+  "type": "way",
+  "id": 208261209,
+  "bounds": {
+    "minlat": 14.6767677,
+    "minlon": -17.4443637,
+    "maxlat": 14.6775548,
+    "maxlon": -17.4429910
+  },
+  "nodes": [
+    2185744908,
+    2185744898,
+    2185744896,
+    2185744899,
+    2185744907,
+    2185744908
+  ],
+  "geometry": [
+    { "lat": 14.6775548, "lon": -17.4436393 },
+    { "lat": 14.6769992, "lon": -17.4443637 },
+    { "lat": 14.6767677, "lon": -17.4432529 },
+    { "lat": 14.6769530, "lon": -17.4429910 },
+    { "lat": 14.6775342, "lon": -17.4435034 },
+    { "lat": 14.6775548, "lon": -17.4436393 }
+  ],
+  "tags": {
+    "amenity": "marketplace",
+    "landuse": "retail"
+  }
+},
+{
+  "type": "way",
+  "id": 208262997,
+  "bounds": {
+    "minlat": 14.6795828,
+    "minlon": -17.4477871,
+    "maxlat": 14.6800020,
+    "maxlon": -17.4475349
+  },
+  "nodes": [
+    2185763576,
+    2185763570,
+    2185763571,
+    2185763577,
+    2185763576
+  ],
+  "geometry": [
+    { "lat": 14.6799977, "lon": -17.4477871 },
+    { "lat": 14.6795828, "lon": -17.4477792 },
+    { "lat": 14.6795872, "lon": -17.4475349 },
+    { "lat": 14.6800020, "lon": -17.4475428 },
+    { "lat": 14.6799977, "lon": -17.4477871 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "handball;wrestling"
+  }
+},
+{
+  "type": "way",
+  "id": 208262998,
+  "bounds": {
+    "minlat": 14.6783687,
+    "minlon": -17.4469096,
+    "maxlat": 14.6788005,
+    "maxlon": -17.4464603
+  },
+  "nodes": [
+    2185763507,
+    2185763511,
+    2185763506,
+    2185763504,
+    2185763507
+  ],
+  "geometry": [
+    { "lat": 14.6786158, "lon": -17.4469096 },
+    { "lat": 14.6788005, "lon": -17.4467260 },
+    { "lat": 14.6785534, "lon": -17.4464603 },
+    { "lat": 14.6783687, "lon": -17.4466438 },
+    { "lat": 14.6786158, "lon": -17.4469096 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "basketball"
+  }
+},
+{
+  "type": "way",
+  "id": 208262999,
+  "bounds": {
+    "minlat": 14.6785099,
+    "minlon": -17.4463433,
+    "maxlat": 14.6789252,
+    "maxlon": -17.4459249
+  },
+  "nodes": [
+    2185763508,
+    2185763513,
+    2185763510,
+    2185763505,
+    2185763508
+  ],
+  "geometry": [
+    { "lat": 14.6786533, "lon": -17.4463433 },
+    { "lat": 14.6789252, "lon": -17.4460885 },
+    { "lat": 14.6787818, "lon": -17.4459249 },
+    { "lat": 14.6785099, "lon": -17.4461796 },
+    { "lat": 14.6786533, "lon": -17.4463433 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "basketball"
+  }
+},
+{
+  "type": "way",
+  "id": 208263000,
+  "bounds": {
+    "minlat": 14.6792380,
+    "minlon": -17.4468316,
+    "maxlat": 14.6801942,
+    "maxlon": -17.4461575
+  },
+  "nodes": [
+    2185763590,
+    2185763592,
+    2185763558,
+    2185763555,
+    2185763590
+  ],
+  "geometry": [
+    { "lat": 14.6801814, "lon": -17.4468316 },
+    { "lat": 14.6801942, "lon": -17.4461772 },
+    { "lat": 14.6792508, "lon": -17.4461575 },
+    { "lat": 14.6792380, "lon": -17.4468120 },
+    { "lat": 14.6801814, "lon": -17.4468316 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "lit": "yes",
+    "sport": "soccer",
+    "surface": "grass"
+  }
+},
+{
+  "type": "way",
+  "id": 208263001,
+  "bounds": {
+    "minlat": 14.6788145,
+    "minlon": -17.4474242,
+    "maxlat": 14.6790869,
+    "maxlon": -17.4470958
+  },
+  "nodes": [
+    2185763528,
+    2185763541,
+    2185763543,
+    2185763514,
+    2185763512,
+    2185763528
+  ],
+  "geometry": [
+    { "lat": 14.6790098, "lon": -17.4474242 },
+    { "lat": 14.6790674, "lon": -17.4473636 },
+    { "lat": 14.6790869, "lon": -17.4472702 },
+    { "lat": 14.6789293, "lon": -17.4470958 },
+    { "lat": 14.6788145, "lon": -17.4472063 },
+    { "lat": 14.6790098, "lon": -17.4474242 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "source": "bing",
+    "sport": "volleyball"
+  }
+},
+{
+  "type": "way",
+  "id": 217819343,
+  "bounds": {
+    "minlat": 14.6701572,
+    "minlon": -17.4293108,
+    "maxlat": 14.6708060,
+    "maxlon": -17.4284775
+  },
+  "nodes": [
+    2271230628,
+    2271230631,
+    2271230630,
+    2271230629,
+    2271230627,
+    2271230628
+  ],
+  "geometry": [
+    { "lat": 14.6703291, "lon": -17.4292924 },
+    { "lat": 14.6708060, "lon": -17.4293108 },
+    { "lat": 14.6707914, "lon": -17.4288363 },
+    { "lat": 14.6705627, "lon": -17.4284775 },
+    { "lat": 14.6701572, "lon": -17.4287474 },
+    { "lat": 14.6703291, "lon": -17.4292924 }
+  ],
+  "tags": {
+    "amenity": "marketplace",
+    "name": "Marché Kermel",
+    "wikimedia_commons": "Category:Marché Kermel (Dakar)"
+  }
+},
+{
+  "type": "way",
+  "id": 248482182,
+  "bounds": {
+    "minlat": 14.6671823,
+    "minlon": -17.4350052,
+    "maxlat": 14.6677376,
+    "maxlon": -17.4346619
+  },
+  "nodes": [
+    2552685528,
+    2552685529,
+    2552685530,
+    2552685531,
+    2552685532,
+    2552685533,
+    2552685528
+  ],
+  "geometry": [
+    { "lat": 14.6672186, "lon": -17.4347638 },
+    { "lat": 14.6674833, "lon": -17.4347799 },
+    { "lat": 14.6675300, "lon": -17.4346619 },
+    { "lat": 14.6677376, "lon": -17.4346940 },
+    { "lat": 14.6677116, "lon": -17.4350052 },
+    { "lat": 14.6671823, "lon": -17.4349784 },
+    { "lat": 14.6672186, "lon": -17.4347638 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 253494926,
+  "bounds": {
+    "minlat": 14.6540124,
+    "minlon": -17.4310667,
+    "maxlat": 14.6543520,
+    "maxlon": -17.4308182
+  },
+  "nodes": [
+    2594184358,
+    2594184353,
+    2594184355,
+    2594184360,
+    2594184358
+  ],
+  "geometry": [
+    { "lat": 14.6543043, "lon": -17.4310667 },
+    { "lat": 14.6540124, "lon": -17.4309665 },
+    { "lat": 14.6540601, "lon": -17.4308182 },
+    { "lat": 14.6543520, "lon": -17.4309184 },
+    { "lat": 14.6543043, "lon": -17.4310667 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 253494927,
+  "bounds": {
+    "minlat": 14.6550795,
+    "minlon": -17.4341547,
+    "maxlat": 14.6554662,
+    "maxlon": -17.4338520
+  },
+  "nodes": [
+    2594184397,
+    2594184386,
+    2594184390,
+    2594184375,
+    2594184382,
+    2594184399,
+    2594184397
+  ],
+  "geometry": [
+    { "lat": 14.6554023, "lon": -17.4341547 },
+    { "lat": 14.6551582, "lon": -17.4340566 },
+    { "lat": 14.6551659, "lon": -17.4340362 },
+    { "lat": 14.6550795, "lon": -17.4340015 },
+    { "lat": 14.6551358, "lon": -17.4338520 },
+    { "lat": 14.6554662, "lon": -17.4339848 },
+    { "lat": 14.6554023, "lon": -17.4341547 }
+  ],
+  "tags": {
+    "leisure": "sports_centre"
+  }
+},
+{
+  "type": "way",
+  "id": 289046233,
+  "bounds": {
+    "minlat": 14.6883364,
+    "minlon": -17.4436506,
+    "maxlat": 14.6902063,
+    "maxlon": -17.4424107
+  },
+  "nodes": [
+    2926002605,
+    2926002606,
+    2926002607,
+    2926002608,
+    2926002605
+  ],
+  "geometry": [
+    { "lat": 14.6899605, "lon": -17.4436506 },
+    { "lat": 14.6902063, "lon": -17.4426444 },
+    { "lat": 14.6891799, "lon": -17.4424107 },
+    { "lat": 14.6883364, "lon": -17.4432542 },
+    { "lat": 14.6899605, "lon": -17.4436506 }
+  ],
+  "tags": {
+    "leisure": "sports_centre",
+    "sport": "equestrian"
+  }
+},
+{
+  "type": "way",
+  "id": 289047928,
+  "bounds": {
+    "minlat": 14.6884247,
+    "minlon": -17.4417620,
+    "maxlat": 14.6894261,
+    "maxlon": -17.4407760
+  },
+  "nodes": [
+    2926013069,
+    2926013070,
+    2926013071,
+    2926013072,
+    2926013073,
+    2926013074,
+    2926013069
+  ],
+  "geometry": [
+    { "lat": 14.6893367, "lon": -17.4414908 },
+    { "lat": 14.6889552, "lon": -17.4413738 },
+    { "lat": 14.6888539, "lon": -17.4417620 },
+    { "lat": 14.6884247, "lon": -17.4416449 },
+    { "lat": 14.6885975, "lon": -17.4407760 },
+    { "lat": 14.6894261, "lon": -17.4408931 },
+    { "lat": 14.6893367, "lon": -17.4414908 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "name": "Terrain Camp Abdou Diassé",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 321953796,
+  "bounds": {
+    "minlat": 14.6872265,
+    "minlon": -17.4421278,
+    "maxlat": 14.6873822,
+    "maxlon": -17.4419695
+  },
+  "nodes": [
+    3287212958,
+    3287212959,
+    3287212960,
+    3287212961,
+    3287212962,
+    3287212958
+  ],
+  "geometry": [
+    { "lat": 14.6873822, "lon": -17.4421278 },
+    { "lat": 14.6873744, "lon": -17.4419695 },
+    { "lat": 14.6872473, "lon": -17.4419695 },
+    { "lat": 14.6872265, "lon": -17.4419803 },
+    { "lat": 14.6872343, "lon": -17.4421278 },
+    { "lat": 14.6873822, "lon": -17.4421278 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "Mosquée de Gibraltar 1",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 321953797,
+  "bounds": {
+    "minlat": 14.6865234,
+    "minlon": -17.4449997,
+    "maxlat": 14.6869209,
+    "maxlon": -17.4447161
+  },
+  "nodes": [
+    3287212963,
+    3287212964,
+    3287212967,
+    3287212968,
+    3287212970,
+    3287212963
+  ],
+  "geometry": [
+    { "lat": 14.6869027, "lon": -17.4449997 },
+    { "lat": 14.6869209, "lon": -17.4449376 },
+    { "lat": 14.6867154, "lon": -17.4447161 },
+    { "lat": 14.6866557, "lon": -17.4447188 },
+    { "lat": 14.6865234, "lon": -17.4448529 },
+    { "lat": 14.6869027, "lon": -17.4449997 }
+  ],
+  "tags": {
+    "adress": "Rue Gib-18",
+    "amenity": "place_of_worship",
+    "check_date": "2026-03-19",
+    "denomination": "sunni",
+    "name": "Mosquée Gibraltar 2",
+    "name:ar": "مسجد جبل طارق 2",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 321954161,
+  "bounds": {
+    "minlat": 14.6791897,
+    "minlon": -17.4498338,
+    "maxlat": 14.6793752,
+    "maxlon": -17.4496581
+  },
+  "nodes": [
+    3287217891,
+    3287217892,
+    3287217893,
+    3287217894,
+    3287217895,
+    3287217896,
+    3287217897,
+    3287217898,
+    3287217891
+  ],
+  "geometry": [
+    { "lat": 14.6792390, "lon": -17.4498002 },
+    { "lat": 14.6791897, "lon": -17.4497560 },
+    { "lat": 14.6792766, "lon": -17.4496581 },
+    { "lat": 14.6793415, "lon": -17.4496782 },
+    { "lat": 14.6793752, "lon": -17.4497292 },
+    { "lat": 14.6793519, "lon": -17.4498338 },
+    { "lat": 14.6792481, "lon": -17.4498217 },
+    { "lat": 14.6792520, "lon": -17.4498002 },
+    { "lat": 14.6792390, "lon": -17.4498002 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 321954605,
+  "bounds": {
+    "minlat": 14.6768324,
+    "minlon": -17.4514404,
+    "maxlat": 14.6771145,
+    "maxlon": -17.4512003
+  },
+  "nodes": [
+    3287221046,
+    3287221047,
+    3287221048,
+    3287221049,
+    2179788199,
+    3287221050,
+    3287221051,
+    3287221052,
+    3287221053,
+    3287221054,
+    3287221046
+  ],
+  "geometry": [
+    { "lat": 14.6769012, "lon": -17.4514404 },
+    { "lat": 14.6768324, "lon": -17.4513626 },
+    { "lat": 14.6770011, "lon": -17.4512003 },
+    { "lat": 14.6770634, "lon": -17.4512647 },
+    { "lat": 14.6771145, "lon": -17.4513312 },
+    { "lat": 14.6770823, "lon": -17.4513633 },
+    { "lat": 14.6770517, "lon": -17.4513291 },
+    { "lat": 14.6770517, "lon": -17.4513881 },
+    { "lat": 14.6770128, "lon": -17.4514257 },
+    { "lat": 14.6769233, "lon": -17.4514203 },
+    { "lat": 14.6769012, "lon": -17.4514404 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 337569651,
+  "bounds": {
+    "minlat": 14.6610163,
+    "minlon": -17.4413325,
+    "maxlat": 14.6621498,
+    "maxlon": -17.4403096
+  },
+  "nodes": [
+    3446387426,
+    3446387429,
+    3446387418,
+    3446387415,
+    3446387426
+  ],
+  "geometry": [
+    { "lat": 14.6618992, "lon": -17.4413325 },
+    { "lat": 14.6621498, "lon": -17.4406623 },
+    { "lat": 14.6612669, "lon": -17.4403096 },
+    { "lat": 14.6610163, "lon": -17.4409799 },
+    { "lat": 14.6618992, "lon": -17.4413325 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer",
+    "surface": "ground"
+  }
+},
+{
+  "type": "way",
+  "id": 340284366,
+  "bounds": {
+    "minlat": 14.6795170,
+    "minlon": -17.4421897,
+    "maxlat": 14.6799889,
+    "maxlon": -17.4417117
+  },
+  "nodes": [
+    3474990786,
+    3474990792,
+    3474990774,
+    3474990761,
+    3474990786
+  ],
+  "geometry": [
+    { "lat": 14.6798043, "lon": -17.4421897 },
+    { "lat": 14.6799889, "lon": -17.4419712 },
+    { "lat": 14.6797016, "lon": -17.4417117 },
+    { "lat": 14.6795170, "lon": -17.4419302 },
+    { "lat": 14.6798043, "lon": -17.4421897 }
+  ],
+  "tags": {
+    "leisure": "pitch"
+  }
+},
+{
+  "type": "way",
+  "id": 352135216,
+  "bounds": {
+    "minlat": 14.6886567,
+    "minlon": -17.4532742,
+    "maxlat": 14.6888926,
+    "maxlon": -17.4529607
+  },
+  "nodes": [
+    3578953039,
+    3578953033,
+    3578953034,
+    3578953038,
+    3578953039
+  ],
+  "geometry": [
+    { "lat": 14.6888926, "lon": -17.4530851 },
+    { "lat": 14.6886567, "lon": -17.4529607 },
+    { "lat": 14.6886712, "lon": -17.4532609 },
+    { "lat": 14.6888027, "lon": -17.4532742 },
+    { "lat": 14.6888926, "lon": -17.4530851 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "name": "daara plus mosquée",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 361793225,
+  "bounds": {
+    "minlat": 14.6833084,
+    "minlon": -17.4447957,
+    "maxlat": 14.6836648,
+    "maxlon": -17.4444285
+  },
+  "nodes": [
+    3662230771,
+    3662230770,
+    3662230752,
+    3662230754,
+    3662230762,
+    3662230768,
+    3662230756,
+    3662230769,
+    3662230753,
+    3662230761,
+    3662230760,
+    3662230772,
+    3662230766,
+    3662230759,
+    3662230767,
+    3662230773,
+    3662230755,
+    3662230763,
+    3662230765,
+    3662230757,
+    3662230758,
+    3662230751,
+    3662230764,
+    3662230774,
+    3662230771
+  ],
+  "geometry": [
+    { "lat": 14.6836587, "lon": -17.4445631 },
+    { "lat": 14.6836644, "lon": -17.4445959 },
+    { "lat": 14.6836648, "lon": -17.4446190 },
+    { "lat": 14.6836587, "lon": -17.4446595 },
+    { "lat": 14.6836404, "lon": -17.4447051 },
+    { "lat": 14.6836269, "lon": -17.4447258 },
+    { "lat": 14.6836085, "lon": -17.4447467 },
+    { "lat": 14.6836015, "lon": -17.4447530 },
+    { "lat": 14.6835522, "lon": -17.4447828 },
+    { "lat": 14.6834837, "lon": -17.4447957 },
+    { "lat": 14.6834235, "lon": -17.4447840 },
+    { "lat": 14.6833674, "lon": -17.4447497 },
+    { "lat": 14.6833569, "lon": -17.4447393 },
+    { "lat": 14.6833290, "lon": -17.4446979 },
+    { "lat": 14.6833084, "lon": -17.4446094 },
+    { "lat": 14.6833193, "lon": -17.4445476 },
+    { "lat": 14.6833510, "lon": -17.4444916 },
+    { "lat": 14.6833858, "lon": -17.4444595 },
+    { "lat": 14.6834436, "lon": -17.4444329 },
+    { "lat": 14.6835078, "lon": -17.4444285 },
+    { "lat": 14.6835341, "lon": -17.4444341 },
+    { "lat": 14.6836048, "lon": -17.4444742 },
+    { "lat": 14.6836340, "lon": -17.4445080 },
+    { "lat": 14.6836515, "lon": -17.4445413 },
+    { "lat": 14.6836587, "lon": -17.4445631 }
+  ],
+  "tags": {
+    "landuse": "recreation_ground"
+  }
+},
+{
+  "type": "way",
+  "id": 362026378,
+  "bounds": {
+    "minlat": 14.6660285,
+    "minlon": -17.4383913,
+    "maxlat": 14.6662227,
+    "maxlon": -17.4380789
+  },
+  "nodes": [
+    3664057712,
+    3664165231,
+    3664057709,
+    3664057717,
+    3664057722,
+    3664165225,
+    3664057712
+  ],
+  "geometry": [
+    { "lat": 14.6661952, "lon": -17.4383913 },
+    { "lat": 14.6662227, "lon": -17.4380789 },
+    { "lat": 14.6660285, "lon": -17.4380870 },
+    { "lat": 14.6660619, "lon": -17.4381916 },
+    { "lat": 14.6660960, "lon": -17.4382882 },
+    { "lat": 14.6661371, "lon": -17.4383552 },
+    { "lat": 14.6661952, "lon": -17.4383913 }
+  ],
+  "tags": {
+    "landuse": "recreation_ground"
+  }
+},
+{
+  "type": "way",
+  "id": 398255543,
+  "bounds": {
+    "minlat": 14.6748357,
+    "minlon": -17.4330749,
+    "maxlat": 14.6750188,
+    "maxlon": -17.4328856
+  },
+  "nodes": [
+    4010225489,
+    4010225190,
+    4010224990,
+    4010225096,
+    4010225192,
+    4010224995,
+    4010224998,
+    4010225000,
+    4010224997,
+    4010224994,
+    4010225097,
+    4010224991,
+    4010225191,
+    4010225094,
+    4010225389,
+    4010225092,
+    4010225489
+  ],
+  "geometry": [
+    { "lat": 14.6748446, "lon": -17.4329393 },
+    { "lat": 14.6748660, "lon": -17.4329097 },
+    { "lat": 14.6748968, "lon": -17.4328909 },
+    { "lat": 14.6749322, "lon": -17.4328856 },
+    { "lat": 14.6749668, "lon": -17.4328947 },
+    { "lat": 14.6749955, "lon": -17.4329169 },
+    { "lat": 14.6750137, "lon": -17.4329487 },
+    { "lat": 14.6750188, "lon": -17.4329853 },
+    { "lat": 14.6750100, "lon": -17.4330211 },
+    { "lat": 14.6749885, "lon": -17.4330507 },
+    { "lat": 14.6749578, "lon": -17.4330696 },
+    { "lat": 14.6749224, "lon": -17.4330749 },
+    { "lat": 14.6748877, "lon": -17.4330657 },
+    { "lat": 14.6748591, "lon": -17.4330435 },
+    { "lat": 14.6748408, "lon": -17.4330117 },
+    { "lat": 14.6748357, "lon": -17.4329751 },
+    { "lat": 14.6748446, "lon": -17.4329393 }
+  ],
+  "tags": {
+    "landuse": "grass"
+  }
+},
+{
+  "type": "way",
+  "id": 423899283,
+  "bounds": {
+    "minlat": 14.6869147,
+    "minlon": -17.4538628,
+    "maxlat": 14.6869610,
+    "maxlon": -17.4538151
+  },
+  "nodes": [
+    4234145413,
+    4234145415,
+    4234145414,
+    4234145412,
+    4234145413
+  ],
+  "geometry": [
+    { "lat": 14.6869353, "lon": -17.4538628 },
+    { "lat": 14.6869610, "lon": -17.4538403 },
+    { "lat": 14.6869403, "lon": -17.4538151 },
+    { "lat": 14.6869147, "lon": -17.4538376 },
+    { "lat": 14.6869353, "lon": -17.4538628 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "name": "Petite Mosquée",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 423899297,
+  "bounds": {
+    "minlat": 14.6836321,
+    "minlon": -17.4546241,
+    "maxlat": 14.6836982,
+    "maxlon": -17.4545502
+  },
+  "nodes": [
+    4234145411,
+    4234145409,
+    4234145408,
+    4234145410,
+    4234145411
+  ],
+  "geometry": [
+    { "lat": 14.6836982, "lon": -17.4545727 },
+    { "lat": 14.6836617, "lon": -17.4545502 },
+    { "lat": 14.6836321, "lon": -17.4546016 },
+    { "lat": 14.6836686, "lon": -17.4546241 },
+    { "lat": 14.6836982, "lon": -17.4545727 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 435781415,
+  "bounds": {
+    "minlat": 14.6593273,
+    "minlon": -17.4342597,
+    "maxlat": 14.6596295,
+    "maxlon": -17.4340568
+  },
+  "nodes": [
+    4336756216,
+    4336756230,
+    4336756215,
+    2967970915,
+    22306497,
+    22306495,
+    4336756220,
+    4336756228,
+    4336756213,
+    4336756218,
+    4336756226,
+    4336756234,
+    4336756216
+  ],
+  "geometry": [
+    { "lat": 14.6596001, "lon": -17.4342181 },
+    { "lat": 14.6596295, "lon": -17.4341591 },
+    { "lat": 14.6596225, "lon": -17.4341018 },
+    { "lat": 14.6595647, "lon": -17.4340917 },
+    { "lat": 14.6594713, "lon": -17.4340823 },
+    { "lat": 14.6593312, "lon": -17.4340568 },
+    { "lat": 14.6593273, "lon": -17.4341301 },
+    { "lat": 14.6593681, "lon": -17.4342294 },
+    { "lat": 14.6594190, "lon": -17.4342528 },
+    { "lat": 14.6594960, "lon": -17.4342597 },
+    { "lat": 14.6595382, "lon": -17.4342536 },
+    { "lat": 14.6595753, "lon": -17.4342421 },
+    { "lat": 14.6596001, "lon": -17.4342181 }
+  ],
+  "tags": {
+    "date": "04/08/2016",
+    "natural": "beach",
+    "source": "survey"
+  }
+},
+{
+  "type": "way",
+  "id": 476030940,
+  "bounds": {
+    "minlat": 14.6876360,
+    "minlon": -17.4429696,
+    "maxlat": 14.6881522,
+    "maxlon": -17.4425671
+  },
+  "nodes": [
+    4696915967,
+    4696916199,
+    4696916215,
+    4696915980,
+    4696915967
+  ],
+  "geometry": [
+    { "lat": 14.6878238, "lon": -17.4429696 },
+    { "lat": 14.6881522, "lon": -17.4426457 },
+    { "lat": 14.6878232, "lon": -17.4425671 },
+    { "lat": 14.6876360, "lon": -17.4426702 },
+    { "lat": 14.6878238, "lon": -17.4429696 }
+  ],
+  "tags": {
+    "landuse": "recreation_ground"
+  }
+},
+{
+  "type": "way",
+  "id": 476032702,
+  "bounds": {
+    "minlat": 14.6845348,
+    "minlon": -17.4435282,
+    "maxlat": 14.6851611,
+    "maxlon": -17.4428937
+  },
+  "nodes": [
+    4696926896,
+    4696926688,
+    4696926897,
+    4696926892,
+    4696926686,
+    4696926687,
+    4696926895,
+    4696926893,
+    4696926896
+  ],
+  "geometry": [
+    { "lat": 14.6851611, "lon": -17.4430252 },
+    { "lat": 14.6850397, "lon": -17.4428937 },
+    { "lat": 14.6848218, "lon": -17.4431087 },
+    { "lat": 14.6848597, "lon": -17.4431499 },
+    { "lat": 14.6845348, "lon": -17.4434705 },
+    { "lat": 14.6845881, "lon": -17.4435282 },
+    { "lat": 14.6849190, "lon": -17.4432018 },
+    { "lat": 14.6849491, "lon": -17.4432344 },
+    { "lat": 14.6851611, "lon": -17.4430252 }
+  ],
+  "tags": {
+    "leisure": "park"
+  }
+},
+{
+  "type": "way",
+  "id": 476145269,
+  "bounds": {
+    "minlat": 14.6887580,
+    "minlon": -17.4458680,
+    "maxlat": 14.6893298,
+    "maxlon": -17.4454630
+  },
+  "nodes": [
+    4697922758,
+    4697922756,
+    4697922761,
+    4697922758
+  ],
+  "geometry": [
+    { "lat": 14.6887580, "lon": -17.4456535 },
+    { "lat": 14.6893298, "lon": -17.4458680 },
+    { "lat": 14.6889603, "lon": -17.4454630 },
+    { "lat": 14.6887580, "lon": -17.4456535 }
+  ],
+  "tags": {
+    "landuse": "recreation_ground"
+  }
+},
+{
+  "type": "way",
+  "id": 476255028,
+  "bounds": {
+    "minlat": 14.6574648,
+    "minlon": -17.4356919,
+    "maxlat": 14.6576009,
+    "maxlon": -17.4355537
+  },
+  "nodes": [
+    4698748595,
+    4698748563,
+    4698748524,
+    4698748598,
+    4698748154,
+    4698748585,
+    4698748497,
+    4698748174,
+    4698748595
+  ],
+  "geometry": [
+    { "lat": 14.6576009, "lon": -17.4356001 },
+    { "lat": 14.6574992, "lon": -17.4355537 },
+    { "lat": 14.6574648, "lon": -17.4356343 },
+    { "lat": 14.6575026, "lon": -17.4356516 },
+    { "lat": 14.6574924, "lon": -17.4356754 },
+    { "lat": 14.6575286, "lon": -17.4356919 },
+    { "lat": 14.6575393, "lon": -17.4356668 },
+    { "lat": 14.6575670, "lon": -17.4356795 },
+    { "lat": 14.6576009, "lon": -17.4356001 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "denomination": "sunni",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 476255039,
+  "bounds": {
+    "minlat": 14.6551553,
+    "minlon": -17.4340822,
+    "maxlat": 14.6553807,
+    "maxlon": -17.4339209
+  },
+  "nodes": [
+    4698748545,
+    4698748543,
+    4698748518,
+    4698748535,
+    4698748545
+  ],
+  "geometry": [
+    { "lat": 14.6553493, "lon": -17.4340822 },
+    { "lat": 14.6553807, "lon": -17.4340011 },
+    { "lat": 14.6551867, "lon": -17.4339209 },
+    { "lat": 14.6551553, "lon": -17.4340021 },
+    { "lat": 14.6553493, "lon": -17.4340822 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 476513237,
+  "bounds": {
+    "minlat": 14.6733125,
+    "minlon": -17.4313987,
+    "maxlat": 14.6737874,
+    "maxlon": -17.4307241
+  },
+  "nodes": [
+    4700741821,
+    4700741818,
+    4700741824,
+    4700741822,
+    4700741813,
+    4700741812,
+    4700741821
+  ],
+  "geometry": [
+    { "lat": 14.6733978, "lon": -17.4309119 },
+    { "lat": 14.6737640, "lon": -17.4313987 },
+    { "lat": 14.6737874, "lon": -17.4313880 },
+    { "lat": 14.6735560, "lon": -17.4309709 },
+    { "lat": 14.6734393, "lon": -17.4307241 },
+    { "lat": 14.6733125, "lon": -17.4307845 },
+    { "lat": 14.6733978, "lon": -17.4309119 }
+  ],
+  "tags": {
+    "landuse": "recreation_ground"
+  }
+},
+{
+  "type": "way",
+  "id": 489082058,
+  "bounds": {
+    "minlat": 14.6805986,
+    "minlon": -17.4459985,
+    "maxlat": 14.6815310,
+    "maxlon": -17.4450499
+  },
+  "nodes": [
+    4813609907,
+    4813609906,
+    4813609905,
+    4813609904,
+    4813609907
+  ],
+  "geometry": [
+    { "lat": 14.6809812, "lon": -17.4459985 },
+    { "lat": 14.6815310, "lon": -17.4455355 },
+    { "lat": 14.6811484, "lon": -17.4450499 },
+    { "lat": 14.6805986, "lon": -17.4455129 },
+    { "lat": 14.6809812, "lon": -17.4459985 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer",
+    "surface": "dirt"
+  }
+},
+{
+  "type": "way",
+  "id": 678277101,
+  "bounds": {
+    "minlat": 14.6838302,
+    "minlon": -17.4461262,
+    "maxlat": 14.6839626,
+    "maxlon": -17.4458901
+  },
+  "nodes": [
+    6351036509,
+    6351036506,
+    6351036507,
+    6351036508,
+    6351036509
+  ],
+  "geometry": [
+    { "lat": 14.6838302, "lon": -17.4461228 },
+    { "lat": 14.6839567, "lon": -17.4461262 },
+    { "lat": 14.6839626, "lon": -17.4458935 },
+    { "lat": 14.6838360, "lon": -17.4458901 },
+    { "lat": 14.6838302, "lon": -17.4461228 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 801312607,
+  "bounds": {
+    "minlat": 14.6527292,
+    "minlon": -17.4325942,
+    "maxlat": 14.6530877,
+    "maxlon": -17.4323354
+  },
+  "nodes": [
+    7494456385,
+    7494456386,
+    7494456387,
+    7494456388,
+    7494456385
+  ],
+  "geometry": [
+    { "lat": 14.6530877, "lon": -17.4324604 },
+    { "lat": 14.6527802, "lon": -17.4323354 },
+    { "lat": 14.6527292, "lon": -17.4324693 },
+    { "lat": 14.6530368, "lon": -17.4325942 },
+    { "lat": 14.6530877, "lon": -17.4324604 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 807783357,
+  "bounds": {
+    "minlat": 14.6837445,
+    "minlon": -17.4414494,
+    "maxlat": 14.6841230,
+    "maxlon": -17.4411044
+  },
+  "nodes": [
+    7553828475,
+    560430258,
+    560430252,
+    7553828474,
+    7553828475
+  ],
+  "geometry": [
+    { "lat": 14.6840239, "lon": -17.4414494 },
+    { "lat": 14.6841230, "lon": -17.4412902 },
+    { "lat": 14.6838436, "lon": -17.4411044 },
+    { "lat": 14.6837445, "lon": -17.4412635 },
+    { "lat": 14.6840239, "lon": -17.4414494 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 807783358,
+  "bounds": {
+    "minlat": 14.6836455,
+    "minlon": -17.4416085,
+    "maxlat": 14.6840239,
+    "maxlon": -17.4412635
+  },
+  "nodes": [
+    7553828477,
+    7553828475,
+    7553828474,
+    7553828476,
+    7553828477
+  ],
+  "geometry": [
+    { "lat": 14.6839249, "lon": -17.4416085 },
+    { "lat": 14.6840239, "lon": -17.4414494 },
+    { "lat": 14.6837445, "lon": -17.4412635 },
+    { "lat": 14.6836455, "lon": -17.4414226 },
+    { "lat": 14.6839249, "lon": -17.4416085 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 807783359,
+  "bounds": {
+    "minlat": 14.6835464,
+    "minlon": -17.4417676,
+    "maxlat": 14.6839249,
+    "maxlon": -17.4414226
+  },
+  "nodes": [
+    7553828479,
+    7553828477,
+    7553828476,
+    7553828478,
+    7553828479
+  ],
+  "geometry": [
+    { "lat": 14.6838258, "lon": -17.4417676 },
+    { "lat": 14.6839249, "lon": -17.4416085 },
+    { "lat": 14.6836455, "lon": -17.4414226 },
+    { "lat": 14.6835464, "lon": -17.4415817 },
+    { "lat": 14.6838258, "lon": -17.4417676 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 807783360,
+  "bounds": {
+    "minlat": 14.6834474,
+    "minlon": -17.4419267,
+    "maxlat": 14.6838258,
+    "maxlon": -17.4415817
+  },
+  "nodes": [
+    7553828481,
+    7553828479,
+    7553828478,
+    7553828480,
+    7553828481
+  ],
+  "geometry": [
+    { "lat": 14.6837268, "lon": -17.4419267 },
+    { "lat": 14.6838258, "lon": -17.4417676 },
+    { "lat": 14.6835464, "lon": -17.4415817 },
+    { "lat": 14.6834474, "lon": -17.4417408 },
+    { "lat": 14.6837268, "lon": -17.4419267 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 807783361,
+  "bounds": {
+    "minlat": 14.6833484,
+    "minlon": -17.4420858,
+    "maxlat": 14.6837268,
+    "maxlon": -17.4417408
+  },
+  "nodes": [
+    560430257,
+    7553828481,
+    7553828480,
+    560430254,
+    560430257
+  ],
+  "geometry": [
+    { "lat": 14.6836278, "lon": -17.4420858 },
+    { "lat": 14.6837268, "lon": -17.4419267 },
+    { "lat": 14.6834474, "lon": -17.4417408 },
+    { "lat": 14.6833484, "lon": -17.4418999 },
+    { "lat": 14.6836278, "lon": -17.4420858 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "tennis"
+  }
+},
+{
+  "type": "way",
+  "id": 807783362,
+  "bounds": {
+    "minlat": 14.6835584,
+    "minlon": -17.4412230,
+    "maxlat": 14.6839518,
+    "maxlon": -17.4407765
+  },
+  "nodes": [
+    7553925885,
+    7553828484,
+    7553828483,
+    7553828482,
+    7553925885
+  ],
+  "geometry": [
+    { "lat": 14.6837309, "lon": -17.4412230 },
+    { "lat": 14.6839518, "lon": -17.4408653 },
+    { "lat": 14.6837832, "lon": -17.4407765 },
+    { "lat": 14.6835584, "lon": -17.4411278 },
+    { "lat": 14.6837309, "lon": -17.4412230 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 807783363,
+  "bounds": {
+    "minlat": 14.6834554,
+    "minlon": -17.4409097,
+    "maxlat": 14.6837294,
+    "maxlon": -17.4406505
+  },
+  "nodes": [
+    7553925887,
+    7553925894,
+    7553925893,
+    7553925886,
+    7553925887
+  ],
+  "geometry": [
+    { "lat": 14.6836479, "lon": -17.4409097 },
+    { "lat": 14.6837294, "lon": -17.4407856 },
+    { "lat": 14.6835369, "lon": -17.4406505 },
+    { "lat": 14.6834554, "lon": -17.4407746 },
+    { "lat": 14.6836479, "lon": -17.4409097 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 807783364,
+  "bounds": {
+    "minlat": 14.6833739,
+    "minlon": -17.4410338,
+    "maxlat": 14.6836479,
+    "maxlon": -17.4407746
+  },
+  "nodes": [
+    7553925889,
+    7553925887,
+    7553925886,
+    7553925888,
+    7553925889
+  ],
+  "geometry": [
+    { "lat": 14.6835664, "lon": -17.4410338 },
+    { "lat": 14.6836479, "lon": -17.4409097 },
+    { "lat": 14.6834554, "lon": -17.4407746 },
+    { "lat": 14.6833739, "lon": -17.4408987 },
+    { "lat": 14.6835664, "lon": -17.4410338 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 807783365,
+  "bounds": {
+    "minlat": 14.6832924,
+    "minlon": -17.4411579,
+    "maxlat": 14.6835664,
+    "maxlon": -17.4408987
+  },
+  "nodes": [
+    7553925891,
+    7553925889,
+    7553925888,
+    7553925890,
+    7553925891
+  ],
+  "geometry": [
+    { "lat": 14.6834849, "lon": -17.4411579 },
+    { "lat": 14.6835664, "lon": -17.4410338 },
+    { "lat": 14.6833739, "lon": -17.4408987 },
+    { "lat": 14.6832924, "lon": -17.4410228 },
+    { "lat": 14.6834849, "lon": -17.4411579 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 807783366,
+  "bounds": {
+    "minlat": 14.6832110,
+    "minlon": -17.4412820,
+    "maxlat": 14.6834849,
+    "maxlon": -17.4410228
+  },
+  "nodes": [
+    7553925895,
+    7553925891,
+    7553925890,
+    7553925892,
+    7553925895
+  ],
+  "geometry": [
+    { "lat": 14.6834034, "lon": -17.4412820 },
+    { "lat": 14.6834849, "lon": -17.4411579 },
+    { "lat": 14.6832924, "lon": -17.4410228 },
+    { "lat": 14.6832110, "lon": -17.4411469 },
+    { "lat": 14.6834034, "lon": -17.4412820 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 807783372,
+  "bounds": {
+    "minlat": 14.6812730,
+    "minlon": -17.4352610,
+    "maxlat": 14.6822159,
+    "maxlon": -17.4343058
+  },
+  "nodes": [
+    7553925916,
+    7553925915,
+    7553925914,
+    7553925913,
+    7553925916
+  ],
+  "geometry": [
+    { "lat": 14.6818855, "lon": -17.4352610 },
+    { "lat": 14.6822159, "lon": -17.4348923 },
+    { "lat": 14.6816034, "lon": -17.4343058 },
+    { "lat": 14.6812730, "lon": -17.4346744 },
+    { "lat": 14.6818855, "lon": -17.4352610 }
+  ],
+  "tags": {
+    "access": "private",
+    "leisure": "pitch",
+    "sport": "soccer",
+    "surface": "dirt"
+  }
+},
+{
+  "type": "way",
+  "id": 807799028,
+  "bounds": {
+    "minlat": 14.6791508,
+    "minlon": -17.4376584,
+    "maxlat": 14.6797248,
+    "maxlon": -17.4373151
+  },
+  "nodes": [
+    7554022976,
+    7554022975,
+    7554022974,
+    7554022973,
+    7554022972,
+    7554022971,
+    7554022970,
+    7554022969,
+    7554022968,
+    7554022967,
+    7554022976
+  ],
+  "geometry": [
+    { "lat": 14.6797216, "lon": -17.4376584 },
+    { "lat": 14.6791508, "lon": -17.4375431 },
+    { "lat": 14.6792091, "lon": -17.4374834 },
+    { "lat": 14.6792455, "lon": -17.4374230 },
+    { "lat": 14.6792539, "lon": -17.4373586 },
+    { "lat": 14.6792526, "lon": -17.4373151 },
+    { "lat": 14.6794362, "lon": -17.4375055 },
+    { "lat": 14.6795017, "lon": -17.4375471 },
+    { "lat": 14.6797034, "lon": -17.4376202 },
+    { "lat": 14.6797248, "lon": -17.4376430 },
+    { "lat": 14.6797216, "lon": -17.4376584 }
+  ],
+  "tags": {
+    "leisure": "park"
+  }
+},
+{
+  "type": "way",
+  "id": 807799031,
+  "bounds": {
+    "minlat": 14.6783687,
+    "minlon": -17.4374977,
+    "maxlat": 14.6787525,
+    "maxlon": -17.4372682
+  },
+  "nodes": [
+    7554067798,
+    7554067797,
+    7554067796,
+    7554067795,
+    7554067798
+  ],
+  "geometry": [
+    { "lat": 14.6787492, "lon": -17.4374977 },
+    { "lat": 14.6787525, "lon": -17.4372742 },
+    { "lat": 14.6783720, "lon": -17.4372682 },
+    { "lat": 14.6783687, "lon": -17.4374917 },
+    { "lat": 14.6787492, "lon": -17.4374977 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "basketball"
+  }
+},
+{
+  "type": "way",
+  "id": 807805224,
+  "bounds": {
+    "minlat": 14.6778632,
+    "minlon": -17.4441688,
+    "maxlat": 14.6789270,
+    "maxlon": -17.4434513
+  },
+  "nodes": [
+    7554124186,
+    7554124185,
+    7554103784,
+    7554103783,
+    7554103782,
+    7554103781,
+    7554103780,
+    7554103779,
+    7554103778,
+    7554124186
+  ],
+  "geometry": [
+    { "lat": 14.6785832, "lon": -17.4441151 },
+    { "lat": 14.6789270, "lon": -17.4437115 },
+    { "lat": 14.6787817, "lon": -17.4436162 },
+    { "lat": 14.6782057, "lon": -17.4434513 },
+    { "lat": 14.6780603, "lon": -17.4437584 },
+    { "lat": 14.6778943, "lon": -17.4436189 },
+    { "lat": 14.6778632, "lon": -17.4436685 },
+    { "lat": 14.6784625, "lon": -17.4441688 },
+    { "lat": 14.6785040, "lon": -17.4441098 },
+    { "lat": 14.6785832, "lon": -17.4441151 }
+  ],
+  "tags": {
+    "leisure": "park"
+  }
+},
+{
+  "type": "way",
+  "id": 808461455,
+  "bounds": {
+    "minlat": 14.6818511,
+    "minlon": -17.4409662,
+    "maxlat": 14.6824188,
+    "maxlon": -17.4404289
+  },
+  "nodes": [
+    7559966005,
+    7559966004,
+    4692487262,
+    7559966003,
+    7559966005
+  ],
+  "geometry": [
+    { "lat": 14.6822559, "lon": -17.4409662 },
+    { "lat": 14.6824188, "lon": -17.4406781 },
+    { "lat": 14.6820685, "lon": -17.4404289 },
+    { "lat": 14.6818511, "lon": -17.4407027 },
+    { "lat": 14.6822559, "lon": -17.4409662 }
+  ],
+  "tags": {
+    "leisure": "park"
+  }
+},
+{
+  "type": "way",
+  "id": 814500776,
+  "bounds": {
+    "minlat": 14.6761221,
+    "minlon": -17.4651839,
+    "maxlat": 14.6770316,
+    "maxlon": -17.4643826
+  },
+  "nodes": [
+    281411310,
+    7608271224,
+    7608271223,
+    7608271222,
+    7608271221,
+    7608271220,
+    7608271219,
+    7608271218,
+    7608271217,
+    7608271216,
+    4007603791,
+    22307751,
+    22307748,
+    22307745,
+    281411310
+  ],
+  "geometry": [
+    { "lat": 14.6769421, "lon": -17.4651839 },
+    { "lat": 14.6770043, "lon": -17.4651423 },
+    { "lat": 14.6770316, "lon": -17.4649867 },
+    { "lat": 14.6770296, "lon": -17.4648607 },
+    { "lat": 14.6769985, "lon": -17.4647708 },
+    { "lat": 14.6768642, "lon": -17.4645636 },
+    { "lat": 14.6767688, "lon": -17.4644570 },
+    { "lat": 14.6766819, "lon": -17.4644027 },
+    { "lat": 14.6762006, "lon": -17.4643826 },
+    { "lat": 14.6761604, "lon": -17.4643953 },
+    { "lat": 14.6761221, "lon": -17.4645080 },
+    { "lat": 14.6763556, "lon": -17.4645590 },
+    { "lat": 14.6766385, "lon": -17.4647372 },
+    { "lat": 14.6768655, "lon": -17.4649881 },
+    { "lat": 14.6769421, "lon": -17.4651839 }
+  ],
+  "tags": {
+    "natural": "beach",
+    "surface": "sand"
+  }
+},
+{
+  "type": "way",
+  "id": 814500777,
+  "bounds": {
+    "minlat": 14.6774201,
+    "minlon": -17.4630730,
+    "maxlat": 14.6777866,
+    "maxlon": -17.4628215
+  },
+  "nodes": [
+    2424965445,
+    7608271230,
+    7608271229,
+    7608271228,
+    7608271227,
+    7608271226,
+    7608271225,
+    6326197779,
+    2424965445
+  ],
+  "geometry": [
+    { "lat": 14.6774201, "lon": -17.4629986 },
+    { "lat": 14.6774409, "lon": -17.4630522 },
+    { "lat": 14.6774714, "lon": -17.4630730 },
+    { "lat": 14.6776056, "lon": -17.4630542 },
+    { "lat": 14.6777704, "lon": -17.4629268 },
+    { "lat": 14.6777866, "lon": -17.4628960 },
+    { "lat": 14.6777075, "lon": -17.4628215 },
+    { "lat": 14.6775336, "lon": -17.4629429 },
+    { "lat": 14.6774201, "lon": -17.4629986 }
+  ],
+  "tags": {
+    "natural": "beach",
+    "surface": "sand"
+  }
+},
+{
+  "type": "way",
+  "id": 814500785,
+  "bounds": {
+    "minlat": 14.6827391,
+    "minlon": -17.4524199,
+    "maxlat": 14.6829033,
+    "maxlon": -17.4521524
+  },
+  "nodes": [
+    7608271332,
+    7608271331,
+    7608271330,
+    7608271329,
+    7608271328,
+    7608271332
+  ],
+  "geometry": [
+    { "lat": 14.6828520, "lon": -17.4524199 },
+    { "lat": 14.6827391, "lon": -17.4524018 },
+    { "lat": 14.6827800, "lon": -17.4522295 },
+    { "lat": 14.6828533, "lon": -17.4521524 },
+    { "lat": 14.6829033, "lon": -17.4522214 },
+    { "lat": 14.6828520, "lon": -17.4524199 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "operational_status": "open",
+    "religion": "muslim",
+    "source": "bing",
+    "source:date": "2013-03-01"
+  }
+},
+{
+  "type": "way",
+  "id": 1010764624,
+  "bounds": {
+    "minlat": 14.6527213,
+    "minlon": -17.4375451,
+    "maxlat": 14.6554699,
+    "maxlon": -17.4354344
+  },
+  "nodes": [
+    22307975,
+    9325298012,
+    9325298011,
+    9325298010,
+    9325298009,
+    9325298008,
+    9325298007,
+    9325298006,
+    9325298005,
+    9325298004,
+    22307992,
+    22307990,
+    22307987,
+    22307985,
+    22307982,
+    22307981,
+    22307979,
+    22307976,
+    22307975
+  ],
+  "geometry": [
+    { "lat": 14.6554699, "lon": -17.4375451 },
+    { "lat": 14.6554171, "lon": -17.4371935 },
+    { "lat": 14.6550426, "lon": -17.4368285 },
+    { "lat": 14.6543931, "lon": -17.4361846 },
+    { "lat": 14.6540275, "lon": -17.4359278 },
+    { "lat": 14.6536477, "lon": -17.4357701 },
+    { "lat": 14.6534028, "lon": -17.4356123 },
+    { "lat": 14.6531135, "lon": -17.4355719 },
+    { "lat": 14.6527213, "lon": -17.4354344 },
+    { "lat": 14.6535111, "lon": -17.4359351 },
+    { "lat": 14.6537261, "lon": -17.4361423 },
+    { "lat": 14.6540842, "lon": -17.4363005 },
+    { "lat": 14.6542996, "lon": -17.4364373 },
+    { "lat": 14.6545384, "lon": -17.4365741 },
+    { "lat": 14.6546915, "lon": -17.4367216 },
+    { "lat": 14.6549302, "lon": -17.4369147 },
+    { "lat": 14.6551352, "lon": -17.4371079 },
+    { "lat": 14.6553039, "lon": -17.4372956 },
+    { "lat": 14.6554699, "lon": -17.4375451 }
+  ],
+  "tags": {
+    "natural": "beach"
+  }
+},
+{
+  "type": "way",
+  "id": 1241504474,
+  "bounds": {
+    "minlat": 14.6803610,
+    "minlon": -17.4555254,
+    "maxlat": 14.6843314,
+    "maxlon": -17.4535746
+  },
+  "nodes": [
+    11535312121,
+    11535312122,
+    11535312123,
+    297224671,
+    2417745461,
+    664327861,
+    11535312121
+  ],
+  "geometry": [
+    { "lat": 14.6843314, "lon": -17.4537077 },
+    { "lat": 14.6842784, "lon": -17.4535746 },
+    { "lat": 14.6819413, "lon": -17.4547101 },
+    { "lat": 14.6803610, "lon": -17.4554191 },
+    { "lat": 14.6804649, "lon": -17.4555254 },
+    { "lat": 14.6823584, "lon": -17.4546095 },
+    { "lat": 14.6843314, "lon": -17.4537077 }
+  ],
+  "tags": {
+    "amenity": "marketplace",
+    "name": "Marché de l'occasion des vêtements"
+  }
+},
+{
+  "type": "way",
+  "id": 1246110361,
+  "bounds": {
+    "minlat": 14.6618906,
+    "minlon": -17.4320174,
+    "maxlat": 14.6621745,
+    "maxlon": -17.4318940
+  },
+  "nodes": [
+    11584739896,
+    11584739897,
+    11584739898,
+    11584739899,
+    11584739900,
+    11584739901,
+    11584739902,
+    11584739896
+  ],
+  "geometry": [
+    { "lat": 14.6621745, "lon": -17.4318990 },
+    { "lat": 14.6621409, "lon": -17.4320018 },
+    { "lat": 14.6620785, "lon": -17.4320082 },
+    { "lat": 14.6619756, "lon": -17.4320174 },
+    { "lat": 14.6619173, "lon": -17.4319869 },
+    { "lat": 14.6618906, "lon": -17.4318940 },
+    { "lat": 14.6619640, "lon": -17.4319075 },
+    { "lat": 14.6621745, "lon": -17.4318990 }
+  ],
+  "tags": {
+    "natural": "beach"
+  }
+},
+{
+  "type": "way",
+  "id": 1285260802,
+  "bounds": {
+    "minlat": 14.6743453,
+    "minlon": -17.4530434,
+    "maxlat": 14.6746332,
+    "maxlon": -17.4527508
+  },
+  "nodes": [
+    11922796135,
+    11922796137,
+    11922796133,
+    11922796141,
+    11922796135
+  ],
+  "geometry": [
+    { "lat": 14.6744451, "lon": -17.4527508 },
+    { "lat": 14.6743453, "lon": -17.4528603 },
+    { "lat": 14.6745333, "lon": -17.4530434 },
+    { "lat": 14.6746332, "lon": -17.4529339 },
+    { "lat": 14.6744451, "lon": -17.4527508 }
+  ],
+  "tags": {
+    "leisure": "pitch",
+    "sport": "soccer"
+  }
+},
+{
+  "type": "way",
+  "id": 1287112502,
+  "bounds": {
+    "minlat": 14.6663755,
+    "minlon": -17.4308531,
+    "maxlat": 14.6671354,
+    "maxlon": -17.4300204
+  },
+  "nodes": [
+    11937458377,
+    11937458378,
+    11937458379,
+    11937458380,
+    11937458377
+  ],
+  "geometry": [
+    { "lat": 14.6668287, "lon": -17.4308531 },
+    { "lat": 14.6671354, "lon": -17.4303264 },
+    { "lat": 14.6667095, "lon": -17.4300204 },
+    { "lat": 14.6663755, "lon": -17.4305447 },
+    { "lat": 14.6668287, "lon": -17.4308531 }
+  ],
+  "tags": {
+    "alt_name": "Teranga Beach Club",
+    "contact:facebook": "PullmanDakar",
+    "leisure": "park",
+    "name": "Pullman Beach Club",
+    "phone": "+22177 520 35 99",
+    "website": "https://all.accor.com/hotel/0563/index.fr.shtml"
+  }
+},
+{
+  "type": "way",
+  "id": 1458575548,
+  "bounds": {
+    "minlat": 14.6786800,
+    "minlon": -17.4413078,
+    "maxlat": 14.6788611,
+    "maxlon": -17.4410154
+  },
+  "nodes": [
+    13376766834,
+    13376766835,
+    13376766836,
+    13376766837,
+    13376766838,
+    13376766839,
+    13376766840,
+    13376766841,
+    13376766834
+  ],
+  "geometry": [
+    { "lat": 14.6788331, "lon": -17.4413078 },
+    { "lat": 14.6787510, "lon": -17.4412764 },
+    { "lat": 14.6787604, "lon": -17.4412499 },
+    { "lat": 14.6786800, "lon": -17.4412192 },
+    { "lat": 14.6787528, "lon": -17.4410154 },
+    { "lat": 14.6788568, "lon": -17.4411179 },
+    { "lat": 14.6788222, "lon": -17.4412147 },
+    { "lat": 14.6788611, "lon": -17.4412295 },
+    { "lat": 14.6788331, "lon": -17.4413078 }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 1527267823,
+  "bounds": {
+    "minlat": 14.6667601,
+    "minlon": -17.4299618,
+    "maxlat": 14.6676864,
+    "maxlon": -17.4286194
+  },
+  "nodes": [
+    299631692,
+    13917878631,
+    13917878632,
+    13917878633,
+    13917878634,
+    13917878635,
+    13917878636,
+    22306543,
+    6422804797,
+    281415268,
+    22306541,
+    22306540,
+    299631692
+  ],
+  "geometry": [
+    { "lat": 14.6667601, "lon": -17.4299317 },
+    { "lat": 14.6668476, "lon": -17.4299618 },
+    { "lat": 14.6670040, "lon": -17.4298506 },
+    { "lat": 14.6670486, "lon": -17.4297252 },
+    { "lat": 14.6672782, "lon": -17.4295114 },
+    { "lat": 14.6674949, "lon": -17.4291984 },
+    { "lat": 14.6676864, "lon": -17.4286222 },
+    { "lat": 14.6675377, "lon": -17.4286194 },
+    { "lat": 14.6675205, "lon": -17.4286971 },
+    { "lat": 14.6673765, "lon": -17.4290559 },
+    { "lat": 14.6670819, "lon": -17.4294750 },
+    { "lat": 14.6668642, "lon": -17.4298103 },
+    { "lat": 14.6667601, "lon": -17.4299317 }
+  ],
+  "tags": {
+    "natural": "beach",
+    "surface": "sand"
+  }
+},
+{
+  "type": "relation",
+  "id": 3471478,
+  "bounds": {
+    "minlat": 14.6776501,
+    "minlon": -17.4430666,
+    "maxlat": 14.6787116,
+    "maxlon": -17.4419615
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 258632937,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6783982, "lon": -17.4430666 },
+         { "lat": 14.6776595, "lon": -17.4428476 },
+         { "lat": 14.6777465, "lon": -17.4425341 },
+         { "lat": 14.6776501, "lon": -17.4425055 },
+         { "lat": 14.6777139, "lon": -17.4422755 },
+         { "lat": 14.6777677, "lon": -17.4422915 },
+         { "lat": 14.6778030, "lon": -17.4421642 },
+         { "lat": 14.6778600, "lon": -17.4421811 },
+         { "lat": 14.6778809, "lon": -17.4421058 },
+         { "lat": 14.6778479, "lon": -17.4420964 },
+         { "lat": 14.6778838, "lon": -17.4419615 },
+         { "lat": 14.6779980, "lon": -17.4419939 },
+         { "lat": 14.6779622, "lon": -17.4421288 },
+         { "lat": 14.6779369, "lon": -17.4421216 },
+         { "lat": 14.6779184, "lon": -17.4421880 },
+         { "lat": 14.6781370, "lon": -17.4422528 },
+         { "lat": 14.6781443, "lon": -17.4422266 },
+         { "lat": 14.6783048, "lon": -17.4422742 },
+         { "lat": 14.6782868, "lon": -17.4423389 },
+         { "lat": 14.6785729, "lon": -17.4424238 },
+         { "lat": 14.6785578, "lon": -17.4424782 },
+         { "lat": 14.6787116, "lon": -17.4425238 },
+         { "lat": 14.6786360, "lon": -17.4427964 },
+         { "lat": 14.6784856, "lon": -17.4427518 },
+         { "lat": 14.6783982, "lon": -17.4430666 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 258632936,
+      "role": "inner",
+      "geometry": [
+         { "lat": 14.6783206, "lon": -17.4429251 },
+         { "lat": 14.6783389, "lon": -17.4428610 },
+         { "lat": 14.6782818, "lon": -17.4428435 },
+         { "lat": 14.6783023, "lon": -17.4427718 },
+         { "lat": 14.6783595, "lon": -17.4427892 },
+         { "lat": 14.6783780, "lon": -17.4427244 },
+         { "lat": 14.6778706, "lon": -17.4425692 },
+         { "lat": 14.6778520, "lon": -17.4426344 },
+         { "lat": 14.6779070, "lon": -17.4426512 },
+         { "lat": 14.6778878, "lon": -17.4427181 },
+         { "lat": 14.6778328, "lon": -17.4427013 },
+         { "lat": 14.6778132, "lon": -17.4427699 },
+         { "lat": 14.6783206, "lon": -17.4429251 }
+      ]
+    }
+  ],
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "denomination": "sunni",
+    "name": "Grande Mosquée de Dakar",
+    "religion": "muslim",
+    "start_date": "1964",
+    "type": "multipolygon",
+    "wikidata": "Q2477297",
+    "wikipedia": "fr:Grande Mosquée de Dakar"
+  }
+},
+{
+  "type": "relation",
+  "id": 5388350,
+  "bounds": {
+    "minlat": 14.6688309,
+    "minlon": -17.4501890,
+    "maxlat": 14.6730500,
+    "maxlon": -17.4458117
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 362017793,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6688309, "lon": -17.4459645 },
+         { "lat": 14.6692773, "lon": -17.4458117 },
+         { "lat": 14.6694629, "lon": -17.4458162 },
+         { "lat": 14.6696484, "lon": -17.4458251 },
+         { "lat": 14.6697950, "lon": -17.4458546 },
+         { "lat": 14.6700219, "lon": -17.4459618 },
+         { "lat": 14.6701205, "lon": -17.4460369 },
+         { "lat": 14.6702139, "lon": -17.4461013 },
+         { "lat": 14.6703073, "lon": -17.4461710 },
+         { "lat": 14.6703904, "lon": -17.4462354 },
+         { "lat": 14.6704891, "lon": -17.4463106 },
+         { "lat": 14.6706019, "lon": -17.4464246 },
+         { "lat": 14.6706732, "lon": -17.4465010 },
+         { "lat": 14.6708109, "lon": -17.4466163 },
+         { "lat": 14.6709015, "lon": -17.4467075 },
+         { "lat": 14.6709716, "lon": -17.4467745 },
+         { "lat": 14.6710858, "lon": -17.4469140 },
+         { "lat": 14.6711221, "lon": -17.4469677 },
+         { "lat": 14.6711766, "lon": -17.4470240 },
+         { "lat": 14.6712726, "lon": -17.4471340 },
+         { "lat": 14.6715372, "lon": -17.4474746 },
+         { "lat": 14.6717500, "lon": -17.4476892 },
+         { "lat": 14.6720692, "lon": -17.4480325 },
+         { "lat": 14.6722871, "lon": -17.4483141 },
+         { "lat": 14.6723883, "lon": -17.4484777 },
+         { "lat": 14.6724610, "lon": -17.4485984 },
+         { "lat": 14.6725129, "lon": -17.4486843 },
+         { "lat": 14.6725777, "lon": -17.4487889 },
+         { "lat": 14.6726737, "lon": -17.4489740 },
+         { "lat": 14.6728009, "lon": -17.4491912 },
+         { "lat": 14.6729436, "lon": -17.4495292 },
+         { "lat": 14.6730137, "lon": -17.4497357 },
+         { "lat": 14.6730500, "lon": -17.4498779 },
+         { "lat": 14.6730500, "lon": -17.4500549 },
+         { "lat": 14.6730059, "lon": -17.4501434 },
+         { "lat": 14.6729125, "lon": -17.4501890 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 476233082,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6729125, "lon": -17.4501890 },
+         { "lat": 14.6729280, "lon": -17.4500200 },
+         { "lat": 14.6729060, "lon": -17.4498229 },
+         { "lat": 14.6727762, "lon": -17.4494782 },
+         { "lat": 14.6725855, "lon": -17.4491215 },
+         { "lat": 14.6723857, "lon": -17.4488640 },
+         { "lat": 14.6722041, "lon": -17.4485877 },
+         { "lat": 14.6720769, "lon": -17.4484241 },
+         { "lat": 14.6719809, "lon": -17.4482954 },
+         { "lat": 14.6718227, "lon": -17.4481264 },
+         { "lat": 14.6716501, "lon": -17.4479601 },
+         { "lat": 14.6715658, "lon": -17.4478689 },
+         { "lat": 14.6714555, "lon": -17.4477442 },
+         { "lat": 14.6713323, "lon": -17.4476369 },
+         { "lat": 14.6709742, "lon": -17.4473351 },
+         { "lat": 14.6707541, "lon": -17.4471577 },
+         { "lat": 14.6705681, "lon": -17.4470319 },
+         { "lat": 14.6704259, "lon": -17.4469002 },
+         { "lat": 14.6702944, "lon": -17.4467906 },
+         { "lat": 14.6700478, "lon": -17.4466270 },
+         { "lat": 14.6696145, "lon": -17.4464098 },
+         { "lat": 14.6693109, "lon": -17.4462569 },
+         { "lat": 14.6691449, "lon": -17.4461603 },
+         { "lat": 14.6689918, "lon": -17.4460584 },
+         { "lat": 14.6688309, "lon": -17.4459645 }
+      ]
+    }
+  ],
+  "tags": {
+    "natural": "beach",
+    "surface": "sand",
+    "type": "multipolygon",
+    "wikimedia_commons": "File:Plage de l'université sur la corniche, Dakar Sénégal.jpg"
+  }
+},
+{
+  "type": "relation",
+  "id": 7001208,
+  "bounds": {
+    "minlat": 14.6685844,
+    "minlon": -17.4257628,
+    "maxlat": 14.6693025,
+    "maxlon": -17.4240482
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 476234870,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6685844, "lon": -17.4257628 },
+         { "lat": 14.6686363, "lon": -17.4257594 },
+         { "lat": 14.6686843, "lon": -17.4257246 },
+         { "lat": 14.6687057, "lon": -17.4256770 },
+         { "lat": 14.6689003, "lon": -17.4251331 },
+         { "lat": 14.6690216, "lon": -17.4248549 },
+         { "lat": 14.6691552, "lon": -17.4246155 },
+         { "lat": 14.6692214, "lon": -17.4244995 },
+         { "lat": 14.6692727, "lon": -17.4243841 },
+         { "lat": 14.6693025, "lon": -17.4242540 },
+         { "lat": 14.6692973, "lon": -17.4241307 },
+         { "lat": 14.6692791, "lon": -17.4240482 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 476234871,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6685844, "lon": -17.4257628 },
+         { "lat": 14.6685954, "lon": -17.4256347 },
+         { "lat": 14.6686136, "lon": -17.4255529 },
+         { "lat": 14.6686875, "lon": -17.4253799 },
+         { "lat": 14.6687407, "lon": -17.4252304 },
+         { "lat": 14.6687543, "lon": -17.4250902 },
+         { "lat": 14.6687738, "lon": -17.4250272 },
+         { "lat": 14.6690482, "lon": -17.4245752 },
+         { "lat": 14.6691786, "lon": -17.4243996 },
+         { "lat": 14.6692370, "lon": -17.4242802 },
+         { "lat": 14.6692571, "lon": -17.4242024 },
+         { "lat": 14.6692642, "lon": -17.4241246 },
+         { "lat": 14.6692791, "lon": -17.4240482 }
+      ]
+    }
+  ],
+  "tags": {
+    "lifeguard": "no",
+    "natural": "beach",
+    "supervised": "no",
+    "surface": "sand",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 7001558,
+  "bounds": {
+    "minlat": 14.6560013,
+    "minlon": -17.4338893,
+    "maxlat": 14.6575913,
+    "maxlon": -17.4334386
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 476255038,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6560013, "lon": -17.4334386 },
+         { "lat": 14.6561576, "lon": -17.4335164 },
+         { "lat": 14.6563369, "lon": -17.4335702 },
+         { "lat": 14.6564469, "lon": -17.4335995 },
+         { "lat": 14.6566973, "lon": -17.4336572 },
+         { "lat": 14.6569227, "lon": -17.4336983 },
+         { "lat": 14.6571119, "lon": -17.4337212 },
+         { "lat": 14.6572715, "lon": -17.4337266 },
+         { "lat": 14.6574275, "lon": -17.4336967 },
+         { "lat": 14.6575913, "lon": -17.4336398 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 476255018,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6560013, "lon": -17.4334386 },
+         { "lat": 14.6560062, "lon": -17.4334913 },
+         { "lat": 14.6560266, "lon": -17.4335332 },
+         { "lat": 14.6563056, "lon": -17.4336479 },
+         { "lat": 14.6566508, "lon": -17.4337878 },
+         { "lat": 14.6568298, "lon": -17.4338383 },
+         { "lat": 14.6570140, "lon": -17.4338652 },
+         { "lat": 14.6571230, "lon": -17.4338813 },
+         { "lat": 14.6572060, "lon": -17.4338893 },
+         { "lat": 14.6573048, "lon": -17.4338787 },
+         { "lat": 14.6574026, "lon": -17.4338399 },
+         { "lat": 14.6575090, "lon": -17.4337729 },
+         { "lat": 14.6575505, "lon": -17.4337407 },
+         { "lat": 14.6575913, "lon": -17.4336398 }
+      ]
+    }
+  ],
+  "tags": {
+    "access": "yes",
+    "name": "Plage de l'Anse Bernard",
+    "natural": "beach",
+    "surface": "sand",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 7004021,
+  "bounds": {
+    "minlat": 14.6716519,
+    "minlon": -17.4320707,
+    "maxlat": 14.6730786,
+    "maxlon": -17.4309870
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 476506886,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6727309, "lon": -17.4312552 },
+         { "lat": 14.6726249, "lon": -17.4313102 },
+         { "lat": 14.6725497, "lon": -17.4310849 },
+         { "lat": 14.6723754, "lon": -17.4311452 },
+         { "lat": 14.6723418, "lon": -17.4310605 },
+         { "lat": 14.6722279, "lon": -17.4311016 },
+         { "lat": 14.6721731, "lon": -17.4309870 },
+         { "lat": 14.6716519, "lon": -17.4311814 },
+         { "lat": 14.6719867, "lon": -17.4319621 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 476506873,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6729619, "lon": -17.4313491 },
+         { "lat": 14.6727676, "lon": -17.4313960 },
+         { "lat": 14.6727309, "lon": -17.4312552 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 476506895,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6730125, "lon": -17.4320707 },
+         { "lat": 14.6730786, "lon": -17.4319660 },
+         { "lat": 14.6729619, "lon": -17.4313491 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 398258835,
+      "role": "outer",
+      "geometry": [
+         { "lat": 14.6730125, "lon": -17.4320707 },
+         { "lat": 14.6720872, "lon": -17.4320439 },
+         { "lat": 14.6719867, "lon": -17.4319621 }
+      ]
+    }
+  ],
+  "tags": {
+    "access": "yes",
+    "leisure": "park",
+    "type": "multipolygon"
+  }
+}
+
+  ]
+}

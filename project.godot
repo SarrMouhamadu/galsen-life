@@ -1,0 +1,89 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[admob]
+
+general/android/app_id="ca-app-pub-5682888880996180~2257419590"
+general/ios/enabled=false
+
+[application]
+
+config/name="Galsen-Life"
+config/description="Vis ta vie à Dakar : taximan, livreur, vendeur de café Touba..."
+config/version="1.24"
+run/main_scene="res://scenes/menu.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.png"
+
+[audio]
+
+driver/enable_input=true
+
+[autoload]
+
+GameState="*res://scripts/autoload/game_state.gd"
+Audio="*res://scripts/autoload/audio.gd"
+Net="*res://scripts/net/net.gd"
+Graphics="*res://scripts/autoload/graphics.gd"
+Ads="*res://scripts/autoload/ads.gd"
+CrashReport="*res://scripts/autoload/crash_report.gd"
+
+[debug]
+
+file_logging/enable_file_logging=true
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg")
+
+[rendering]
+
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_s3tc_bptc=true
+textures/vram_compression/import_etc2_astc=true
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality.mobile=1
+anti_aliasing/quality/msaa_3d=1
+anti_aliasing/quality/screen_space_aa=1
+
+[shader_globals]
+
+city_wet={
+"type": "float",
+"value": 0.0
+}
+city_detail={
+"type": "float",
+"value": 1.0
+}
+city_night={
+"type": "float",
+"value": 0.0
+}
+city_lamps={
+"type": "sampler2D",
+"value": ""
+}
+city_lamp_night={
+"type": "float",
+"value": 0.0
+}
+city_lamp_count={
+"type": "float",
+"value": 0.0
+}

@@ -1,0 +1,43 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://crxgmstxxatp7"
+path="res://.godot/imported/loft_9d4e3da9ff384e00e2cf2f289d63a9a0-no-bg-preview (carve.jpg-5d45468bbc9afe7f55580d77c97cd8af.ctex"
+metadata={
+"vram_texture": false
+}
+generator_parameters={
+"md5": "acdb13f891cd91e4e8f46f467f8526c9"
+}
+
+[deps]
+
+source_file="res://world/loft/loft_9d4e3da9ff384e00e2cf2f289d63a9a0-no-bg-preview (carve.jpg"
+dest_files=["res://.godot/imported/loft_9d4e3da9ff384e00e2cf2f289d63a9a0-no-bg-preview (carve.jpg-5d45468bbc9afe7f55580d77c97cd8af.ctex"]
+
+[params]
+
+compress/mode=1
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/uastc_level=0
+compress/rdo_quality_loss=0.0
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/channel_remap/red=0
+process/channel_remap/green=1
+process/channel_remap/blue=2
+process/channel_remap/alpha=3
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1

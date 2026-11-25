@@ -1,0 +1,634 @@
+extends Node3D
+## Le vrai Dakar (Plateau + Médina) généré depuis OpenStreetMap par tools/bake_dakar.gd.
+## Charge la ville pré-assemblée et fournit le réseau routier au trafic, aux piétons et à la police.
+## Données © les contributeurs d'OpenStreetMap (ODbL).
+
+const Mk = preload("res://scripts/util/mk.gd")
+const SidewalkPlan = preload("res://scripts/world/sidewalk_plan.gd")
+const CITY_SCENE := "res://world/dakar/city.scn"
+const DATA := "res://world/dakar/data.json"
+const MINIMAP := "res://world/dakar/minimap.png"
+
+const ONEWAY := 1
+const DRIVE := 2
+const WALK := 4
+## Trottoirs surélevés (mêmes cotes que tools/bake_dakar.gd) : la collision du sol est plate, on leur ajoute
+## une collision invisible pour que le joueur marche dessus au lieu de s'y enfoncer
+const SIDEWALK_Y := 0.16
+const SIDEWALK_W := 1.8
+const SIDEWALK_LAYER := 32 ## seul le joueur à pied la touche (voitures et passants ne la voient pas)
+const SIDEWALKS := "res://world/dakar/sidewalks.res" ## tracé des trottoirs (tools/bake_dakar.gd)
+const SIDEWALK_RAMP := 0.3 ## bord en pente douce : on monte sur le trottoir sans buter
+
+var places := {} ## nom → Vector3 (trottoir devant le lieu)
+var place_info := {} ## nom → Array brut (cap, normale, centre)
+var street_stalls: Array = [] ## étals de vendeurs dans la rue : {type, pos, face (vers la rue)}
+var parking_spots: Array = []
+var spawn_point := Vector3.ZERO
+var bounds := Rect2()
+var map_res := 2.0
+var minimap_texture: Texture2D
+var signal_nodes := PackedInt32Array() ## carrefours à feux
+var services := {} ## lieu → type de service avec intérieur (banque, restaurant, station, hôpital, police, garage)
+var lights = null ## contrôleur des feux (traffic_lights.gd)
+const RULE_STOP := 1
+const RULE_YIELD := 2
+var rules := {} ## Vector2i(depuis, carrefour) → RULE_STOP / RULE_YIELD (panneau pour qui arrive par là)
+var zebras := {} ## Vector2i(branche, carrefour) → true : passage piéton sur cette branche
+var _drive_in: Array = [] ## nœud → nœuds d'où une voiture peut y arriver
+
+var node_pos := PackedVector3Array()
+var _drive_next: Array = [] ## nœud → PackedInt32Array (sens autorisés, véhicules)
+var _dead_end := {} ## Vector2i(a, b) : le tronçon a → b mène dans une impasse
+var _walk_next: Array = [] ## nœud → PackedInt32Array (tous sens, piétons)
+var _edge := {} ## Vector2i(a, b) → [largeur, drapeaux, nom]
+var _names: Array = []
+var _districts: Array = []
+var _drive_nodes := PackedInt32Array()
+var _walk_nodes := PackedInt32Array()
+var _astar := AStar3D.new()
+var _astar_drive := AStar3D.new() ## vraies routes seulement (bus, taxis)
+var _hash := {} ## cellule de 50 m → nœuds routiers
+var rng := RandomNumberGenerator.new()
+
+
+## Outil de mesure (tools/perf_probe.gd) : charge une autre version de la ville
+static var scene_override := ""
+
+
+func build() -> void:
+	var scene: PackedScene = load(scene_override if scene_override != "" else CITY_SCENE)
+	add_child(scene.instantiate())
+	minimap_texture = load(MINIMAP)
+	build_data_only()
+	_build_job_decor()
+	_build_sidewalk_collision()
+
+
+## Réseau routier, lieux et feux sans aucun graphisme (utilisé aussi par le serveur en ligne).
+func build_data_only() -> void:
+	rng.seed = 221
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(DATA))
+	var b: Array = data["bounds"]
+	bounds = Rect2(b[0], b[1], b[2] - b[0], b[3] - b[1])
+	map_res = data["map_res"]
+	_names = data["names"]
+	for d in data["districts"]:
+		_districts.append([d[0], Vector3(d[1], 0, d[2])])
+	_load_graph(data["nodes"], data["edges"])
+	# Ponts et rampes : hauteur des nœuds (les voitures et les piétons montent dessus)
+	var hts: Array = data.get("heights", [])
+	for k in range(0, hts.size(), 2):
+		var ni: int = hts[k]
+		node_pos[ni].y = hts[k + 1]
+		_astar.set_point_position(ni, node_pos[ni])
+		_astar_drive.set_point_position(ni, node_pos[ni])
+	services = data.get("services", {})
+	for k in data["places"]:
+		var p: Array = data["places"][k]
+		places[k] = Vector3(p[0], 0.3, p[1])
+		place_info[k] = p
+	for n in data.get("signals", []):
+		signal_nodes.append(int(n))
+	var rl: Array = data.get("rules", [])
+	for k in range(0, rl.size(), 3):
+		rules[Vector2i(int(rl[k]), int(rl[k + 1]))] = int(rl[k + 2])
+	var zb: Array = data.get("zebras", [])
+	for k in range(0, zb.size(), 2):
+		zebras[Vector2i(int(zb[k]), int(zb[k + 1]))] = true
+	for s in data.get("stalls", []):
+		street_stalls.append({"type": s[2], "pos": Vector3(s[0], float(s[5]) if s.size() > 5 else 0.0, s[1]), "face": Vector3(s[3], 0, s[4])})
+	for s in data["parking"]:
+		parking_spots.append({"type": s["type"], "pos": Vector3(s["pos"][0], 0.2, s["pos"][1]), "yaw": s["yaw"]})
+	spawn_point = places.get("Place de l'Indépendance", node_pos[0]) + Vector3(0, 0.5, 0)
+	for required in ["Hôpital Principal", "Commissariat", "Café Touba", "Chez Adja", "Dibiterie", "Restaurant Maïga", "Place de l'Indépendance"]:
+		if not places.has(required):
+			places[required] = node_pos[_drive_nodes[0]]
+			place_info[required] = [0, 0, 0.0, 1.0, 0.0]
+
+
+func _load_graph(nodes: Array, edges: Array) -> void:
+	var n := nodes.size() / 2
+	node_pos.resize(n)
+	_drive_next.resize(n)
+	_walk_next.resize(n)
+	_drive_in.resize(n)
+	for i in n:
+		node_pos[i] = Vector3(nodes[i * 2], 0.0, nodes[i * 2 + 1])
+		_drive_next[i] = PackedInt32Array()
+		_walk_next[i] = PackedInt32Array()
+		_drive_in[i] = PackedInt32Array()
+		_astar.add_point(i, node_pos[i])
+		_astar_drive.add_point(i, node_pos[i])
+	var is_drive := {}
+	var is_walk := {}
+	for k in range(0, edges.size(), 5):
+		var a: int = edges[k]
+		var b: int = edges[k + 1]
+		var w: float = edges[k + 2]
+		var flags: int = edges[k + 3]
+		var name_idx: int = edges[k + 4]
+		_edge[Vector2i(a, b)] = [w, flags, name_idx]
+		_edge[Vector2i(b, a)] = [w, flags, name_idx]
+		if (flags & WALK) != 0:
+			_walk_next[a].append(b)
+			_walk_next[b].append(a)
+			is_walk[a] = true
+			is_walk[b] = true
+		# La police emprunte toutes les rues ; le trafic ordinaire seulement les vraies routes.
+		var oneway := (flags & ONEWAY) != 0
+		_astar.connect_points(a, b, not oneway)
+		if (flags & DRIVE) != 0:
+			_astar_drive.connect_points(a, b, not oneway)
+			_drive_next[a].append(b)
+			_drive_in[b].append(a)
+			is_drive[a] = true
+			if not oneway:
+				_drive_next[b].append(a)
+				_drive_in[a].append(b)
+				is_drive[b] = true
+	for i in n:
+		if is_drive.has(i):
+			_drive_nodes.append(i)
+		if is_walk.has(i):
+			_walk_nodes.append(i)
+		var cell := _cell_of(node_pos[i])
+		if not _hash.has(cell):
+			_hash[cell] = PackedInt32Array()
+		_hash[cell].append(i)
+	_mark_dead_ends()
+
+
+## Tronçons qui mènent dans une impasse (on y entre en a → b) : les voitures du trafic les évitent,
+## sinon elles doivent y faire demi-tour (impossible pour un car dans une ruelle)
+func _mark_dead_ends() -> void:
+	var nbs := func(i: int) -> Array:
+		var out := {}
+		for o in _drive_next[i]:
+			out[o] = true
+		for o in _drive_in[i]:
+			out[o] = true
+		return out.keys()
+	for i in _drive_nodes:
+		var nb: Array = nbs.call(i)
+		if nb.size() != 1:
+			continue
+		var cur: int = i
+		var prev: int = nb[0]
+		for step in 60:
+			_dead_end[Vector2i(prev, cur)] = true
+			var pn: Array = nbs.call(prev)
+			if pn.size() != 2:
+				break
+			var nxt: int = pn[0] if pn[1] == cur else pn[1]
+			cur = prev
+			prev = nxt
+
+
+# --- Chaussée : un objet (panneau, abribus, feu, lampadaire) ne doit jamais s'y trouver ---
+
+const ROAD_CELL := 25.0
+var _road_grid := {} ## cellule de 25 m → PackedInt32Array de paires de nœuds (a, b) des tronçons carrossables
+
+
+func _build_road_grid() -> void:
+	_road_grid.clear()
+	for key in _edge:
+		if key.x > key.y:
+			continue
+		var info: Array = _edge[key]
+		if (int(info[1]) & DRIVE) == 0:
+			continue
+		var pa := node_pos[key.x]
+		var pb := node_pos[key.y]
+		var r: float = float(info[0]) / 2.0 + 1.0
+		var x0 := floori((minf(pa.x, pb.x) - r) / ROAD_CELL)
+		var x1 := floori((maxf(pa.x, pb.x) + r) / ROAD_CELL)
+		var z0 := floori((minf(pa.z, pb.z) - r) / ROAD_CELL)
+		var z1 := floori((maxf(pa.z, pb.z) + r) / ROAD_CELL)
+		for gx in range(x0, x1 + 1):
+			for gz in range(z0, z1 + 1):
+				var cell := Vector2i(gx, gz)
+				if not _road_grid.has(cell):
+					_road_grid[cell] = PackedInt32Array()
+				_road_grid[cell].append(key.x)
+				_road_grid[cell].append(key.y)
+
+
+## Vrai si p est sur une chaussée (à moins de `margin` mètres du bord), carrefours compris.
+func in_roadway(p: Vector3, margin := 0.3) -> bool:
+	if _road_grid.is_empty():
+		_build_road_grid()
+	var cell := Vector2i(floori(p.x / ROAD_CELL), floori(p.z / ROAD_CELL))
+	var list: PackedInt32Array = _road_grid.get(cell, PackedInt32Array())
+	var q := Vector2(p.x, p.z)
+	for k in range(0, list.size(), 2):
+		var a := node_pos[list[k]]
+		var b := node_pos[list[k + 1]]
+		var half: float = edge_width(list[k], list[k + 1]) / 2.0 + margin
+		var pt := Geometry2D.get_closest_point_to_segment(q, Vector2(a.x, a.z), Vector2(b.x, b.z))
+		if pt.distance_to(q) < half:
+			return true
+	# Carrefours : disque de la largeur de la plus grande rue
+	for k in range(0, list.size(), 2):
+		for ni: int in [list[k], list[k + 1]]:
+			var np: Vector3 = node_pos[ni]
+			if Vector2(np.x, np.z).distance_to(q) < _node_radius(ni) + margin:
+				return true
+	return false
+
+
+func _node_radius(n: int) -> float:
+	var r := 0.0
+	for o in _drive_next[n]:
+		r = maxf(r, edge_width(n, o) / 2.0)
+	for o in _walk_next[n]:
+		if _edge.has(Vector2i(n, o)) and (int(_edge[Vector2i(n, o)][1]) & DRIVE) != 0:
+			r = maxf(r, edge_width(n, o) / 2.0)
+	return r
+
+
+## Le point le plus proche de p, le long de la direction `along`, qui n'est pas sur la chaussée
+## (essais tous les mètres jusqu'à max_shift). Vector3.INF si aucun.
+func clear_of_road(p: Vector3, along: Vector3, max_shift := 15.0, margin := 0.3) -> Vector3:
+	if not in_roadway(p, margin):
+		return p
+	along.y = 0.0
+	along = along.normalized() if along.length() > 0.01 else Vector3.RIGHT
+	var s := 1.0
+	while s <= max_shift:
+		for sg: float in [1.0, -1.0]:
+			var c: Vector3 = p + along * s * sg
+			if not in_roadway(c, margin):
+				return c
+		s += 1.0
+	return Vector3.INF
+
+
+## Recule un objet posé au bord de la rue (emprise de rayon r) pour qu'il ne morde plus sur la chaussée :
+## d'abord vers les façades (n), puis le long du trottoir. Rend p tel quel s'il est déjà dégagé.
+func off_road(p: Vector3, n: Vector3, r: float) -> Vector3:
+	if not in_roadway(p, r):
+		return p
+	n.y = 0.0
+	if n.length() > 0.01:
+		n = n.normalized()
+		var s := 0.5
+		while s <= 5.0:
+			if not in_roadway(p + n * s, r):
+				return p + n * s
+			s += 0.5
+	var along := Vector3(-n.z, 0, n.x) if n.length() > 0.01 else Vector3.RIGHT
+	var c := clear_of_road(p, along, 12.0, r)
+	return p if c == Vector3.INF else c
+
+
+func _cell_of(p: Vector3) -> Vector2i:
+	return Vector2i(floori(p.x / 50.0), floori(p.z / 50.0))
+
+
+# --- Requêtes sur le réseau ------------------------------------------------------
+
+func edge_width(a: int, b: int) -> float:
+	var e = _edge.get(Vector2i(a, b))
+	return e[0] if e != null else 6.0
+
+
+func is_oneway(a: int, b: int) -> bool:
+	var e = _edge.get(Vector2i(a, b))
+	return e != null and (e[1] & ONEWAY) != 0
+
+
+func street_name(a: int, b: int) -> String:
+	var e = _edge.get(Vector2i(a, b))
+	if e == null or e[2] < 0:
+		return ""
+	return _names[e[2]]
+
+
+func nearest_node(p: Vector3, mode := "drive") -> int:
+	var c := _cell_of(p)
+	var best := -1
+	var bd := INF
+	for r in 3:
+		for dx in range(-r, r + 1):
+			for dz in range(-r, r + 1):
+				if maxi(absi(dx), absi(dz)) != r:
+					continue
+				var key := c + Vector2i(dx, dz)
+				if not _hash.has(key):
+					continue
+				for i in _hash[key]:
+					if mode == "drive" and _drive_next[i].is_empty():
+						continue
+					if mode == "walk" and _walk_next[i].is_empty():
+						continue
+					var d := node_pos[i].distance_squared_to(p)
+					if d < bd:
+						bd = d
+						best = i
+		if best != -1:
+			return best
+	return _drive_nodes[0] if mode == "drive" else _walk_nodes[0]
+
+
+## Un nœud au hasard entre min_d et max_d mètres de p.
+func random_node_around(p: Vector3, min_d: float, max_d: float, mode := "drive") -> int:
+	var pool := _drive_nodes if mode == "drive" else _walk_nodes
+	for attempt in 80:
+		var ang := rng.randf() * TAU
+		var dist := rng.randf_range(min_d, max_d)
+		var guess := p + Vector3(cos(ang), 0, sin(ang)) * dist
+		if not bounds.has_point(Vector2(guess.x, guess.z)):
+			continue
+		var i := nearest_node(guess, mode)
+		var d := _flat(node_pos[i], p)
+		if d >= min_d and d <= max_d:
+			return i
+	return pool[rng.randi() % pool.size()]
+
+
+## Tronçon suivant au hasard (sans demi-tour sauf impasse). min_width évite les rues trop étroites.
+func next_node(from: int, to: int, mode: String, min_width := 0.0) -> int:
+	var options: PackedInt32Array = _drive_next[to] if mode == "drive" else _walk_next[to]
+	if options.is_empty():
+		return from
+	var good := PackedInt32Array()
+	var wide := PackedInt32Array()
+	var open := PackedInt32Array() ## véhicules : pas dans une impasse
+	for o in options:
+		if o == from:
+			continue
+		good.append(o)
+		if mode == "drive" and not _dead_end.has(Vector2i(to, o)):
+			open.append(o)
+		if edge_width(to, o) >= min_width:
+			wide.append(o)
+	if mode == "drive" and not open.is_empty():
+		var open_wide := PackedInt32Array()
+		for o in open:
+			if edge_width(to, o) >= min_width:
+				open_wide.append(o)
+		var pick := open_wide if not open_wide.is_empty() else open
+		return pick[rng.randi() % pick.size()]
+	if not wide.is_empty():
+		return wide[rng.randi() % wide.size()]
+	if not good.is_empty():
+		return good[rng.randi() % good.size()]
+	return options[0]
+
+func is_dead_end(a: int, b: int) -> bool:
+	return _dead_end.has(Vector2i(a, b))
+
+
+func drive_neighbors(i: int) -> PackedInt32Array:
+	return _drive_next[i]
+
+
+func walk_neighbors(i: int) -> PackedInt32Array:
+	return _walk_next[i]
+
+
+## Nœuds d'où une voiture peut arriver au nœud i
+func drive_incoming(i: int) -> PackedInt32Array:
+	return _drive_in[i]
+
+
+## Panneau pour qui arrive au carrefour `to` en venant de `from` : 0 (prioritaire), RULE_STOP, RULE_YIELD
+func rule(from: int, to: int) -> int:
+	return rules.get(Vector2i(from, to), 0)
+
+
+## Distance entre le centre du carrefour et la ligne d'arrêt (derrière le passage piéton s'il y en a un)
+func stop_distance(from: int, to: int) -> float:
+	return _node_radius(to) + (3.9 if zebras.has(Vector2i(from, to)) else 0.5)
+
+
+## Rayon du carrefour (demi-largeur de la plus grande rue qui y arrive)
+func junction_radius(n: int) -> float:
+	return _node_radius(n)
+
+
+## Point visé par un véhicule sur le tronçon a → b : voie de droite si la rue est à double sens.
+func lane_point(a: int, b: int) -> Vector3:
+	var pa := node_pos[a]
+	var pb := node_pos[b]
+	if is_oneway(a, b):
+		return pb
+	var d := (pb - pa)
+	d.y = 0.0
+	if d.length() < 0.01:
+		return pb
+	d = d.normalized()
+	return pb + Vector3(-d.z, 0, d.x) * (edge_width(a, b) * 0.25)
+
+
+## Point sur le trottoir (côté `side` = 1 droite, -1 gauche) à la distance t du nœud a.
+func sidewalk_point(a: int, b: int, t: float, side: int) -> Vector3:
+	var pa := node_pos[a]
+	var pb := node_pos[b]
+	var d := pb - pa
+	var L := maxf(d.length(), 0.01)
+	d /= L
+	# Sur un pont il n'y a pas de trottoir : on marche sur le bord du tablier
+	var raised := pa.y > 0.5 or pb.y > 0.5
+	var off := edge_width(a, b) * 0.5 + (-0.4 if raised else 0.9)
+	return pa + d * clampf(t, 0.0, L) + Vector3(-d.z, 0, d.x) * side * off + Vector3(0, 0.07 if raised else 0.16, 0)
+
+
+func segment_length(a: int, b: int) -> float:
+	return node_pos[a].distance_to(node_pos[b])
+
+
+## Itinéraire (positions) entre deux points, en suivant les rues.
+## drive_only : uniquement les vraies routes (pas les ruelles de service ni les rues piétonnes).
+func route(from: Vector3, to: Vector3, drive_only := false) -> PackedVector3Array:
+	if drive_only:
+		return _astar_drive.get_point_path(nearest_node(from, "drive"), nearest_node(to, "drive"))
+	return _astar.get_point_path(nearest_node(from, "any"), nearest_node(to, "any"))
+
+
+func district_at(p: Vector3) -> String:
+	var best := "Dakar"
+	var bd := INF
+	for d in _districts:
+		var dd := _flat(p, d[1])
+		if dd < bd:
+			bd = dd
+			best = d[0]
+	if p.x < bounds.position.x or p.z < bounds.position.y or p.x > bounds.end.x or p.z > bounds.end.y:
+		return "Dakar"
+	return best
+
+
+## Une vraie adresse (rue nommée ou lieu connu) entre min_d et max_d mètres.
+func random_address(near: Vector3, min_d: float, max_d: float) -> Dictionary:
+	for attempt in 60:
+		if rng.randf() < 0.3:
+			var keys := places.keys()
+			var k: String = keys[rng.randi() % keys.size()]
+			var pp: Vector3 = places[k]
+			var dd := _flat(pp, near)
+			if dd >= min_d and dd <= max_d:
+				return {"name": k, "pos": pp}
+			continue
+		var a := random_node_around(near, min_d, max_d, "drive")
+		var nb: PackedInt32Array = _drive_next[a]
+		if nb.is_empty():
+			continue
+		var b: int = nb[0]
+		var street := street_name(a, b)
+		if street == "":
+			continue
+		var pos := sidewalk_point(a, b, segment_length(a, b) * 0.5, 1)
+		return {"name": "%s, %s" % [street, district_at(pos)], "pos": pos}
+	return {"name": "Place de l'Indépendance", "pos": places["Place de l'Indépendance"]}
+
+
+func _flat(a: Vector3, b: Vector3) -> float:
+	return Vector2(a.x - b.x, a.z - b.z).length()
+
+
+## Collision des trottoirs : dessus à SIDEWALK_Y, bords en pente vers la chaussée et aux carrefours
+func _build_sidewalk_collision() -> void:
+	# Tracé enregistré par le baker (le même que les trottoirs qu'on voit) ; sinon recalculé ici
+	var pl: Dictionary = SidewalkPlan.load_saved(SIDEWALKS)
+	if pl.is_empty():
+		pl = _plan_sidewalks()
+	var faces := PackedVector3Array()
+	_add_sidewalk_faces(pl, faces)
+	if faces.is_empty():
+		return
+	var shape := ConcavePolygonShape3D.new()
+	shape.backface_collision = true
+	shape.set_faces(faces)
+	var body := StaticBody3D.new()
+	body.name = "TrottoirsCollision"
+	body.collision_layer = SIDEWALK_LAYER
+	body.collision_mask = 0
+	var cs := CollisionShape3D.new()
+	cs.shape = shape
+	body.add_child(cs)
+	add_child(body)
+
+
+func _plan_sidewalks() -> Dictionary:
+	var segs: Array = []
+	for key in _edge:
+		if key.x > key.y:
+			continue
+		var info: Array = _edge[key]
+		var f := int(info[1])
+		segs.append([key.x, key.y, float(info[0]), (f & DRIVE) != 0 and (f & WALK) != 0, (f & DRIVE) != 0,
+			node_pos[key.x].y <= 0.01 and node_pos[key.y].y <= 0.01])
+	var nodes := PackedVector2Array()
+	nodes.resize(node_pos.size())
+	for k in node_pos.size():
+		nodes[k] = Vector2(node_pos[k].x, node_pos[k].z)
+	return SidewalkPlan.plan(nodes, segs)
+
+
+func _add_sidewalk_faces(pl: Dictionary, faces: PackedVector3Array) -> void:
+	for r in pl["runs"]:
+		var sa: Vector2 = r["a"]
+		var sb: Vector2 = r["b"]
+		var d: Vector2 = r["d"]
+		var n: Vector2 = r["n"]
+		var w: float = r["w"]
+		var side: int = r["side"]
+		var inner: Vector2 = n * side * (w / 2.0) # bord côté chaussée
+		var outer: Vector2 = n * side * (w / 2.0 + SIDEWALK_W)
+		var rr: Vector2 = n * side * -SIDEWALK_RAMP
+		var e := d * SIDEWALK_RAMP
+		var p0 := _v3(sa + inner, SIDEWALK_Y)
+		var p1 := _v3(sb + inner, SIDEWALK_Y)
+		var p2 := _v3(sb + outer, SIDEWALK_Y)
+		var p3 := _v3(sa + outer, SIDEWALK_Y)
+		_quad(faces, p0, p1, p2, p3)
+		# Pente côté chaussée et aux deux bouts
+		_quad(faces, _v3(sa + inner + rr, 0.0), _v3(sb + inner + rr, 0.0), p1, p0)
+		_quad(faces, _v3(sa + inner - e, 0.0), p0, p3, _v3(sa + outer - e, 0.0))
+		_quad(faces, p1, _v3(sb + inner + e, 0.0), _v3(sb + outer + e, 0.0), p2)
+	# Coins des carrefours : dessus et pente côté chaussée
+	for c in pl["corners"]:
+		var poly: PackedVector2Array = c["poly"]
+		var idx := Geometry2D.triangulate_polygon(poly)
+		for k in range(0, idx.size(), 3):
+			faces.append_array([_v3(poly[idx[k]], SIDEWALK_Y), _v3(poly[idx[k + 1]], SIDEWALK_Y), _v3(poly[idx[k + 2]], SIDEWALK_Y)])
+		var cen := (poly[0] + poly[1] + poly[2] + poly[3] + poly[4] + poly[5]) / 6.0
+		for k in 2:
+			var q0: Vector2 = poly[k]
+			var q1: Vector2 = poly[k + 1]
+			var out0: Vector2 = (q0 - cen).normalized() * SIDEWALK_RAMP
+			var out1: Vector2 = (q1 - cen).normalized() * SIDEWALK_RAMP
+			_quad(faces, _v3(q0 + out0, 0.0), _v3(q1 + out1, 0.0), _v3(q1, SIDEWALK_Y), _v3(q0, SIDEWALK_Y))
+
+
+static func _v3(p: Vector2, y: float) -> Vector3:
+	return Vector3(p.x, y, p.y)
+
+
+static func _quad(faces: PackedVector3Array, a: Vector3, b: Vector3, c: Vector3, d: Vector3) -> void:
+	faces.append_array([a, b, c, a, c, d])
+
+
+# --- Petits décors des métiers ---------------------------------------------------
+
+func _build_job_decor() -> void:
+	_stall("Café Touba", Color("6f4518"))
+	_stall("Chez Adja", Color("e76f51"))
+	_stall("Dibiterie", Color("9d0208"))
+	_stall_maiga()
+
+
+func _stall_maiga() -> void:
+	if not place_info.has("Restaurant Maïga"):
+		return
+	var info: Array = place_info["Restaurant Maïga"]
+	var n := Vector3(info[3], 0, info[4])
+	var pos: Vector3 = off_road(places["Restaurant Maïga"] + n * 2.2, n, 1.5)
+	var holder := Node3D.new()
+	holder.name = "StallMaiga"
+	add_child(holder)
+	holder.position = Vector3(pos.x, 0.07, pos.z)
+	holder.rotation.y = info[2]
+	# Comptoir Maïga : structure bois & carrelage
+	Mk.box(holder, Vector3(3.2, 0.9, 1.4), Vector3(0, 0.45, 0), Color("c87d55"), true)
+	Mk.box(holder, Vector3(3.3, 0.06, 1.45), Vector3(0, 0.93, 0), Color("f8f9fa"), true)
+	# Plancha chaude & bacs spaghetti / brochettes
+	Mk.box(holder, Vector3(1.1, 0.15, 0.6), Vector3(-0.8, 1.03, 0.1), Color("2b2b2b"), true)
+	Mk.box(holder, Vector3(0.5, 0.12, 0.4), Vector3(0.2, 1.01, 0.2), Color("e9c46a"))
+	Mk.box(holder, Vector3(0.5, 0.12, 0.4), Vector3(0.8, 1.01, 0.2), Color("8b0000"))
+	# Poteaux et auvent jaune & orange
+	for sx in [-1, 1]:
+		for sz in [-1, 1]:
+			Mk.cyl(holder, 0.05, 0.05, 2.5, Vector3(sx * 1.6, 1.25, sz * 0.8), Color("333333"), false, 4)
+	Mk.box(holder, Vector3(3.6, 0.08, 2.1), Vector3(0, 2.5, 0), Color("e67e22"))
+	var sign_front := Mk.label(holder, "RESTAURANT MAÏGA — FAST FOOD", Vector3(0, 2.2, 1.08), 38, Color("fefae0"), false)
+	sign_front.outline_size = 8
+	sign_front.outline_modulate = Color("111111")
+	# Tables et chaises pour les clients
+	var Furn = load("res://scripts/util/furniture.gd")
+	Furn.place(holder, "painted_wooden_table", Vector3(2.4, 0, 1.8), 0.0, true, 0.6)
+	for x in [1.7, 3.1]:
+		Furn.place(holder, "plastic_monobloc_chair_01", Vector3(x, 0, 2.6), PI)
+	# Cuisinier Maïga derrière le comptoir
+	var cook = load("res://scripts/util/real_character.gd").create(holder, "homme_tunique", 0)
+	cook.position = Vector3(0, 0.0, -0.3)
+	cook.rotation.y = 0.0
+	cook.play_clip("idle", 0.0)
+
+
+func _stall(place: String, color: Color) -> void:
+	var info: Array = place_info[place]
+	var n := Vector3(info[3], 0, info[4])
+	var pos: Vector3 = off_road(places[place] + n * 2.2, n, 1.5)
+	var holder := Node3D.new()
+	add_child(holder)
+	holder.position = Vector3(pos.x, 0.07, pos.z)
+	holder.rotation.y = info[2]
+	Mk.box(holder, Vector3(3, 0.9, 1.4), Vector3(0, 0.45, 0), Color("8d6748"), true)
+	for sx in [-1, 1]:
+		for sz in [-1, 1]:
+			Mk.cyl(holder, 0.05, 0.05, 2.4, Vector3(sx * 1.5, 1.2, sz * 0.8), Color("444444"), false, 4)
+	Mk.box(holder, Vector3(3.4, 0.08, 2.0), Vector3(0, 2.4, 0), color)
