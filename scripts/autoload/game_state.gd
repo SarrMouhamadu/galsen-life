@@ -68,7 +68,7 @@ func _ready() -> void:
 	# Quitter proprement : en ligne, la sauvegarde doit avoir le temps de partir vers le serveur
 	get_tree().auto_accept_quit = false
 	var t := Timer.new()
-	t.wait_time = 30.0
+	t.wait_time = 15.0
 	t.autostart = true
 	t.timeout.connect(save_game)
 	add_child(t)
@@ -161,13 +161,30 @@ func advance_time(minutes: float) -> void:
 	for k in maxi(0, mornings):
 		day += 1
 		new_day.emit()
+		request_autosave()
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		quit_game()
-	elif what == NOTIFICATION_APPLICATION_PAUSED:
-		save_game()
+	match what:
+		NOTIFICATION_WM_CLOSE_REQUEST:
+			quit_game()
+		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_GO_BACK_REQUEST:
+			save_game()
+
+
+var _autosave_pending := false
+
+
+func request_autosave() -> void:
+	if _autosave_pending:
+		return
+	_autosave_pending = true
+	call_deferred("_do_autosave")
+
+
+func _do_autosave() -> void:
+	_autosave_pending = false
+	save_game()
 
 
 ## Sauvegarde puis quitte (en ligne : laisse le temps à la sauvegarde d'arriver au serveur).
@@ -195,12 +212,14 @@ func add_money(amount: int, reason: String) -> void:
 	money += amount
 	notify.emit("+%s — %s" % [fcfa(amount), reason])
 	Audio.play_sfx("coin", -10.0)
+	request_autosave()
 
 
 func spend(amount: int) -> bool:
 	if money < amount:
 		return false
 	money -= amount
+	request_autosave()
 	return true
 
 
@@ -208,6 +227,7 @@ func fine(amount: int, reason: String) -> void:
 	var paid := mini(amount, money)
 	money -= paid
 	notify.emit("-%s — %s" % [fcfa(paid), reason])
+	request_autosave()
 
 
 func damage(amount: float, reason: String) -> void:
@@ -236,10 +256,12 @@ func bank_note(text: String) -> void:
 	bank_log.append("Jour %d — %s" % [day, text])
 	if bank_log.size() > 30:
 		bank_log.pop_front()
+	request_autosave()
 
 
 func add_item(item: String, count := 1) -> void:
 	inventory[item] = int(inventory.get(item, 0)) + count
+	request_autosave()
 
 
 func inventory_text() -> String:
@@ -257,6 +279,7 @@ func revive() -> void:
 	thirst = maxf(thirst, 70.0)
 	energy = maxf(energy, 50.0)
 	_is_fainted = false
+	request_autosave()
 
 
 # --- Contrôles --------------------------------------------------------------
@@ -374,12 +397,13 @@ func save_game() -> void:
 	}
 	if Net.is_server:
 		return
-	if Net.online:
-		Net.send_save(data)
-		return
+	# Sauvegarde automatique sur le stockage local du téléphone
 	var f := FileAccess.open(save_path, FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(data))
+	# Synchronisation automatique avec le serveur si connecté en ligne
+	if Net.online:
+		Net.send_save(data)
 
 
 func load_game() -> void:

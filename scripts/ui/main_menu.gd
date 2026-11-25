@@ -52,8 +52,8 @@ func _ready() -> void:
 			auto[a.get_slice("=", 0).trim_prefix("--")] = a.get_slice("=", 1)
 	if auto.has("online"):
 		_host.text = auto["online"]
-		_pseudo.text = auto.get("pseudo", "")
-		_password.text = auto.get("password", "")
+		_pseudo.text = auto.get("pseudo", _pseudo.text)
+		_password.text = auto.get("password", _password.text)
 		_create.button_pressed = "--create" in args
 		var idx := Net.AVATARS.find(auto.get("avatar", "heros"))
 		_avatar.select(maxi(0, idx))
@@ -163,8 +163,10 @@ func _build() -> void:
 	_channel.visible = false
 	v.add_child(_channel)
 
-	_pseudo = _field(v, "Pseudo (3 à 16 caractères)", cfg.get_value("net", "pseudo", ""))
-	_password = _field(v, "Mot de passe", "")
+	var saved_p: String = str(cfg.get_value("net", "pseudo", ""))
+	var saved_pw: String = str(cfg.get_value("net", "password", ""))
+	_pseudo = _field(v, "Pseudo (3 à 16 caractères)", saved_p)
+	_password = _field(v, "Mot de passe", saved_pw)
 	_password.secret = true
 
 	# Enchaînement rapide et naturel au clavier virtuel
@@ -296,6 +298,8 @@ func _build() -> void:
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.add_theme_color_override("font_color", Color("ffd166"))
 	_status.add_theme_font_size_override("font_size", 14)
+	if saved_p != "" and saved_pw != "":
+		_status.text = "Identifiants mémorisés pour %s. Touche « Se connecter » !" % saved_p
 	v.add_child(_status)
 
 	var note := Label.new()
@@ -393,6 +397,7 @@ func _on_connect() -> void:
 	if not from_test:
 		cfg.set_value("net", "host", _host.text.strip_edges())
 		cfg.set_value("net", "pseudo", _pseudo.text.strip_edges())
+		cfg.set_value("net", "password", _password.text)
 		cfg.set_value("net", "avatar", Net.AVATARS[_avatar.selected])
 		cfg.set_value("net", "channel_idx", ch_idx)
 		cfg.save(SETTINGS)
@@ -406,4 +411,9 @@ func _on_login(ok: bool, message: String) -> void:
 	_status.text = message
 	_connect_btn.disabled = false
 	if ok:
+		var cfg := ConfigFile.new()
+		cfg.load(SETTINGS)
+		cfg.set_value("net", "pseudo", _pseudo.text.strip_edges())
+		cfg.set_value("net", "password", _password.text)
+		cfg.save(SETTINGS)
 		get_tree().change_scene_to_file(MAIN)
