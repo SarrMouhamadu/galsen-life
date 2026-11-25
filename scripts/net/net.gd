@@ -1339,7 +1339,13 @@ func notify_ride(driver: int) -> void:
 ## Envoi : par défaut aux joueurs proches ; « /t texte » à tout Dakar ; « /g texte » à son groupe
 func send_chat(text: String) -> void:
 	text = text.strip_edges()
-	if not online or text == "":
+	if text == "":
+		return
+	if not online:
+		var p_name: String = pseudo if pseudo != "" else "Moi"
+		chat_received.emit("[Proche] " + p_name, text)
+		bubble.emit(1, text)
+		_npc_chat_reply(text)
 		return
 	var channel := "local"
 	if text.begins_with("/t ") or text.begins_with("/a "):
@@ -1352,6 +1358,39 @@ func send_chat(text: String) -> void:
 		channel = "faction"
 		text = text.substr(3)
 	rpc_chat.rpc_id(1, text, channel)
+
+
+func _npc_chat_reply(text: String) -> void:
+	var lower := text.to_lower()
+	var reply := ""
+	if "salam" in lower or "bonjour" in lower or "salut" in lower:
+		reply = "Malekum salam ! Nanga def ?"
+	elif "stade" in lower or "foot" in lower or "match" in lower:
+		reply = "Le grand match se joue au Stade Iba Mar Diop en Médina !"
+	elif "lutte" in lower or "arene" in lower or "arène" in lower:
+		reply = "L'Arène nationale est à Pikine, de grands combats s'y préparent !"
+	elif "taxi" in lower:
+		reply = "Hèle un taxi jaune et noir sur la route, ils s'arrêtent partout !"
+	elif "brt" in lower or "bus" in lower:
+		reply = "Le SunuBRT électrique dessert la Ligne 1 jusqu'à Guédiawaye !"
+	elif "ter" in lower or "train" in lower:
+		reply = "Le TER part de la Gare de Dakar vers Diamniadio toutes les 15 minutes !"
+	elif "merci" in lower or "sant" in lower:
+		reply = "Diereudieuf ! Bonne journée à Dakar."
+	elif "comment" in lower or "ou" in lower or "où" in lower:
+		reply = "Regarde sur la carte ou ton téléphone pour trouver ton chemin !"
+	else:
+		var generic_replies := [
+			"Alhamdoulillah, la vie est belle à Dakar !",
+			"Waaw kay, bienvenue dans le quartier !",
+			"Sant Yalla, tout va bien ici !",
+			"Prends soin de toi l'ami !",
+		]
+		reply = generic_replies[randi() % generic_replies.size()]
+
+	get_tree().create_timer(randf_range(1.2, 2.0)).timeout.connect(func():
+		chat_received.emit("[Proche] Passant dakarois", reply)
+	)
 
 
 func send_save(save: Dictionary) -> void:

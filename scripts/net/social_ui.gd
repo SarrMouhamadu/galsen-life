@@ -57,19 +57,19 @@ func _ready() -> void:
 # --- Bulles de discussion ------------------------------------------------------------
 
 func _on_bubble(sender: int, text: String) -> void:
-	if sender == multiplayer.get_unique_id():
+	if not Net.online or (multiplayer.has_multiplayer_peer() and sender == multiplayer.get_unique_id()):
 		if _bubble_self != null and is_instance_valid(_bubble_self):
 			_bubble_self.queue_free()
 		_bubble_self = _make_bubble(main.player, text, 2.5)
-	else:
+	elif main and main.remote_players:
 		main.remote_players.show_bubble(sender, text)
 
 
 static func _make_bubble(parent: Node3D, text: String, height: float) -> Label3D:
-	var l := Mk.label(parent, text.left(80), Vector3(0, height, 0), Mk.NAME_SIZE + 6, Color.WHITE)
+	var l := Mk.label(parent, "💬 " + text.left(80), Vector3(0, height, 0), Mk.NAME_SIZE + 6, Color.WHITE)
 	l.no_depth_test = true
-	l.outline_size = 14
-	l.outline_modulate = Color(0.05, 0.05, 0.1, 0.9)
+	l.outline_size = 12
+	l.outline_modulate = Color(0.04, 0.08, 0.12, 0.95)
 	l.width = 600.0
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var tw := l.create_tween()

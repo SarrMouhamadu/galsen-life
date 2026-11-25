@@ -35,8 +35,8 @@ func get_hint() -> String:
 	if GameState.rp_job == "police":
 		return "Contrôle de police : " + o["pseudo"]
 	if o["vehicle"] != null:
-		return ("Prendre le taxi de " if o["job"] == "taxi" else "Monter / payer : ") + o["pseudo"]
-	return ("Acheter à " if o["job"] == "vendeur" else "Donner de l'argent à ") + o["pseudo"]
+		return ("Prendre le taxi de " if o["job"] == "taxi" else "Monter / Discuter avec ") + o["pseudo"]
+	return ("Acheter à " if o["job"] == "vendeur" else "💬 Discuter / Interagir avec ") + o["pseudo"]
 
 
 func try_interact() -> bool:
@@ -46,6 +46,7 @@ func try_interact() -> bool:
 	var id: int = o["id"]
 	var who: String = o["pseudo"]
 	var choices: Array = []
+	choices.append(["💬 Discuter avec %s" % who, func(): main.hud.open_chat_direct(who)])
 	var jobs = main.net_jobs
 	if jobs.can_heal(id):
 		Net.factions.heal(id)

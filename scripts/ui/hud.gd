@@ -36,8 +36,12 @@ var _choices: Control
 var map_screen
 var _online: Label
 var _chat_log: VBoxContainer
+var _chat_log_panel: PanelContainer
+var _chat_panel: PanelContainer
 var _chat_input: LineEdit
 var _chat_btn: Button
+var _chat_channel := "local"
+var _channel_btns := {}
 var _services_btn: Button
 var _phone_btn: Button
 var _mic_btn: Button
@@ -178,12 +182,12 @@ func _ready() -> void:
 	map_btn.focus_mode = Control.FOCUS_NONE
 	map_btn.pressed.connect(open_map)
 	_chat_btn = Button.new()
-	_chat_btn.text = " CHAT "
+	_chat_btn.text = " 💬 CHAT "
 	_chat_btn.custom_minimum_size = Vector2(0, 38)
 	_chat_btn.add_theme_font_size_override("font_size", 14)
 	_chat_btn.focus_mode = Control.FOCUS_NONE
 	_chat_btn.pressed.connect(open_chat)
-	_chat_btn.visible = Net.online
+	_chat_btn.visible = true
 	top_row.add_child(_chat_btn)
 	_services_btn = Button.new()
 	_services_btn.text = " MÉTIERS "
@@ -293,21 +297,8 @@ func _ready() -> void:
 	_notes.add_theme_constant_override("separation", 6)
 	root.add_child(_notes)
 
-	# Chat (mode en ligne)
-	_chat_log = VBoxContainer.new()
-	_chat_log.position = Vector2(16, 350)
-	_chat_log.add_theme_constant_override("separation", 2)
-	_chat_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(_chat_log)
-	_chat_input = LineEdit.new()
-	_chat_input.placeholder_text = "Message aux joueurs proches — /t à tout Dakar, /g à ton groupe, /f radio de ta faction (Entrée : envoyer)"
-	_chat_input.position = Vector2(16, 640)
-	_chat_input.custom_minimum_size = Vector2(520, 44)
-	_chat_input.max_length = 160
-	_chat_input.visible = false
-	_chat_input.text_submitted.connect(_send_chat)
-	root.add_child(_chat_input)
-	Net.chat_received.connect(_on_chat)
+	# Discussion et Chat (en ligne & solo)
+	_build_chat(root)
 
 	_build_pause(root)
 	map_screen = MapScreen.new()
@@ -627,12 +618,12 @@ func _input(event: InputEvent) -> void:
 			phone._unfocus()
 			get_viewport().set_input_as_handled()
 		return
-	if _chat_input.visible:
+	if _chat_panel and _chat_panel.visible:
 		if _is_escape(event):
 			close_chat()
 			get_viewport().set_input_as_handled()
 		elif event is InputEventScreenTouch and event.pressed:
-			var cr := _chat_input.get_global_rect()
+			var cr := _chat_panel.get_global_rect()
 			if not cr.has_point(event.position):
 				close_chat()
 				get_viewport().set_input_as_handled()
@@ -654,7 +645,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("phone") and not get_tree().paused and not choices_open():
 		phone.open()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("chat") and Net.online and not get_tree().paused:
+	elif event.is_action_pressed("chat") and not get_tree().paused:
 		open_chat()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("map") and not get_tree().paused:
@@ -669,7 +660,7 @@ func _input(event: InputEvent) -> void:
 		_touch.release_all()
 
 
-# --- Chat --------------------------------------------------------------------------------
+# --- Système de Discussion et Chat (Mobile & Desktop) ---------------------
 
 func _is_escape(event: InputEvent) -> bool:
 	return event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE
@@ -679,38 +670,244 @@ func release_touch() -> void:
 	_touch.release_all()
 
 
+func _build_chat(p_root: Control) -> void:
+	# 1. Fenêtre d'affichage des messages reçus avec fond sombre semi-transparent
+	_chat_log_panel = PanelContainer.new()
+	_chat_log_panel.position = Vector2(16, 320)
+	var log_sb := StyleBoxFlat.new()
+	log_sb.bg_color = Color(0.04, 0.07, 0.11, 0.75)
+	log_sb.set_corner_radius_all(8)
+	log_sb.content_margin_left = 12
+	log_sb.content_margin_top = 8
+	log_sb.content_margin_right = 12
+	log_sb.content_margin_bottom = 8
+	_chat_log_panel.add_theme_stylebox_override("panel", log_sb)
+	_chat_log_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chat_log_panel.visible = false
+	p_root.add_child(_chat_log_panel)
+
+	_chat_log = VBoxContainer.new()
+	_chat_log.add_theme_constant_override("separation", 4)
+	_chat_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chat_log_panel.add_child(_chat_log)
+
+	# 2. Panneau de saisie et de discussion complet
+	_chat_panel = PanelContainer.new()
+	_chat_panel.position = Vector2(16, 520)
+	_chat_panel.custom_minimum_size = Vector2(540, 130)
+	var chat_sb := StyleBoxFlat.new()
+	chat_sb.bg_color = Color(0.06, 0.1, 0.15, 0.96)
+	chat_sb.border_color = Color("00a896")
+	chat_sb.border_width_left = 2
+	chat_sb.border_width_top = 2
+	chat_sb.border_width_right = 2
+	chat_sb.border_width_bottom = 2
+	chat_sb.set_corner_radius_all(12)
+	chat_sb.content_margin_left = 12
+	chat_sb.content_margin_top = 10
+	chat_sb.content_margin_right = 12
+	chat_sb.content_margin_bottom = 10
+	_chat_panel.add_theme_stylebox_override("panel", chat_sb)
+	_chat_panel.visible = false
+	p_root.add_child(_chat_panel)
+
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 6)
+	_chat_panel.add_child(vb)
+
+	# Ligne 1 : Choix du canal + Bouton Fermer
+	var chan_row := HBoxContainer.new()
+	chan_row.add_theme_constant_override("separation", 6)
+	vb.add_child(chan_row)
+
+	var chan_lbl := Label.new()
+	chan_lbl.text = "💬 Canal :"
+	chan_lbl.add_theme_font_size_override("font_size", 12)
+	chan_lbl.add_theme_color_override("font_color", Color("ffd166"))
+	chan_row.add_child(chan_lbl)
+
+	var channels := [
+		["local", "📍 Proche"],
+		["all", "🌍 Dakar (Tous)"],
+		["group", "👥 Groupe"],
+		["faction", "📻 Radio"]
+	]
+	for c in channels:
+		var cid: String = c[0]
+		var clbl: String = c[1]
+		var btn := Button.new()
+		btn.text = clbl
+		btn.add_theme_font_size_override("font_size", 11)
+		btn.focus_mode = Control.FOCUS_NONE
+		btn.pressed.connect(func(): _select_channel(cid))
+		chan_row.add_child(btn)
+		_channel_btns[cid] = btn
+
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chan_row.add_child(spacer)
+
+	var close_btn := Button.new()
+	close_btn.text = " ✕ "
+	close_btn.add_theme_font_size_override("font_size", 12)
+	close_btn.focus_mode = Control.FOCUS_NONE
+	close_btn.pressed.connect(close_chat)
+	chan_row.add_child(close_btn)
+
+	# Ligne 2 : Phrases rapides en un clic (Mobile Friendly)
+	var quick_scroll := ScrollContainer.new()
+	quick_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	quick_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	quick_scroll.custom_minimum_size = Vector2(0, 30)
+	vb.add_child(quick_scroll)
+
+	var quick_row := HBoxContainer.new()
+	quick_row.add_theme_constant_override("separation", 6)
+	quick_scroll.add_child(quick_row)
+
+	var phrases := [
+		"👋 Salamalekum !",
+		"🚕 Taxi disponible ?",
+		"⚽ Match au Stade !",
+		"🤼 Qui pour la lutte ?",
+		"🚗 Monte avec moi !",
+		"📍 On va où ?",
+		"💰 Merci beaucoup !"
+	]
+	for phrase in phrases:
+		var p_text: String = phrase
+		var p_btn := Button.new()
+		p_btn.text = p_text
+		p_btn.add_theme_font_size_override("font_size", 11)
+		p_btn.focus_mode = Control.FOCUS_NONE
+		p_btn.pressed.connect(func():
+			if _chat_input:
+				_chat_input.text = p_text
+				_send_current_chat()
+		)
+		quick_row.add_child(p_btn)
+
+	# Ligne 3 : Ligne de saisie + Bouton Envoyer tactile
+	var input_row := HBoxContainer.new()
+	input_row.add_theme_constant_override("separation", 8)
+	vb.add_child(input_row)
+
+	_chat_input = LineEdit.new()
+	_chat_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_chat_input.custom_minimum_size = Vector2(300, 42)
+	_chat_input.max_length = 160
+	_chat_input.text_submitted.connect(func(_t): _send_current_chat())
+	input_row.add_child(_chat_input)
+
+	var send_btn := Button.new()
+	send_btn.text = " 🚀 Envoyer "
+	send_btn.custom_minimum_size = Vector2(96, 42)
+	send_btn.add_theme_font_size_override("font_size", 13)
+	var send_sb := StyleBoxFlat.new()
+	send_sb.bg_color = Color("00853f")
+	send_sb.set_corner_radius_all(6)
+	send_btn.add_theme_stylebox_override("normal", send_sb)
+	send_btn.focus_mode = Control.FOCUS_NONE
+	send_btn.pressed.connect(_send_current_chat)
+	input_row.add_child(send_btn)
+
+	_select_channel("local")
+	Net.chat_received.connect(_on_chat)
+
+
+func _select_channel(cid: String) -> void:
+	_chat_channel = cid
+	for k in _channel_btns:
+		var b: Button = _channel_btns[k]
+		if k == cid:
+			b.modulate = Color("00a896")
+		else:
+			b.modulate = Color(0.7, 0.75, 0.8)
+	if _chat_input:
+		match cid:
+			"local":
+				_chat_input.placeholder_text = "Message aux joueurs proches (bulle 3D)..."
+			"all":
+				_chat_input.placeholder_text = "Message public à tout Dakar (/t)..."
+			"group":
+				_chat_input.placeholder_text = "Message à ton groupe Mbokk (/g)..."
+			"faction":
+				_chat_input.placeholder_text = "Message à la radio de ta faction (/f)..."
+
+
 func open_chat() -> void:
-	if not Net.online:
+	if _chat_panel == null:
 		return
-	_chat_input.visible = true
-	_chat_input.text = ""
-	var vp: Vector2 = get_viewport().get_visible_rect().size
-	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
-	var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
-	_chat_input.position = Vector2(16, vp.y - bot_m - 44.0)
-	_chat_input.custom_minimum_size.x = minf(520, vp.x - 32)
+	_chat_panel.visible = true
+	_position_chat_panel()
 	_chat_input.grab_focus()
 	GameState.typing = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_touch.release_all()
 
 
+func open_chat_direct(who: String) -> void:
+	open_chat()
+	_select_channel("local")
+	_chat_input.text = "@" + who + " "
+	_chat_input.caret_column = _chat_input.text.length()
+
+
 func close_chat() -> void:
-	_chat_input.visible = false
-	_chat_input.release_focus()
+	if _chat_panel:
+		_chat_panel.visible = false
+	if _chat_input:
+		_chat_input.release_focus()
 	GameState.typing = false
 
 
-func _send_chat(text: String) -> void:
+func _send_current_chat() -> void:
+	if _chat_input == null:
+		return
+	var text := _chat_input.text.strip_edges()
+	if text == "":
+		return
+	if _chat_channel == "all" and not text.begins_with("/t ") and not text.begins_with("/a "):
+		text = "/t " + text
+	elif _chat_channel == "group" and not text.begins_with("/g "):
+		text = "/g " + text
+	elif _chat_channel == "faction" and not text.begins_with("/f "):
+		text = "/f " + text
 	Net.send_chat(text)
+	Audio.play_sfx("coin", -18.0)
+	_chat_input.text = ""
 	close_chat()
 
 
+func _position_chat_panel() -> void:
+	if _chat_panel == null:
+		return
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
+	var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
+	_chat_panel.position = Vector2(16, vp.y - bot_m - _chat_panel.size.y)
+	_chat_panel.custom_minimum_size.x = minf(540, vp.x - 32)
+
+
 func _on_chat(from: String, text: String) -> void:
-	var l := _label(14, Color("caffbf") if from == "Serveur" else Color.WHITE)
+	if _chat_log_panel:
+		_chat_log_panel.visible = true
+	var color := Color.WHITE
+	if from.begins_with("[Proche]"):
+		color = Color("ffd166")
+	elif from.begins_with("[Tous]") or from.begins_with("[Dakar]"):
+		color = Color("06d6a0")
+	elif from.begins_with("[Radio"):
+		color = Color("f77f00")
+	elif from.begins_with("[") and not from.begins_with("[Serveur"):
+		color = Color("e0aaff")
+	elif "Serveur" in from:
+		color = Color("caffbf")
+
+	var l := _label(13, color)
 	l.text = "%s : %s" % [from, text]
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size.x = 520
+	l.custom_minimum_size.x = 480
 	_chat_log.add_child(l)
 	while _chat_log.get_child_count() > 7:
 		var old := _chat_log.get_child(0)
@@ -719,6 +916,10 @@ func _on_chat(from: String, text: String) -> void:
 	var tw := l.create_tween()
 	tw.tween_interval(25.0)
 	tw.tween_property(l, "modulate:a", 0.0, 1.0)
+	tw.tween_callback(func():
+		if _chat_log and _chat_log.get_child_count() == 0 and _chat_log_panel:
+			_chat_log_panel.visible = false
+	)
 
 
 ## Fondu au noir, action (téléportation...), retour à l'image.
@@ -865,13 +1066,8 @@ func _on_notify(text: String) -> void:
 
 
 func _process(delta: float) -> void:
-	if _chat_input and _chat_input.visible:
-		var vp: Vector2 = get_viewport().get_visible_rect().size
-		var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
-		var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
-		var target_y := vp.y - bot_m - _chat_input.size.y
-		_chat_input.position.y = lerpf(_chat_input.position.y, target_y, 0.45)
-		_chat_input.custom_minimum_size.x = minf(520, vp.x - 32)
+	if _chat_panel and _chat_panel.visible:
+		_position_chat_panel()
 	if main == null or main.player == null:
 		return
 	# Textes de l'interface : 10 mises à jour par seconde suffisent (moins de calcul sur téléphone)
@@ -904,7 +1100,7 @@ func _process(delta: float) -> void:
 	_speed.visible = veh != null
 	var on: bool = Net.online or preview_online
 	_online.visible = true
-	_chat_btn.visible = on
+	_chat_btn.visible = true
 	_mic_btn.visible = on
 	_radio_btn.visible = (Net.online and Net.social.my_group != "") or preview_online
 	var talking: String = main.voice.talking if main.voice else ""

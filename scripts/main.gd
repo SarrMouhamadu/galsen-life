@@ -236,13 +236,13 @@ func _ready() -> void:
 	net_traffic.name = "NetTraffic"
 	net_traffic.city = city
 	add_child(net_traffic)
+	social_ui = SocialUI.new()
+	social_ui.main = self
+	add_child(social_ui)
 	if Net.online:
 		net_jobs = NetJobs.new()
 		net_jobs.main = self
 		add_child(net_jobs)
-		social_ui = SocialUI.new()
-		social_ui.main = self
-		add_child(social_ui)
 		trade_ui = TradeUI.new()
 		trade_ui.main = self
 		add_child(trade_ui)
