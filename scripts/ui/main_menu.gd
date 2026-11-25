@@ -1,6 +1,6 @@
 extends Control
 ## Menu de départ : jouer en solo, ou se connecter au serveur en ligne.
-## Réglages retenus (adresse, pseudo, personnage) dans user://net_settings.cfg — jamais le mot de passe.
+## Réglages retenus (adresse, pseudo, mot de passe, personnage) dans user://net_settings.cfg.
 
 const SETTINGS := "user://net_settings.cfg"
 const MAIN := "res://scenes/main.tscn"
@@ -103,38 +103,34 @@ func _build() -> void:
 	_margin.add_theme_constant_override("margin_left", 16)
 	_margin.add_theme_constant_override("margin_right", 16)
 	_margin.add_theme_constant_override("margin_top", 16)
-	_margin.add_theme_constant_override("margin_bottom", 24)
+	_margin.add_theme_constant_override("margin_bottom", 30)
 	_scroll.add_child(_margin)
 
-	var center := CenterContainer.new()
-	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_margin.add_child(center)
-
+	# VBoxContainer directement dans MarginContainer (évite le bogue de CenterContainer à Y négatif)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 9)
+	v.add_theme_constant_override("separation", 8)
 	v.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var vp_size := get_viewport_rect().size
 	v.custom_minimum_size = Vector2(clampf(vp_size.x - 32.0, 280.0, 480.0), 0)
 	_content_vbox = v
-	center.add_child(v)
+	_margin.add_child(v)
 
 	var title := Label.new()
 	title.text = "GALSEN-LIFE"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 42)
+	title.add_theme_font_size_override("font_size", 38)
 	title.add_theme_color_override("font_color", Color("fdef42"))
 	v.add_child(title)
 
 	var sub := Label.new()
 	sub.text = "Dalal ak jàmm ci Dakar !"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub.add_theme_font_size_override("font_size", 18)
+	sub.add_theme_font_size_override("font_size", 16)
 	v.add_child(sub)
 
 	var solo := _button("Jouer en solo", func(): get_tree().change_scene_to_file(MAIN))
-	solo.custom_minimum_size = Vector2(0, 48)
-	solo.add_theme_font_size_override("font_size", 20)
+	solo.custom_minimum_size = Vector2(0, 46)
+	solo.add_theme_font_size_override("font_size", 19)
 	v.add_child(solo)
 
 	var sep := HSeparator.new()
@@ -142,19 +138,20 @@ func _build() -> void:
 
 	var online_title := Label.new()
 	online_title.text = "Jouer en ligne"
-	online_title.add_theme_font_size_override("font_size", 22)
+	online_title.add_theme_font_size_override("font_size", 20)
 	online_title.add_theme_color_override("font_color", Color("7cfc9a"))
 	v.add_child(online_title)
 
 	var cfg := ConfigFile.new()
 	cfg.load(SETTINGS)
-	_host = _field(v, "Adresse du serveur", cfg.get_value("net", "host", Net.DEFAULT_HOST))
-	# Version des joueurs : toujours le serveur officiel
-	if not OS.is_debug_build():
-		_host.text = Net.DEFAULT_HOST
-		_host.visible = false
 
-	# Canal de connexion : sélection automatique transparente sans encombrer l'écran
+	# Hôte réseau invisible (toujours le serveur officiel)
+	_host = LineEdit.new()
+	_host.text = str(cfg.get_value("net", "host", Net.DEFAULT_HOST))
+	_host.visible = false
+	v.add_child(_host)
+
+	# Canal de connexion invisible (géré automatiquement en arrière-plan)
 	_channel = OptionButton.new()
 	for ch in Net.CHANNELS:
 		_channel.add_item(ch["name"])
@@ -165,6 +162,7 @@ func _build() -> void:
 
 	var saved_p: String = str(cfg.get_value("net", "pseudo", ""))
 	var saved_pw: String = str(cfg.get_value("net", "password", ""))
+
 	_pseudo = _field(v, "Pseudo (3 à 16 caractères)", saved_p)
 	_password = _field(v, "Mot de passe", saved_pw)
 	_password.secret = true
@@ -175,7 +173,7 @@ func _build() -> void:
 
 	_avatar = OptionButton.new()
 	_avatar.custom_minimum_size = Vector2(0, 44)
-	_avatar.add_theme_font_size_override("font_size", 18)
+	_avatar.add_theme_font_size_override("font_size", 17)
 	for a in Net.AVATARS:
 		_avatar.add_item(AVATAR_NAMES.get(a, a))
 	_avatar.select(maxi(0, Net.AVATARS.find(cfg.get_value("net", "avatar", "heros"))))
@@ -192,7 +190,7 @@ func _build() -> void:
 
 	var f_label := Label.new()
 	f_label.text = "🤝 Rejoindre un ami (optionnel) :"
-	f_label.add_theme_font_size_override("font_size", 15)
+	f_label.add_theme_font_size_override("font_size", 14)
 	f_label.add_theme_color_override("font_color", Color("90e0ef"))
 	f_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	f_header.add_child(f_label)
@@ -207,8 +205,8 @@ func _build() -> void:
 
 	var paste_btn := Button.new()
 	paste_btn.text = "Coller"
-	paste_btn.custom_minimum_size = Vector2(75, 46)
-	paste_btn.add_theme_font_size_override("font_size", 15)
+	paste_btn.custom_minimum_size = Vector2(75, 44)
+	paste_btn.add_theme_font_size_override("font_size", 14)
 	paste_btn.pressed.connect(func():
 		var clip := DisplayServer.clipboard_get().strip_edges()
 		if clip != "":
@@ -224,14 +222,14 @@ func _build() -> void:
 	var my_c_val := Net.generate_friend_code(init_p if init_p != "" else "Joueur")
 	var my_code_label := Label.new()
 	my_code_label.text = "Ton code ami : %s" % my_c_val
-	my_code_label.add_theme_font_size_override("font_size", 14)
+	my_code_label.add_theme_font_size_override("font_size", 13)
 	my_code_label.add_theme_color_override("font_color", Color("fdef42"))
 	my_code_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	my_code_row.add_child(my_code_label)
 
 	var copy_my_code_btn := Button.new()
 	copy_my_code_btn.text = "📋 Partager mon code"
-	copy_my_code_btn.custom_minimum_size = Vector2(160, 36)
+	copy_my_code_btn.custom_minimum_size = Vector2(160, 34)
 	copy_my_code_btn.add_theme_font_size_override("font_size", 13)
 	copy_my_code_btn.pressed.connect(func():
 		var cur_p := _pseudo.text.strip_edges()
@@ -249,8 +247,8 @@ func _build() -> void:
 	# Case à cocher "Créer un compte"
 	_create = CheckBox.new()
 	_create.text = " Nouveau joueur ? Créer un compte"
-	_create.custom_minimum_size = Vector2(0, 46)
-	_create.add_theme_font_size_override("font_size", 18)
+	_create.custom_minimum_size = Vector2(0, 44)
+	_create.add_theme_font_size_override("font_size", 17)
 	_create.add_theme_color_override("font_color", Color("e2e8f0"))
 	_create.add_theme_color_override("font_pressed_color", Color("7cfc9a"))
 	_create.add_theme_color_override("font_hover_color", Color.WHITE)
@@ -282,8 +280,8 @@ func _build() -> void:
 	v.add_child(_create)
 
 	_connect_btn = _button("Se connecter", _on_connect)
-	_connect_btn.custom_minimum_size = Vector2(0, 50)
-	_connect_btn.add_theme_font_size_override("font_size", 20)
+	_connect_btn.custom_minimum_size = Vector2(0, 48)
+	_connect_btn.add_theme_font_size_override("font_size", 19)
 	v.add_child(_connect_btn)
 
 	_create.toggled.connect(func(pressed: bool):
@@ -310,8 +308,8 @@ func _build() -> void:
 
 	var credits := _button("Crédits", _show_credits)
 	credits.flat = true
-	credits.custom_minimum_size = Vector2(0, 36)
-	credits.add_theme_font_size_override("font_size", 16)
+	credits.custom_minimum_size = Vector2(0, 34)
+	credits.add_theme_font_size_override("font_size", 15)
 	v.add_child(credits)
 
 
@@ -359,8 +357,8 @@ func _field(parent: Control, placeholder: String, value: String) -> LineEdit:
 	var e := LineEdit.new()
 	e.placeholder_text = placeholder
 	e.text = value
-	e.custom_minimum_size = Vector2(0, 46)
-	e.add_theme_font_size_override("font_size", 17)
+	e.custom_minimum_size = Vector2(0, 44)
+	e.add_theme_font_size_override("font_size", 16)
 	e.focus_entered.connect(func():
 		call_deferred("_scroll_to_control", e)
 	)
@@ -371,21 +369,24 @@ func _field(parent: Control, placeholder: String, value: String) -> LineEdit:
 func _button(text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(0, 50)
-	b.add_theme_font_size_override("font_size", 20)
+	b.custom_minimum_size = Vector2(0, 48)
+	b.add_theme_font_size_override("font_size", 19)
 	b.pressed.connect(cb)
 	return b
 
 
 func _on_connect() -> void:
-	if _pseudo.text.strip_edges().length() < 3 or _password.text.length() < 4:
+	_pseudo.text = _pseudo.text.strip_edges()
+	if _pseudo.text.length() < 3 or _password.text.length() < 4:
 		_status.text = "Pseudo d'au moins 3 caractères et mot de passe d'au moins 4 caractères."
 		return
+
 	# Connexion automatique des tests (--online=...) : on ne touche pas aux réglages du joueur
 	var from_test := false
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--online="):
 			from_test = true
+
 	var cfg := ConfigFile.new()
 	cfg.load(SETTINGS)
 	var ch_idx: int = _channel.selected if _channel else 0
@@ -394,22 +395,43 @@ func _on_connect() -> void:
 	var target_host: String = _host.text.strip_edges()
 	if target_host == "" or target_host == Net.DEFAULT_HOST:
 		target_host = str(ch.get("host", Net.DEFAULT_HOST))
+
 	if not from_test:
-		cfg.set_value("net", "host", _host.text.strip_edges())
-		cfg.set_value("net", "pseudo", _pseudo.text.strip_edges())
+		cfg.set_value("net", "host", target_host)
+		cfg.set_value("net", "pseudo", _pseudo.text)
 		cfg.set_value("net", "password", _password.text)
 		cfg.set_value("net", "avatar", Net.AVATARS[_avatar.selected])
 		cfg.set_value("net", "channel_idx", ch_idx)
 		cfg.save(SETTINGS)
+
 	if _friend_code and _friend_code.text.strip_edges() != "":
 		Net.pending_friend_join_code = _friend_code.text.strip_edges().to_upper()
+
 	_connect_btn.disabled = true
+	_status.text = "Connexion au serveur..."
+
+	# Sécurité timeout connexion (10s) : réactive le bouton si le serveur met du temps à répondre
+	var conn_timer := get_tree().create_timer(10.0)
+	conn_timer.timeout.connect(func():
+		if not Net.online and _connect_btn and is_instance_valid(_connect_btn) and _connect_btn.disabled:
+			_connect_btn.disabled = false
+			_status.text = "Le serveur met du temps à répondre. Vérifie ta connexion ou réessaie."
+	)
+
 	Net.connect_and_login(target_host, _pseudo.text, _password.text, Net.AVATARS[_avatar.selected], _create.button_pressed, target_port)
 
 
 func _on_login(ok: bool, message: String) -> void:
 	_status.text = message
 	_connect_btn.disabled = false
+	if not ok:
+		# Auto-correction intelligente pour guider immédiatement le joueur
+		if "Compte inconnu" in message or "inconnu" in message:
+			_create.button_pressed = true
+			_status.text = "Compte non trouvé. Touche « Créer mon compte et jouer » pour le créer !"
+		elif "déjà pris" in message and _create.button_pressed:
+			_create.button_pressed = false
+			_status.text = "Ce compte existe déjà. Touche « Se connecter » avec ton mot de passe."
 	if ok:
 		var cfg := ConfigFile.new()
 		cfg.load(SETTINGS)
