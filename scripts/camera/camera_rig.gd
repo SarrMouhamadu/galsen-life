@@ -28,9 +28,10 @@ func _ready() -> void:
 
 func set_target(t: Node3D) -> void:
 	target = t
-	spring.clear_excluded_objects()
-	if t is CollisionObject3D:
-		spring.add_excluded_object(t.get_rid())
+	if spring:
+		spring.clear_excluded_objects()
+		if t is CollisionObject3D:
+			spring.add_excluded_object(t.get_rid())
 	var d = t.get("camera_distance")
 	distance = d if d != null else 5.0
 	if global_position == Vector3.ZERO:

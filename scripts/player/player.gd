@@ -239,10 +239,12 @@ func ride(v) -> void:
 	collision_mask = 0
 	velocity = Vector3.ZERO
 	camera_rig.set_target(v)
-	if v.vehicle_type in ["jakarta", "grosse_moto"]:
-		GameState.notify.emit("Tu es sur la %s ! Accélère." % v.display_name)
-	elif not (v.vehicle_type in ["police", "army"]):
-		GameState.notify.emit("Tu es au volant du %s." % v.display_name)
+	if v.vehicle_type == "taxi":
+		GameState.notify.emit("Tu es assis dans le taxi. Le taximan met la radio et démarre.")
+	elif v.vehicle_type in ["car_rapide", "ndiaga"]:
+		GameState.notify.emit("Tu es installé dans le transport. [E] pour demander l'arrêt.")
+	elif v.line_name != "":
+		GameState.notify.emit("Tu es à bord du bus %s. [E] pour descendre au prochain arrêt." % v.line_name)
 
 
 ## Descendre côté trottoir (à droite du véhicule).

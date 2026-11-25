@@ -17,15 +17,118 @@ const LINES := [
 	{"name": "SunuBRT Ligne 1", "type": "brt", "color": Color("00a896"), "buses": 2,
 		"stops": ["Gare routière Petersen", "Marché Tilène", "Grande Mosquée", "Stade Iba Mar Diop", "Porte du Millénaire"]},
 ]
-const TAXI_PLACES := ["Place de l'Indépendance", "Marché Sandaga", "Grande Mosquée", "Hôpital Principal", "Gare de Dakar",
-	"Marché Kermel", "Marché Tilène", "Gare routière Petersen", "Cathédrale", "Assemblée nationale",
-	"Porte du Millénaire", "Stade Iba Mar Diop", "Chez Adja", "Dibiterie", "Restaurant Maïga", "Café Touba"]
+const TAXI_CATEGORIES := [
+	{
+		"id": "sports",
+		"icon": "⚽",
+		"title": "Stades & Sports",
+		"places": [
+			{"name": "Stade Iba Mar Diop (Médina)", "place": "Stade Iba Mar Diop"},
+			{"name": "Stade Me Abdoulaye Wade (Diamniadio)", "special": "wade", "fare": 2500},
+			{"name": "Arène nationale de Lutte (Pikine)", "special": "arena", "fare": 1500},
+			{"name": "Complexe de mini-foot", "special": "foot", "fare": 1200},
+			{"name": "Terrain Camp Abdou Diassé", "place": "Terrain Camp Abdou Diassé"},
+			{"name": "Terrain de foot", "place": "Terrain de foot"},
+			{"name": "Terrain de basket", "place": "Terrain de basket"},
+			{"name": "Courts de tennis", "place": "Courts de tennis"},
+		]
+	},
+	{
+		"id": "marches",
+		"icon": "🛒",
+		"title": "Marchés & Boutiques",
+		"places": [
+			{"name": "Marché Sandaga (Plateau)", "place": "Marché Sandaga"},
+			{"name": "Marché Kermel", "place": "Marché Kermel"},
+			{"name": "Marché Tilène (Médina)", "place": "Marché Tilène"},
+			{"name": "Centre commercial SAHM", "place": "Centre commercial SAHM"},
+			{"name": "Supermarché Auchan", "place": "Auchan"},
+			{"name": "Boutique Wave / Orange Money", "place": "Wave"},
+			{"name": "Boutique Jumbo / Jadida", "place": "Jumbo"},
+			{"name": "Concession auto de prestige", "special": "dealership"},
+		]
+	},
+	{
+		"id": "monuments",
+		"icon": "🏛️",
+		"title": "Monuments & Quartiers",
+		"places": [
+			{"name": "Place de l'Indépendance (Plateau)", "place": "Place de l'Indépendance"},
+			{"name": "Assemblée nationale", "place": "Assemblée nationale"},
+			{"name": "Porte du Millénaire", "place": "Porte du Millénaire"},
+			{"name": "Commissariat Central Plateau", "place": "Commissariat (Dakar-Plateau)"},
+			{"name": "Commissariat de la Médina", "place": "Commissariat"},
+			{"name": "Caserne des Pompiers", "place": "Caserne"},
+		]
+	},
+	{
+		"id": "sante",
+		"icon": "🏥",
+		"title": "Hôpitaux & Santé",
+		"places": [
+			{"name": "Hôpital Principal de Dakar", "place": "Hôpital Principal"},
+			{"name": "Hôpital Aristide Le Dantec", "place": "Hôpital Aristide Le Dantec"},
+			{"name": "Polyclinique de la Médina", "place": "Polyclinique de la Médina"},
+			{"name": "Cabinet Médical Zénith", "place": "CABINET MEDICAL ZENITH"},
+			{"name": "Centre médico-social fonction publique", "place": "Centre medico-social de la fonction publique"},
+		]
+	},
+	{
+		"id": "transports",
+		"icon": "🚆",
+		"title": "Gares, TER & BRT",
+		"places": [
+			{"name": "Gare de Dakar (TER & Train)", "place": "Gare de Dakar"},
+			{"name": "Gare routière Petersen (Bus & BRT)", "place": "Gare routière Petersen"},
+		]
+	},
+	{
+		"id": "culte",
+		"icon": "🕌",
+		"title": "Mosquées & Lieux de culte",
+		"places": [
+			{"name": "Grande Mosquée de Dakar", "place": "Grande Mosquée"},
+			{"name": "Cathédrale de Dakar", "place": "Cathédrale"},
+			{"name": "Mosquée Seydou Nourou Tall", "place": "Mosquée Seydou Nourou Tall"},
+			{"name": "Église Saint-Laurent", "place": "Église Saint-Laurent"},
+		]
+	},
+	{
+		"id": "resto",
+		"icon": "🍽️",
+		"title": "Restaurants & Dibiteries",
+		"places": [
+			{"name": "Chez Adja (Thiéboudienne)", "place": "Chez Adja"},
+			{"name": "Chez Loutcha (Cuisine sénégalaise)", "place": "Chez Loutcha"},
+			{"name": "Restaurant Maïga", "place": "Restaurant Maïga"},
+			{"name": "Dibiterie (Viande d'agneau grillée)", "place": "Dibiterie"},
+			{"name": "Café Touba traditionnel", "place": "Café Touba"},
+			{"name": "Chez Ndioufa", "place": "Chez Ndioufa"},
+			{"name": "Planet Kebab", "place": "Restaurant planet kebab"},
+			{"name": "Maxi Food", "place": "Restaurant Maxi Food"},
+			{"name": "Maxi food", "place": "Restaurant Maxi food"},
+			{"name": "Restaurant La Médinoise", "place": "Restaurant la Médinoise"},
+			{"name": "Brioche Dorée", "place": "Restaurant Brioche Dorée"},
+		]
+	},
+	{
+		"id": "plages",
+		"icon": "🏖️",
+		"title": "Plages & Corniche",
+		"places": [
+			{"name": "Plage de l'Anse Bernard", "place": "Plage de l'Anse Bernard"},
+			{"name": "Porte du Millénaire & Corniche Ouest", "place": "Porte du Millénaire"},
+		]
+	}
+]
 
 var city
 var player
 var hud
 var arena
 var foot ## complexe de mini-foot (scripts/world/foot.gd)
+var stade ## stades Iba Mar Diop et Me Abdoulaye Wade (scripts/world/stade.gd)
+var main
 var stops: Array = [] ## {name, line, pos}
 var buses: Array = []
 var status := ""
@@ -35,9 +138,12 @@ var _ride_kind := ""
 var _want_stop := false
 var _alight := false
 var _taxi_dest := ""
+var _taxi_dest_pos := Vector3.ZERO
 
 
 func _ready() -> void:
+	if not city:
+		return
 	for line in LINES:
 		_build_line(line)
 
@@ -278,46 +384,207 @@ func taxi_price(from: Vector3, to: Vector3) -> int:
 	return maxi(500, int(round((500.0 + d * 0.4) / 50.0)) * 50)
 
 
+func _dest_info(pos: Vector3, from_pos: Vector3) -> String:
+	var d := Vector2(from_pos.x - pos.x, from_pos.z - pos.z).length()
+	var dist_str := ("%d m" % int(d)) if d < 1000.0 else ("%.1f km" % (d / 1000.0))
+	var price := taxi_price(from_pos, pos)
+	return "%s (%s)" % [GameState.fcfa(price), dist_str]
+
+
 func _hail_taxi(v) -> void:
 	v.hold = true
+	_show_taxi_main_menu(v)
+
+
+func _show_taxi_main_menu(v) -> void:
 	var pp: Vector3 = player.global_position
-	var options: Array = []
-	for place_name in TAXI_PLACES:
-		if not city.places.has(place_name):
-			continue
-		var pos: Vector3 = city.places[place_name]
-		if pos.distance_to(pp) < 60.0:
-			continue
-		var price := taxi_price(pp, pos)
-		options.append([price, place_name])
-	options.sort_custom(func(a, b): return a[0] < b[0])
 	var choices: Array = []
-	for o in options.slice(0, 8):
-		choices.append(["%s — %s" % [o[1], GameState.fcfa(o[0])], start_taxi_ride.bind(v, o[1])])
-	if arena:
-		choices.append(["Arène nationale (Pikine) — %s" % GameState.fcfa(arena.TAXI_FARE), func():
-			v.hold = false
-			arena.travel_to_arena("taxi")])
-	if foot:
-		choices.append(["Complexe de mini-foot — %s" % GameState.fcfa(foot.TAXI_FARE), func():
-			v.hold = false
-			foot.travel_to_complex("taxi")])
-	hud.show_choices("Taxi — « Où on va, grand ? »", choices, func(): v.hold = false)
+
+	# 1. Repère GPS personnalisé s'il existe
+	if GameState.waypoint != null:
+		var wp: Vector3 = GameState.waypoint
+		var wp_label: String = "Repère GPS"
+		if hud and hud.main and hud.main.gps and hud.main.gps.label != "":
+			wp_label = hud.main.gps.label
+		var info_str := _dest_info(wp, pp)
+		choices.append(["📍 Repère GPS : %s — %s" % [wp_label, info_str], func():
+			start_taxi_ride_custom(v, wp, "Repère GPS (%s)" % wp_label)
+		])
+
+	# 2. Destinations directes populaires les plus proches
+	var popular_places := ["Place de l'Indépendance", "Marché Sandaga", "Grande Mosquée", "Hôpital Principal", "Gare de Dakar", "Stade Iba Mar Diop", "Chez Adja", "Marché Kermel", "Marché Tilène"]
+	var quick_options: Array = []
+	for p_name in popular_places:
+		if not city.places.has(p_name):
+			continue
+		var p_pos: Vector3 = city.places[p_name]
+		var d := Vector2(pp.x - p_pos.x, pp.z - p_pos.z).length()
+		if d < 60.0:
+			continue
+		var price := taxi_price(pp, p_pos)
+		quick_options.append([d, p_name, p_pos, price])
+	quick_options.sort_custom(func(a, b): return a[0] < b[0])
+	for qo in quick_options.slice(0, 4):
+		var dist_str := ("%d m" % int(qo[0])) if qo[0] < 1000.0 else ("%.1f km" % (qo[0] / 1000.0))
+		choices.append(["🚕 %s — %s (%s)" % [qo[1], GameState.fcfa(qo[3]), dist_str], func():
+			start_taxi_ride(v, qo[1])
+		])
+
+	# 3. Catégories
+	for cat in TAXI_CATEGORIES:
+		var count: int = cat["places"].size()
+		choices.append(["%s %s (%d) ▶" % [cat["icon"], cat["title"], count], func():
+			_show_taxi_category_menu(v, cat)
+		])
+
+	# 4. Tous les lieux de Dakar (A-Z)
+	choices.append(["🔍 Tous les lieux de Dakar (A-Z) ▶", func():
+		_show_taxi_all_places_menu(v, 0)
+	])
+
+	hud.show_choices("Taxi — « Où on va, grand ? »", choices, func():
+		v.hold = false
+	)
+
+
+func _show_taxi_category_menu(v, cat: Dictionary) -> void:
+	var pp: Vector3 = player.global_position
+	var choices: Array = []
+	for p_item in cat["places"]:
+		var p_name: String = p_item["name"]
+		if p_item.get("special", "") == "wade":
+			var fare: int = p_item.get("fare", 2500)
+			choices.append(["⭐ %s — %s (Autoroute)" % [p_name, GameState.fcfa(fare)], func():
+				travel_to_wade_stadium(v, fare)
+			])
+		elif p_item.get("special", "") == "arena":
+			var fare: int = arena.TAXI_FARE if arena else 1500
+			choices.append(["⭐ %s — %s (Pikine)" % [p_name, GameState.fcfa(fare)], func():
+				v.hold = false
+				if arena:
+					arena.travel_to_arena("taxi")
+				else:
+					GameState.notify.emit("Arène non disponible.")
+			])
+		elif p_item.get("special", "") == "foot":
+			var fare: int = foot.TAXI_FARE if foot else 1200
+			choices.append(["⭐ %s — %s (Complexe)" % [p_name, GameState.fcfa(fare)], func():
+				v.hold = false
+				if foot:
+					foot.travel_to_complex("taxi")
+				else:
+					GameState.notify.emit("Complexe non disponible.")
+			])
+		elif p_item.get("special", "") == "dealership":
+			var d_pos := Vector3.ZERO
+			if main and main.dealership and main.dealership.pos != Vector3.ZERO:
+				d_pos = main.dealership.pos
+			elif hud and hud.main and hud.main.dealership and hud.main.dealership.pos != Vector3.ZERO:
+				d_pos = hud.main.dealership.pos
+			elif city.places.has("Place de l'Indépendance"):
+				d_pos = city.places["Place de l'Indépendance"]
+			if d_pos != Vector3.ZERO:
+				var info_str := _dest_info(d_pos, pp)
+				choices.append(["🚗 %s — %s" % [p_name, info_str], func():
+					start_taxi_ride_custom(v, d_pos, p_name)
+				])
+		elif p_item.has("place") and city.places.has(p_item["place"]):
+			var place_key: String = p_item["place"]
+			var pos: Vector3 = city.places[place_key]
+			var info_str := _dest_info(pos, pp)
+			choices.append(["%s — %s" % [p_name, info_str], func():
+				start_taxi_ride(v, place_key)
+			])
+
+	# Bouton Retour
+	choices.append(["« ↩ Retour au menu principal", func():
+		_show_taxi_main_menu(v)
+	])
+
+	hud.show_choices("Taxi — %s" % cat["title"], choices, func():
+		_show_taxi_main_menu(v)
+	)
+
+
+func _show_taxi_all_places_menu(v, page: int = 0) -> void:
+	var pp: Vector3 = player.global_position
+	var all_keys: Array = city.places.keys()
+	all_keys.sort()
+	var per_page := 8
+	var total_pages := maxi(1, int(ceil(float(all_keys.size()) / float(per_page))))
+	page = clampi(page, 0, total_pages - 1)
+	var start_idx := page * per_page
+	var end_idx := mini(start_idx + per_page, all_keys.size())
+
+	var choices: Array = []
+	for i in range(start_idx, end_idx):
+		var k: String = all_keys[i]
+		var pos: Vector3 = city.places[k]
+		var info_str := _dest_info(pos, pp)
+		choices.append(["%s — %s" % [k, info_str], func():
+			start_taxi_ride(v, k)
+		])
+
+	if page < total_pages - 1:
+		choices.append(["▶ Page suivante (%d/%d)" % [page + 2, total_pages], func():
+			_show_taxi_all_places_menu(v, page + 1)
+		])
+	if page > 0:
+		choices.append(["◀ Page précédente (%d/%d)" % [page, total_pages], func():
+			_show_taxi_all_places_menu(v, page - 1)
+		])
+	choices.append(["« ↩ Retour au menu principal", func():
+		_show_taxi_main_menu(v)
+	])
+
+	hud.show_choices("Taxi — Dakar A-Z (%d/%d)" % [page + 1, total_pages], choices, func():
+		_show_taxi_main_menu(v)
+	)
 
 
 func start_taxi_ride(v, dest: String) -> void:
-	var price := taxi_price(player.global_position, city.places[dest])
+	if not city.places.has(dest):
+		GameState.notify.emit("Destination inconnue.")
+		v.hold = false
+		return
+	start_taxi_ride_custom(v, city.places[dest], dest)
+
+
+func start_taxi_ride_custom(v, target_pos: Vector3, dest_name: String) -> void:
+	var price := taxi_price(player.global_position, target_pos)
 	if not GameState.spend(price):
 		GameState.notify.emit("Le taximan : « C'est %s, tu n'as pas assez ! »" % GameState.fcfa(price))
 		v.hold = false
 		return
-	_taxi_dest = dest
+	_taxi_dest = dest_name
+	_taxi_dest_pos = target_pos
 	_start_ride(v, "taxi")
 	v.hold = false
-	v.follow_route(city.route(v.global_position, city.places[dest], true), false)
+	var route: PackedVector3Array = city.route(v.global_position, target_pos, true)
+	if route.is_empty() or route.size() < 2:
+		route = PackedVector3Array([v.global_position, target_pos])
+	v.follow_route(route, false)
 	if not v.route_finished.is_connected(_on_taxi_arrived):
 		v.route_finished.connect(_on_taxi_arrived)
-	GameState.notify.emit("« Waaw, dem nañu ! » (allons-y) — %s pour %s." % [GameState.fcfa(price), dest])
+	GameState.notify.emit("« Waaw, dem nañu ! » (allons-y) — %s pour %s." % [GameState.fcfa(price), dest_name])
+
+
+func travel_to_wade_stadium(v, fare: int = 2500) -> void:
+	if not GameState.spend(fare):
+		GameState.notify.emit("Le taximan : « C'est %s pour l'autoroute vers Diamniadio ! »" % GameState.fcfa(fare))
+		v.hold = false
+		return
+	v.hold = false
+	hud.fade_through(func():
+		player.leave_any_vehicle()
+		var target := Vector3(9000 - 85.0, 0.5, 1800)
+		if stade:
+			target = stade.WADE_ORIGIN + Vector3(-85.0, 0.5, 0)
+		elif main and main.stade:
+			target = main.stade.WADE_ORIGIN + Vector3(-85.0, 0.5, 0)
+		player.global_position = target
+		GameState.game_minutes = fmod(GameState.game_minutes + 35.0, 1440.0)
+		GameState.notify.emit("Après 35 minutes sur l'autoroute à péage... Bienvenue au Stade Me Abdoulaye Wade !"))
 
 
 func _on_taxi_arrived() -> void:
@@ -342,7 +609,12 @@ func _process(_delta: float) -> void:
 			"bus":
 				status = "BUS %s — %s" % [_ride.line_name, "tu descends au prochain arrêt" if _want_stop else "[E] descendre au prochain arrêt"]
 			"taxi":
-				status = "TAXI vers %s (%d m) — [E] descendre ici" % [_taxi_dest, int(player.get_world_position().distance_to(city.places[_taxi_dest]))]
+				var d_rem: int = 0
+				if _taxi_dest_pos != Vector3.ZERO:
+					d_rem = int(player.get_world_position().distance_to(_taxi_dest_pos))
+				elif city and city.places.has(_taxi_dest):
+					d_rem = int(player.get_world_position().distance_to(city.places[_taxi_dest]))
+				status = "TAXI vers %s (%d m) — [E] descendre ici" % [_taxi_dest, d_rem]
 			_:
 				status = "%s — [E] « Descente ! »" % _ride.display_name.to_upper()
 		return

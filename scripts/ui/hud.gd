@@ -33,6 +33,7 @@ var _layout_bar: Control ## barre du mode « Placer les boutons »
 var _touch
 var _root: Control
 var _choices: Control
+var _choices_on_cancel: Callable
 var map_screen
 var _online: Label
 var _chat_log: VBoxContainer
@@ -510,23 +511,34 @@ func _layout_mode(on: bool) -> void:
 ## Menu de choix (destination du taxi...) : options = [[texte, Callable], ...]
 func show_choices(title_text: String, options: Array, on_cancel: Callable) -> void:
 	close_choices()
+	_choices_on_cancel = on_cancel
 	_choices = ColorRect.new()
-	_choices.color = Color(0, 0, 0, 0.45)
+	_choices.color = Color(0, 0, 0, 0.55)
 	_choices.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root.add_child(_choices)
 	var cc := CenterContainer.new()
 	cc.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_choices.add_child(cc)
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", _style(Color(0.08, 0.08, 0.1, 0.95)))
+	panel.add_theme_stylebox_override("panel", _style(Color(0.08, 0.08, 0.11, 0.96)))
 	cc.add_child(panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
-	v.custom_minimum_size = Vector2(460, 0)
+	v.custom_minimum_size = Vector2(490, 0)
 	panel.add_child(v)
-	var t := _label(26, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
+	var t := _label(24, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
 	t.text = title_text
 	v.add_child(t)
+	var scroll := ScrollContainer.new()
+	var visible_items := mini(options.size(), 7)
+	scroll.custom_minimum_size = Vector2(480, visible_items * 52 + 10)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	v.add_child(scroll)
+	var btn_box := VBoxContainer.new()
+	btn_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_box.add_theme_constant_override("separation", 6)
+	scroll.add_child(btn_box)
 	var first_btn: Button = null
 	for o in options:
 		var cb: Callable = o[1]
@@ -534,13 +546,18 @@ func show_choices(title_text: String, options: Array, on_cancel: Callable) -> vo
 			close_choices()
 			cb.call())
 		b.custom_minimum_size = Vector2(0, 46)
-		b.add_theme_font_size_override("font_size", 19)
-		v.add_child(b)
+		b.add_theme_font_size_override("font_size", 18)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_box.add_child(b)
 		if first_btn == null:
 			first_btn = b
-	var cancel_btn := _menu_button("Annuler [B]", func():
+	var cancel_btn := _menu_button("Annuler / Fermer [B]", func():
+		var cb := _choices_on_cancel
 		close_choices()
-		on_cancel.call())
+		if cb.is_valid():
+			cb.call())
+	cancel_btn.custom_minimum_size = Vector2(0, 44)
+	cancel_btn.add_theme_font_size_override("font_size", 18)
 	v.add_child(cancel_btn)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_touch.release_all()
@@ -554,6 +571,7 @@ func close_choices() -> void:
 	if _choices != null and is_instance_valid(_choices):
 		_choices.queue_free()
 	_choices = null
+	_choices_on_cancel = Callable()
 
 
 func choices_open() -> bool:
@@ -642,7 +660,10 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		return
 	if choices_open() and event.is_action_pressed("ui_cancel"):
+		var cb := _choices_on_cancel
 		close_choices()
+		if cb.is_valid():
+			cb.call()
 		get_viewport().set_input_as_handled()
 		return
 	if map_screen.visible:

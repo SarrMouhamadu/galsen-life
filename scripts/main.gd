@@ -210,6 +210,8 @@ func _ready() -> void:
 	stade.player = player
 	stade.hud = hud
 	add_child(stade)
+	transit.stade = stade
+	transit.main = self
 
 	ter = Ter.new()
 	ter.main = self
