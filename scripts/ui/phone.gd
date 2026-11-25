@@ -1013,8 +1013,14 @@ func _music_app() -> void:
 	btn_next.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	controls.add_child(btn_next)
 
+	var btn_rand := _button("🔀 Aléatoire", func():
+		Audio.play_random_track(true)
+		_show("music"), Color("e76f51"))
+	btn_rand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	controls.add_child(btn_rand)
+
 	var track_descs := [
-		"Hymne officiel des JOJ Dakar 2026 interprété par Baaba Maal. Musique principale par défaut au lancement !",
+		"Hymne officiel des JOJ Dakar 2026 interprété par Baaba Maal. Morceau phare de la playlist de Dakar !",
 		"Thème musical officiel de la Cérémonie d'Ouverture des Jeux Olympiques de la Jeunesse Dakar 2026.",
 		"Générique officiel JOJ Dakar 2026 composé par Iss 814 Beats. Rythme électro-mbalax énergique et moderne.",
 		"Chant patriotique et traditionnel légendaire interprété par Kiné Lam lors de la cérémonie des JOJ Dakar 2026.",
@@ -1022,6 +1028,8 @@ func _music_app() -> void:
 		"Rythme Sabar & Tama (Bakk Sénégal) : Synthèse polyrythmique des arènes avec Thiol, Mbëng-mbëng et kora.",
 		"Galsen Mbalax FM : Groove urbain dakarois non-stop avec balafon et guitare."
 	]
+
+	_content.add_child(_note("🎲 Playlist aléatoire : à chaque ouverture de l'application, une musique différente est choisie et chargée au hasard."))
 
 	for i in Audio.TRACK_NAMES.size():
 		var box := VBoxContainer.new()

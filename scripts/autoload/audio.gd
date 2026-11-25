@@ -66,19 +66,23 @@ func _ready() -> void:
 	# Chargement des morceaux de musique officiels
 	for i in MUSIC_FILES.size():
 		var path: String = MUSIC_FILES[i]
+		var s: AudioStream = null
 		if ResourceLoader.exists(path):
-			_track_streams[i] = load(path)
+			s = load(path)
 		elif FileAccess.file_exists(path):
-			var s := AudioStreamMP3.new()
-			s.data = FileAccess.get_file_as_bytes(path)
-			s.loop = true
-			_track_streams[i] = s
+			var mp3 := AudioStreamMP3.new()
+			mp3.data = FileAccess.get_file_as_bytes(path)
+			s = mp3
+		if s is AudioStreamMP3:
+			(s as AudioStreamMP3).loop = false
+		_track_streams[i] = s
 
-	# Musique principale par défaut au lancement du jeu (Baaba Maal dès 57s)
-	if _track_streams[0] != null:
-		_radio.stream = _track_streams[0]
-		_radio_wanted = true
-		_radio.play()
+	_radio.finished.connect(_on_radio_finished)
+
+	# Sélection et chargement aléatoire de la musique dès l'entrée dans l'application
+	randomize()
+	_radio_wanted = true
+	play_random_track(false)
 
 	# La boucle de mbalax synthétique se prépare en arrière-plan
 	_radio_task = WorkerThreadPool.add_task(_build_radio)
@@ -210,6 +214,30 @@ func set_radio_track(idx: int) -> void:
 
 func next_radio_track() -> void:
 	set_radio_track((current_track_idx + 1) % _track_streams.size())
+
+
+## Sélectionne et joue un morceau aléatoire parmi les morceaux disponibles
+func play_random_track(avoid_current: bool = true) -> void:
+	var available: Array[int] = []
+	for i in _track_streams.size():
+		if _track_streams[i] != null:
+			if not avoid_current or i != current_track_idx:
+				available.append(i)
+	# Si aucun autre morceau n'est disponible pour éviter la répétition, prendre tous les morceaux valides
+	if available.is_empty():
+		for i in _track_streams.size():
+			if _track_streams[i] != null:
+				available.append(i)
+	if available.is_empty():
+		return
+	var rand_idx: int = available[randi() % available.size()]
+	_radio_wanted = true
+	set_radio_track(rand_idx)
+
+
+func _on_radio_finished() -> void:
+	if _radio_wanted:
+		play_random_track(true)
 
 
 func toggle_radio() -> void:
