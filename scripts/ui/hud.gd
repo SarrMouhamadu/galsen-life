@@ -119,7 +119,7 @@ func _ready() -> void:
 	root.add_child(_voice_dock)
 
 	_voice_dock_btn = Button.new()
-	_voice_dock_btn.text = "🎙️ MICRO"
+	_voice_dock_btn.text = "🎙️❌ MICRO"
 	_voice_dock_btn.custom_minimum_size = Vector2(134, 44)
 	_voice_dock_btn.add_theme_font_size_override("font_size", 14)
 	_voice_dock_btn.focus_mode = Control.FOCUS_NONE
@@ -228,7 +228,7 @@ func _ready() -> void:
 	_emote_btn = emote_btn
 	# Chat vocal : maintenir pour parler ou appuyer pour basculer (V / B au clavier)
 	_mic_btn = Button.new()
-	_mic_btn.text = " 🎙️ MICRO "
+	_mic_btn.text = " 🎙️❌ MICRO "
 	_mic_btn.custom_minimum_size = Vector2(0, 38)
 	_mic_btn.add_theme_font_size_override("font_size", 14)
 	_mic_btn.focus_mode = Control.FOCUS_NONE
@@ -1113,7 +1113,7 @@ func _on_mic_press_up() -> void:
 		else:
 			if main.voice:
 				main.voice.stop_talking()
-				GameState.notify.emit("🎙️ Micro coupé.")
+				GameState.notify.emit("🎙️❌ Micro coupé.")
 	else:
 		_mic_locked = false
 		if main.voice:
@@ -1152,8 +1152,8 @@ func _style_voice_btn(btn: Button, active: bool, channel: String) -> void:
 		base_col = Color(0.60, 0.28, 0.05, 0.95) if active else Color(0.18, 0.14, 0.10, 0.88)
 		border_col = Color("ffd166") if active else Color("f4a261")
 	else:
-		base_col = Color(0.08, 0.42, 0.22, 0.95) if active else Color(0.10, 0.16, 0.24, 0.88)
-		border_col = Color("7cfc9a") if active else Color("00b4d8")
+		base_col = Color(0.08, 0.42, 0.22, 0.95) if active else Color(0.18, 0.10, 0.12, 0.88)
+		border_col = Color("7cfc9a") if active else Color("e63946")
 
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = base_col
@@ -1165,7 +1165,7 @@ func _style_voice_btn(btn: Button, active: bool, channel: String) -> void:
 	btn.add_theme_stylebox_override("normal", sb)
 	btn.add_theme_stylebox_override("hover", sb)
 	btn.add_theme_stylebox_override("pressed", sb)
-	btn.add_theme_color_override("font_color", Color.WHITE if active else Color("e2e8f0"))
+	btn.add_theme_color_override("font_color", Color.WHITE if active else Color("ffccd5"))
 
 
 func toggle_pause() -> void:
@@ -1280,8 +1280,8 @@ func _process(delta: float) -> void:
 			_style_voice_btn(_voice_dock_btn, true, "local")
 			_style_voice_btn(_mic_btn, true, "local")
 		else:
-			_voice_dock_btn.text = "🎙️ MICRO"
-			_mic_btn.text = " 🎙️ MICRO "
+			_voice_dock_btn.text = "🎙️❌ MICRO"
+			_mic_btn.text = " 🎙️❌ MICRO "
 			_style_voice_btn(_voice_dock_btn, false, "local")
 			_style_voice_btn(_mic_btn, false, "local")
 
