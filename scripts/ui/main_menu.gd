@@ -66,9 +66,16 @@ func _process(_delta: float) -> void:
 	if not _scroll:
 		return
 	var vp_size := get_viewport_rect().size
-	var target_w := clampf(vp_size.x - 32.0, 280.0, 480.0)
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+	var target_w := clampf(vp_size.x - margins.left - margins.right - 20.0, 280.0, 480.0)
 	if _content_vbox and absf(_content_vbox.custom_minimum_size.x - target_w) > 1.0:
 		_content_vbox.custom_minimum_size.x = target_w
+	
+	if _margin:
+		_margin.add_theme_constant_override("margin_left", int(margins.left))
+		_margin.add_theme_constant_override("margin_right", int(margins.right))
+		_margin.add_theme_constant_override("margin_top", int(margins.top))
+		_margin.add_theme_constant_override("margin_bottom", int(maxf(margins.bottom, 24.0)))
 
 	# Élévation réactive de l'interface quand le clavier virtuel apparaît sur smartphone (iOS / Android)
 	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0

@@ -60,6 +60,60 @@ var _is_fainted := false
 var faint_reason := "" ## "ko" : mis KO dans une bagarre, "soif" (sinon : faim)
 var _warned := {} ## besoins déjà signalés au joueur (soif, fatigue)
 var gamepad_active := false ## passe à true dès qu'une manette est utilisée ou connectée
+var simulated_safe_area := Rect2i() ## Utilisé pour les tests automatisés de responsivité
+var simulated_window_size := Vector2i() ## Utilisé pour les tests automatisés de responsivité
+
+
+## Marges de sécurité adaptatives (encoche iPhone, Dynamic Island, barre d'accueil, bords arrondis).
+func get_safe_margins(vp: Viewport = null) -> Dictionary:
+	var safe := simulated_safe_area if simulated_safe_area != Rect2i() else DisplayServer.get_display_safe_area()
+	var win_size := simulated_window_size if simulated_window_size != Vector2i() else DisplayServer.window_get_size()
+	var vp_size := Vector2(1280.0, 720.0)
+	if vp != null:
+		vp_size = vp.get_visible_rect().size
+	elif get_viewport() != null:
+		vp_size = get_viewport().get_visible_rect().size
+	
+	if win_size.x <= 0 or win_size.y <= 0:
+		win_size = Vector2i(int(vp_size.x), int(vp_size.y))
+	if safe.size.x <= 0 or safe.size.y <= 0:
+		safe = Rect2i(0, 0, win_size.x, win_size.y)
+	
+	var sx: float = vp_size.x / float(win_size.x) if win_size.x > 0 else 1.0
+	var sy: float = vp_size.y / float(win_size.y) if win_size.y > 0 else 1.0
+	var sl: float = float(safe.position.x) * sx
+	var st: float = float(safe.position.y) * sy
+	var sr: float = float(win_size.x - safe.end.x) * sx
+	var sb: float = float(win_size.y - safe.end.y) * sy
+	
+	# Minimum esthétique de 16px sur les côtés et 12px en haut/bas
+	var ml: float = maxf(16.0, sl)
+	var mt: float = maxf(12.0, st)
+	var mr: float = maxf(16.0, sr)
+	var mb: float = maxf(16.0, sb)
+	
+	return {
+		"left": ml,
+		"top": mt,
+		"right": mr,
+		"bottom": mb,
+		"raw_left": sl,
+		"raw_top": st,
+		"raw_right": sr,
+		"raw_bottom": sb,
+		"safe_width": vp_size.x - ml - mr,
+		"safe_height": vp_size.y - mt - mb,
+	}
+
+
+func get_ui_scale(vp: Viewport = null) -> float:
+	var vp_size := Vector2(1280.0, 720.0)
+	if vp != null:
+		vp_size = vp.get_visible_rect().size
+	elif get_viewport() != null:
+		vp_size = get_viewport().get_visible_rect().size
+	return clampf(minf(vp_size.x / 1280.0, vp_size.y / 720.0), 0.75, 1.6)
+
 
 
 func _ready() -> void:

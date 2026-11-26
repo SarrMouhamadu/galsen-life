@@ -172,7 +172,8 @@ const BASE_SCALE := 0.75
 
 
 func _scale() -> float:
-	return clampf(minf(size.x / 1280.0, size.y / 720.0), 0.75, 1.8) * float(SIZES[size_pref]) * BASE_SCALE
+	var base := clampf(minf(size.x / 1280.0, size.y / 720.0), 0.70, 1.8)
+	return base * float(SIZES[size_pref]) * BASE_SCALE
 
 
 func _buttons() -> Array:
@@ -183,19 +184,29 @@ func _key(b: Dictionary) -> String:
 	return ("car/" if in_vehicle else "foot/") + String(b["action"])
 
 
-## Centre d'un bouton à l'écran (place choisie par le joueur, sinon place d'origine), toujours dans l'écran
+## Centre d'un bouton à l'écran (place choisie par le joueur, sinon place d'origine), toujours dans l'écran et la Safe Area
 func _center(b: Dictionary, s: float) -> Vector2:
+	var m: Dictionary = GameState.get_safe_margins(get_viewport())
+	var extra_r: float = maxf(0.0, m["right"] - 16.0)
+	var extra_b: float = maxf(0.0, m["bottom"] - 16.0)
+	var extra_l: float = maxf(0.0, m["left"] - 16.0)
 	var off: Vector2 = layout.get(_key(b), b["offset"])
 	var r: float = b["r"] * s
-	var c := size + off * s
-	return Vector2(clampf(c.x, r, size.x - r), clampf(c.y, r, size.y - r))
+	var c := size + off * s - Vector2(extra_r, extra_b)
+	return Vector2(clampf(c.x, r + extra_l, size.x - r - extra_r), clampf(c.y, r, size.y - r - extra_b))
 
 
-## Repos du joystick
+## Repos du joystick (éloigné de l'encoche, de la barre d'accueil et des zones courbées)
 func _joy_home(s: float) -> Vector2:
+	var m: Dictionary = GameState.get_safe_margins(get_viewport())
+	var extra_l: float = maxf(0.0, m["left"] - 16.0)
+	var extra_b: float = maxf(0.0, m["bottom"] - 16.0)
+	var extra_r: float = maxf(0.0, m["right"] - 16.0)
 	var off: Vector2 = layout.get("joy", Vector2(185.0, -175.0))
 	var jr := BASE_JOY * s
-	return Vector2(clampf(off.x * s, jr, size.x - jr), clampf(size.y + off.y * s, jr, size.y - jr))
+	var base_x := off.x * s + extra_l
+	var base_y := size.y + off.y * s - extra_b
+	return Vector2(clampf(base_x, jr + extra_l, size.x - jr - extra_r), clampf(base_y, jr, size.y - jr - extra_b))
 
 
 ## Le doigt qui se pose ici prend le joystick : bas de l'écran du côté du joystick (à droite s'il y a

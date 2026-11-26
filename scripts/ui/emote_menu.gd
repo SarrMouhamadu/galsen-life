@@ -5,6 +5,7 @@ extends PanelContainer
 const NetEmotes = preload("res://scripts/net/net_emotes.gd")
 
 var main
+var _grid: GridContainer
 
 
 func _ready() -> void:
@@ -23,6 +24,7 @@ func _ready() -> void:
 	sb.set_content_margin_all(10)
 	add_theme_stylebox_override("panel", sb)
 	var grid := GridContainer.new()
+	_grid = grid
 	grid.columns = 4
 	grid.add_theme_constant_override("h_separation", 6)
 	grid.add_theme_constant_override("v_separation", 6)
@@ -59,7 +61,25 @@ func _pick(clip: String) -> void:
 
 
 func toggle() -> void:
-	visible = not visible
+	if visible:
+		close()
+	else:
+		open()
+
+
+func open() -> void:
+	visible = true
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+	offset_bottom = -maxf(24.0, margins.bottom + 8.0)
+	var vp := get_viewport_rect().size if get_viewport() else Vector2(1280, 720)
+	var max_w: float = vp.x - margins.left - margins.right - 24.0
+	var cols := clampi(int(max_w / 140.0), 2, 5)
+	if _grid:
+		_grid.columns = cols
+		var btn_w: float = minf(150.0, (max_w / float(cols)) - 8.0)
+		for child in _grid.get_children():
+			if child is Button:
+				child.custom_minimum_size.x = btn_w
 
 
 func close() -> void:

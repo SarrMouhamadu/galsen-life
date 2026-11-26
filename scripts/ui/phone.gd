@@ -64,16 +64,22 @@ var _dragged := false
 func _ready() -> void:
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	custom_minimum_size = Vector2(W, H)
-	# En bas à droite, sous les boutons du haut
+	var vp := get_viewport_rect().size if get_viewport() else Vector2(1280, 720)
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+	var cur_w: float = minf(W, vp.x - margins.left - margins.right - 24.0)
+	var cur_h: float = minf(H, vp.y - margins.top - margins.bottom - 24.0)
+	custom_minimum_size = Vector2(cur_w, cur_h)
+	# En bas à droite, respecte l'encoche et la barre d'accueil
 	anchor_left = 1.0
 	anchor_right = 1.0
 	anchor_top = 1.0
 	anchor_bottom = 1.0
-	offset_left = -W - 24.0
-	offset_right = -24.0
-	offset_top = -H - 16.0
-	offset_bottom = -16.0
+	var r_off: float = margins.right + 16.0
+	var b_off: float = margins.bottom + 16.0
+	offset_left = -cur_w - r_off
+	offset_right = -r_off
+	offset_top = -cur_h - b_off
+	offset_bottom = -b_off
 	var frame := PanelContainer.new()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = BG
@@ -157,14 +163,22 @@ func _process(_delta: float) -> void:
 	if visible:
 		var m := int(GameState.game_minutes)
 		_clock.text = "%02d:%02d" % [m / 60, m % 60]
+		var vp := get_viewport_rect().size if get_viewport() else Vector2(1280, 720)
+		var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+		var cur_w: float = minf(W, vp.x - margins.left - margins.right - 24.0)
+		var cur_h: float = minf(H, vp.y - margins.top - margins.bottom - 24.0)
+		var r_off: float = margins.right + 16.0
+		var b_off: float = maxf(margins.bottom + 8.0, 16.0)
+		offset_right = -r_off
+		offset_left = -cur_w - r_off
 		var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
 		if kb_h > 0 and GameState.typing:
 			var target_b := -float(kb_h) - 10.0
 			offset_bottom = lerpf(offset_bottom, target_b, 0.4)
-			offset_top = offset_bottom - H
+			offset_top = offset_bottom - cur_h
 		else:
-			offset_bottom = lerpf(offset_bottom, -16.0, 0.4)
-			offset_top = offset_bottom - H
+			offset_bottom = lerpf(offset_bottom, -b_off, 0.4)
+			offset_top = offset_bottom - cur_h
 
 
 # --- Ouverture ---------------------------------------------------------------------------

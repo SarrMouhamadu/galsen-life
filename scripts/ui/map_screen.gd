@@ -10,6 +10,7 @@ const LABELLED := ["Place de l'Indépendance", "Marché Sandaga", "Grande Mosqu�
 var main
 var zoom := 1.0
 var center := Vector2.ZERO ## point du monde (x, z) au centre de l'écran
+var _bar: HBoxContainer
 var _dragging := false
 var _drag_moved := 0.0
 var _press_pos := Vector2.ZERO
@@ -20,6 +21,7 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
 	var bar := HBoxContainer.new()
+	_bar = bar
 	bar.position = Vector2(16, 16)
 	bar.add_theme_constant_override("separation", 10)
 	add_child(bar)
@@ -36,6 +38,9 @@ func _ready() -> void:
 
 func open() -> void:
 	visible = true
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+	if _bar:
+		_bar.position = Vector2(margins.left, margins.top)
 	_center_on_player()
 	var city = main.city
 	zoom = minf(size.x / city.bounds.size.x, size.y / city.bounds.size.y) * 2.2

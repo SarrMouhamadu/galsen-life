@@ -62,6 +62,14 @@ var _radio_locked := false
 var phone
 var emote_menu ## menu GESTES (saluer, danser...)
 
+var _gauges_panel: PanelContainer
+var _tr: VBoxContainer
+var _top_row: HBoxContainer
+var _map_btn: Button
+var _pause_btn: Button
+var _emote_btn: Button
+var _bottom_center: CenterContainer
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -82,6 +90,7 @@ func _ready() -> void:
 	panel.add_theme_stylebox_override("panel", _style(Color(0, 0, 0, 0.45)))
 	panel.position = Vector2(16, 16)
 	root.add_child(panel)
+	_gauges_panel = panel
 	var v := VBoxContainer.new()
 	panel.add_child(v)
 	_money = _label(22, Color("7cfc9a"))
@@ -165,6 +174,7 @@ func _ready() -> void:
 	root.add_child(tr)
 	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 16)
 	tr.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_tr = tr
 	var pause_btn := Button.new()
 	pause_btn.text = "  II  "
 	pause_btn.custom_minimum_size = Vector2(0, 38)
@@ -172,16 +182,19 @@ func _ready() -> void:
 	pause_btn.size_flags_horizontal = Control.SIZE_SHRINK_END
 	pause_btn.focus_mode = Control.FOCUS_NONE
 	pause_btn.pressed.connect(toggle_pause)
+	_pause_btn = pause_btn
 	var top_row := HBoxContainer.new()
 	top_row.alignment = BoxContainer.ALIGNMENT_END
 	top_row.add_theme_constant_override("separation", 5)
 	tr.add_child(top_row)
+	_top_row = top_row
 	var map_btn := Button.new()
 	map_btn.text = " CARTE "
 	map_btn.custom_minimum_size = Vector2(0, 38)
 	map_btn.add_theme_font_size_override("font_size", 14)
 	map_btn.focus_mode = Control.FOCUS_NONE
 	map_btn.pressed.connect(open_map)
+	_map_btn = map_btn
 	_chat_btn = Button.new()
 	_chat_btn.text = " 💬 CHAT "
 	_chat_btn.custom_minimum_size = Vector2(0, 38)
@@ -212,6 +225,7 @@ func _ready() -> void:
 	emote_btn.focus_mode = Control.FOCUS_NONE
 	emote_btn.pressed.connect(func(): emote_menu.toggle())
 	top_row.add_child(emote_btn)
+	_emote_btn = emote_btn
 	# Chat vocal : maintenir pour parler ou appuyer pour basculer (V / B au clavier)
 	_mic_btn = Button.new()
 	_mic_btn.text = " 🎙️ MICRO "
@@ -275,6 +289,7 @@ func _ready() -> void:
 	bc.offset_bottom = -130
 	bc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(bc)
+	_bottom_center = bc
 	_prompt_panel = PanelContainer.new()
 	_prompt_panel.add_theme_stylebox_override("panel", _style(Color(0, 0, 0, 0.65)))
 	_prompt_panel.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -314,6 +329,89 @@ func _ready() -> void:
 	root.add_child(emote_menu)
 	_build_intro(root)
 	GameState.notify.connect(_on_notify)
+	get_viewport().size_changed.connect(apply_responsive_layout)
+	apply_responsive_layout()
+
+
+## Répartition dynamique et Safe Area (encoche, Dynamic Island, barre d'accueil, bords arrondis)
+func apply_responsive_layout() -> void:
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+	var vp: Vector2 = get_viewport().get_visible_rect().size if get_viewport() else Vector2(1280, 720)
+	
+	# 1. Panneau des jauges (en haut à gauche, respecte l'encoche et les coins arrondis)
+	if _gauges_panel and is_instance_valid(_gauges_panel):
+		_gauges_panel.position = Vector2(margins.left, margins.top)
+	
+	# 2. Dock vocal (sous les jauges)
+	if _voice_dock and is_instance_valid(_voice_dock):
+		var gp_h: float = _gauges_panel.size.y if _gauges_panel and _gauges_panel.size.y > 0 else 156.0
+		_voice_dock.position = Vector2(margins.left, margins.top + gp_h + 8.0)
+	
+	# 3. Notifications (sous le dock vocal)
+	if _notes and is_instance_valid(_notes):
+		var vd_y: float = _voice_dock.position.y if _voice_dock else (margins.top + 160.0)
+		var vd_h: float = (_voice_dock.size.y + 8.0) if (_voice_dock and _voice_dock.visible and _voice_dock.size.y > 0) else 0.0
+		_notes.position = Vector2(margins.left, vd_y + vd_h + 4.0)
+	
+	# 4. Colonne de droite (minimap, boutons du haut, heure, vitesse)
+	if _tr and is_instance_valid(_tr):
+		_tr.anchor_left = 1.0
+		_tr.anchor_right = 1.0
+		_tr.anchor_top = 0.0
+		_tr.anchor_bottom = 0.0
+		_tr.offset_right = -margins.right
+		_tr.offset_top = margins.top
+	
+	# 5. Adaptabilité des boutons du haut selon la largeur de l'écran
+	var compact := vp.x < 1180.0 or GameState.touch_ui
+	if _map_btn and is_instance_valid(_map_btn):
+		_map_btn.text = " 🗺️ " if compact else " CARTE "
+	if _pause_btn and is_instance_valid(_pause_btn):
+		_pause_btn.text = " ⏸ " if compact else "  II  "
+	if _chat_btn and is_instance_valid(_chat_btn):
+		_chat_btn.text = " 💬 " if compact else " 💬 CHAT "
+	if _services_btn and is_instance_valid(_services_btn):
+		_services_btn.text = " 💼 " if compact else " MÉTIERS "
+	if _phone_btn and is_instance_valid(_phone_btn):
+		_phone_btn.text = " 📱 " if compact else " TÉL "
+	if _emote_btn and is_instance_valid(_emote_btn):
+		_emote_btn.text = " 🎭 " if compact else " GESTES "
+	
+	# Sur mobile avec dock vocal, masquer les doublons micro/radio du haut pour libérer 200px
+	if GameState.touch_ui:
+		if _mic_btn and is_instance_valid(_mic_btn):
+			_mic_btn.visible = false
+		if _radio_btn and is_instance_valid(_radio_btn):
+			_radio_btn.visible = false
+	
+	# 6. Bannière de parole (centrée sans chevauchement)
+	if _talk_banner and is_instance_valid(_talk_banner):
+		var gp_w: float = _gauges_panel.size.x if _gauges_panel and _gauges_panel.size.x > 0 else 180.0
+		var tr_w: float = _tr.size.x if _tr and _tr.size.x > 0 else 180.0
+		_talk_banner.offset_left = margins.left + gp_w + 12.0
+		_talk_banner.offset_right = -(margins.right + tr_w + 12.0)
+		_talk_banner.offset_top = margins.top
+		_talk_banner.offset_bottom = margins.top + 38.0
+	
+	# 7. Objectif & Police
+	if _objective and is_instance_valid(_objective):
+		_objective.offset_left = margins.left + 200.0
+		_objective.offset_right = -(margins.right + 190.0)
+		_objective.offset_top = margins.top + 46.0
+	if _police and is_instance_valid(_police):
+		_police.offset_left = margins.left + 200.0
+		_police.offset_right = -(margins.right + 190.0)
+		_police.offset_top = margins.top + 90.0
+	
+	# 8. Invite d'action (en bas au centre, au-dessus de la barre d'accueil iPhone)
+	if _bottom_center and is_instance_valid(_bottom_center):
+		var bot_m: float = maxf(130.0, 90.0 + margins.bottom)
+		_bottom_center.offset_bottom = -bot_m
+		_bottom_center.offset_top = -bot_m - 60.0
+	
+	# 9. Repositionnement du panneau de chat
+	if _chat_panel and _chat_panel.visible:
+		_position_chat_panel()
 
 
 func _style(color: Color) -> StyleBoxFlat:
@@ -378,10 +476,15 @@ func _build_pause(root: Control) -> void:
 	panel.add_theme_stylebox_override("panel", _style(Color(0.08, 0.08, 0.1, 0.95)))
 	cc.add_child(panel)
 	_pause_main = panel
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.custom_minimum_size = Vector2(380, 0)
+	panel.add_child(scroll)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 12)
-	v.custom_minimum_size = Vector2(380, 0)
-	panel.add_child(v)
+	v.add_theme_constant_override("separation", 10)
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(v)
 	var title := _label(40, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
 	title.text = "PAUSE"
 	v.add_child(title)
@@ -447,10 +550,15 @@ func _build_touch_menu(cc: Control, root: Control) -> void:
 	panel.visible = false
 	cc.add_child(panel)
 	_touch_menu = panel
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.custom_minimum_size = Vector2(380, 0)
+	panel.add_child(scroll)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 12)
-	v.custom_minimum_size = Vector2(380, 0)
-	panel.add_child(v)
+	v.add_theme_constant_override("separation", 10)
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(v)
 	var title := _label(32, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
 	title.text = "COMMANDES TACTILES"
 	v.add_child(title)
@@ -522,16 +630,21 @@ func show_choices(title_text: String, options: Array, on_cancel: Callable) -> vo
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", _style(Color(0.08, 0.08, 0.11, 0.96)))
 	cc.add_child(panel)
+	var vp := get_viewport().get_visible_rect().size if get_viewport() else Vector2(1280, 720)
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+	var max_w: float = clampf(vp.x - margins.left - margins.right - 24.0, 280.0, 520.0)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
-	v.custom_minimum_size = Vector2(490, 0)
+	v.custom_minimum_size = Vector2(max_w, 0)
 	panel.add_child(v)
-	var t := _label(24, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
+	var t := _label(22, Color("fdef42"), HORIZONTAL_ALIGNMENT_CENTER)
 	t.text = title_text
+	t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(t)
 	var scroll := ScrollContainer.new()
 	var visible_items := mini(options.size(), 7)
-	scroll.custom_minimum_size = Vector2(480, visible_items * 52 + 10)
+	var max_h: float = maxf(160.0, vp.y - margins.top - margins.bottom - 170.0)
+	scroll.custom_minimum_size = Vector2(max_w - 10.0, minf(visible_items * 52 + 10, max_h))
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	v.add_child(scroll)
@@ -920,10 +1033,11 @@ func _position_chat_panel() -> void:
 	if _chat_panel == null:
 		return
 	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var margins: Dictionary = GameState.get_safe_margins(get_viewport())
 	var kb_h := DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
-	var bot_m := float(kb_h) + 12.0 if kb_h > 0 else 60.0
-	_chat_panel.position = Vector2(16, vp.y - bot_m - _chat_panel.size.y)
-	_chat_panel.custom_minimum_size.x = minf(540, vp.x - 32)
+	var bot_m: float = float(kb_h) + 12.0 if kb_h > 0 else maxf(60.0, margins.bottom + 12.0)
+	_chat_panel.custom_minimum_size.x = clampf(vp.x - margins.left - margins.right, 280.0, 540.0)
+	_chat_panel.position = Vector2(margins.left, vp.y - bot_m - _chat_panel.size.y)
 
 
 func _on_chat(from: String, text: String) -> void:
@@ -1069,7 +1183,17 @@ func toggle_pause() -> void:
 		_stats.text = "Courses de taxi : %d\nLivraisons : %d\nCafés vendus : %d\n\nSac : %s" % [
 			GameState.stats["courses_taxi"], GameState.stats["livraisons"], GameState.stats["cafes_vendus"], GameState.inventory_text()]
 		_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_tut_btn.visible = main.tutorial != null and main.tutorial.active()
+		_tut_btn.visible = main != null and main.tutorial != null and main.tutorial.active()
+		var vp := get_viewport().get_visible_rect().size if get_viewport() else Vector2(1280, 720)
+		var margins: Dictionary = GameState.get_safe_margins(get_viewport())
+		if _pause_main:
+			var scroll: ScrollContainer = _pause_main.get_child(0) if _pause_main.get_child_count() > 0 and _pause_main.get_child(0) is ScrollContainer else null
+			if scroll:
+				scroll.custom_minimum_size.y = minf(540.0, maxf(220.0, vp.y - margins.top - margins.bottom - 48.0))
+		if _touch_menu:
+			var scroll: ScrollContainer = _touch_menu.get_child(0) if _touch_menu.get_child_count() > 0 and _touch_menu.get_child(0) is ScrollContainer else null
+			if scroll:
+				scroll.custom_minimum_size.y = minf(540.0, maxf(220.0, vp.y - margins.top - margins.bottom - 48.0))
 
 
 ## Étoiles de recherche, dessinées (la police par défaut n'a pas le glyphe ★).
