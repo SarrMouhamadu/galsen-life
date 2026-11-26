@@ -49,6 +49,8 @@ var tuto := {} ## guide des premiers pas (scripts/jobs/tutorial.gd) : {step, don
 var waypoint = null
 ## Niveau de recherche de la police (0 à 5 étoiles). Non sauvegardé.
 var wanted := 0
+## Mode d'affichage clair / sombre de l'interface
+var light_mode := false
 
 var touch_ui := false
 var touch_move := Vector2.ZERO
