@@ -17,6 +17,8 @@ TRACKS = [
     ("glcij6-S11E", "audio/music/el_hadji_ndiaye_weet.mp3", "El Hadji Ndiaye - Weet"),
     ("MIAf60xzjZo", "audio/music/pape_et_cheikh_sogni.mp3", "Pape & Cheikh - Sogni"),
     ("k5eDy7N_zks", "audio/music/choeurs_senegal_wolof.mp3", "African Choirs - Wolof Song"),
+    ("ONFTONKdR_4", "audio/music/ashs_the_best_dellusil.mp3", "Ashs The Best - Dellusil"),
+    ("3erGLa8nhyc", "audio/music/mamy_mbaye_teranga_joj.mp3", "Mamy Mbaye - Teranga (JOJ Dakar 2026)"),
 ]
 
 for video_id, out_path, title in TRACKS:

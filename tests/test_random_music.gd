@@ -16,7 +16,7 @@ func _run() -> void:
 	for s in audio._track_streams:
 		if s != null:
 			loaded_count += 1
-	assert(loaded_count >= 19, "Au moins 19 morceaux de musique doivent être chargés")
+	assert(loaded_count >= 21, "Au moins 21 morceaux de musique doivent être chargés (trouvé: %d)" % loaded_count)
 	print("OK: %d morceaux de musique chargés dans la playlist" % loaded_count)
 
 	# 2. Vérification que les MP3 ne sont pas en boucle unique figée (permettant le shuffle à la fin)
@@ -32,6 +32,7 @@ func _run() -> void:
 			counts[i] = 0
 
 	var priority_hits := 0
+	var joj_hits := 0
 	for attempt in 200:
 		var prev_idx: int = audio.current_track_idx
 		audio.play_random_track(true)
@@ -40,18 +41,30 @@ func _run() -> void:
 		counts[new_idx] = counts.get(new_idx, 0) + 1
 		if new_idx in audio.PRIORITY_INDICES:
 			priority_hits += 1
+		if new_idx in audio.JOJ_INDICES:
+			joj_hits += 1
 
 	print("Répartition sur 200 tirages aléatoires :")
 	for k in counts:
 		print(" - Piste [%d] %s : %d fois" % [k, audio.TRACK_NAMES[k], counts[k]])
-	print("Part des morceaux prioritaires (Touré Kunda, Xalam, Souleymane Faye) : %d / 200 (%.1f%%)" % [priority_hits, float(priority_hits) / 2.0])
-	assert(priority_hits >= 80, "Les morceaux prioritaires doivent avoir une part prépondérante dans les tirages")
-	print("OK: La sélection aléatoire pondérée privilégie bien les morceaux demandés")
+	print("Part des classiques Touré Kunda / Xalam : %d / 200 (%.1f%%)" % [priority_hits, float(priority_hits) / 2.0])
+	print("Part des hymnes et musiques JOJ Dakar 2026 : %d / 200 (%.1f%%)" % [joj_hits, float(joj_hits) / 2.0])
+	assert(priority_hits >= 40, "Les morceaux classiques doivent être régulièrement joués")
+	assert(joj_hits >= 30, "Les morceaux des JOJ Dakar 2026 ne doivent pas être oubliés et doivent être fréquemment joués")
+	print("OK: La sélection aléatoire pondérée assure une présence forte et équitable des JOJ Dakar 2026 et des hits sénégalais")
 
-	# 4. Test de find_track
+	# 4. Test de find_track pour JOJ et nouveaux morceaux
 	var sabar_idx: int = audio.find_track("Sabar, Tama & Mbeur")
 	assert(sabar_idx >= 0, "find_track doit trouver le morceau de lutte")
 	print("OK: find_track('Sabar, Tama & Mbeur') -> indice %d" % sabar_idx)
+
+	var ashs_idx: int = audio.find_track("Dellusil")
+	assert(ashs_idx >= 0 and "Ashs The Best" in audio.TRACK_NAMES[ashs_idx], "find_track doit trouver le hit d'Ashs The Best")
+	print("OK: find_track('Dellusil') -> indice %d (%s)" % [ashs_idx, audio.TRACK_NAMES[ashs_idx]])
+
+	var joj_teranga_idx: int = audio.find_track("Teranga")
+	assert(joj_teranga_idx >= 0 and "JOJ Dakar 2026" in audio.TRACK_NAMES[joj_teranga_idx], "find_track doit trouver Teranga des JOJ 2026")
+	print("OK: find_track('Teranga') -> indice %d (%s)" % [joj_teranga_idx, audio.TRACK_NAMES[joj_teranga_idx]])
 
 	# 4. Test du signal finished et enchaînement aléatoire
 	var old_track: int = audio.current_track_idx

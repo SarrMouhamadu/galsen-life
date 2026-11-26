@@ -1042,12 +1042,14 @@ func _music_app() -> void:
 		"Ninki Nanka — Hymne mythique de Xalam inspiré de la légende du dragon Ninki Nanka.",
 		"Natalia — Balade afro-mandingue envoûtante et mélodique de Touré Kunda.",
 		"Duunya — Réflexion poétique et philosophique de Touré Kunda sur la vie et le destin.",
+		"Dellusil — Le hit envoûtant et incontournable d'Ashs The Best. Voix d'or et mélodie sahélienne moderne.",
 		"Miniyamba — Le grand hymne traditionnel mandingue revisité avec la voix puissante de Coumba Gawlo.",
 		"Reference — Hip-hop mbalax sénégalais de Books feat. Jas, production signée Ama Diop.",
 		"Massa Thiono — Morceau acoustique profond de Diogal Sakho (Archive INA). Guitare folk et chant wolof.",
 		"Weet — La voix poétique et engagée d'El Hadji Ndiaye. Guitare acoustique et émotion pure.",
 		"Sogni — Le duo légendaire Pape & Cheikh aux accents folk acoustiques de Dakar.",
 		"Wolof Song — Polyphonies vocales traditionnelles du Sénégal et chœurs sacrés.",
+		"Teranga — La chanson officielle des Jeux Olympiques de la Jeunesse Dakar 2026 par Mamy Mbaye. Rythmes chaleureux de l'hospitalité sénégalaise.",
 		"Hymne officiel des JOJ Dakar 2026 interprété par Baaba Maal.",
 		"Chant patriotique et traditionnel légendaire interprété par Kiné Lam lors de la cérémonie des JOJ Dakar 2026.",
 		"Générique officiel JOJ Dakar 2026 composé par Iss 814 Beats. Rythme électro-mbalax énergique et moderne.",
@@ -1057,7 +1059,7 @@ func _music_app() -> void:
 		"Galsen Mbalax FM : Groove urbain dakarois non-stop avec balafon et guitare."
 	]
 
-	_content.add_child(_note("🎲 Playlist aléatoire active : à chaque entrée dans le jeu, une musique est tirée au sort (avec priorité à Touré Kunda, Xalam et Souleymane Faye)."))
+	_content.add_child(_note("🎲 Playlist aléatoire active : shuffle complet sans répétition immédiate, incluant tous les hymnes des JOJ Dakar 2026 et les grands hits sénégalais !"))
 
 	for i in Audio.TRACK_NAMES.size():
 		var box := VBoxContainer.new()

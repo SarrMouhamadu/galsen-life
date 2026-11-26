@@ -14,9 +14,13 @@ var _radio_task := -1
 var _track_samples: Array = [[], [], []]
 var _track_streams: Array = []
 var current_track_idx := 0
+var _played_history: Array[int] = []
 
 # Morceaux privilégiés (Touré Kunda, Xalam, Souleymane Faye) : indices 0 à 7
 const PRIORITY_INDICES: Array[int] = [0, 1, 2, 3, 4, 5, 6, 7]
+
+# Morceaux des Jeux Olympiques de la Jeunesse (JOJ Dakar 2026) : indices 15 à 20
+const JOJ_INDICES: Array[int] = [15, 16, 17, 18, 19, 20]
 
 const TRACK_NAMES := [
 	# --- Morceaux Prioritaires (Touré Kunda, Xalam, Souleymane Faye) ---
@@ -29,7 +33,8 @@ const TRACK_NAMES := [
 	"⭐ 🇸🇳 Natalia — Touré Kunda",
 	"⭐ 🇸🇳 Duunya — Touré Kunda",
 
-	# --- Grands Classiques & Musiques du Sénégal ---
+	# --- Hits Sénégalais & Musiques Urbaines ---
+	"🇸🇳 Dellusil — Ashs The Best",
 	"🇸🇳 Miniyamba — Coumba Gawlo",
 	"🇸🇳 Reference — Books feat. Jas (Prod. Ama Diop)",
 	"🇸🇳 Massa Thiono — Diogal Sakho",
@@ -37,7 +42,8 @@ const TRACK_NAMES := [
 	"🇸🇳 Sogni — Pape & Cheikh",
 	"🇸🇳 Chœurs du Sénégal — Wolof Song",
 
-	# --- JOJ Dakar 2026 & Lamb (Arènes) ---
+	# --- JOJ Dakar 2026 (Jeux Olympiques de la Jeunesse) & Lamb ---
+	"🏅 Teranga (Chanson Officielle JOJ Dakar 2026) — Mamy Mbaye",
 	"🏅 JOJ Dakar 2026 (Hymne Officiel) — Baaba Maal",
 	"🇸🇳 Niany Bagne Na — Kiné Lam",
 	"🏅 Générique JOJ 2026 — Iss 814 Beats",
@@ -58,12 +64,14 @@ const MUSIC_FILES := [
 	"res://audio/music/xalam_ninki_nanka.mp3",
 	"res://audio/music/toure_kunda_natalia.mp3",
 	"res://audio/music/toure_kunda_duunya.mp3",
+	"res://audio/music/ashs_the_best_dellusil.mp3",
 	"res://audio/music/coumba_gawlo_miniyamba.mp3",
 	"res://audio/music/books_jas_reference.mp3",
 	"res://audio/music/diogal_sakho_massa_thiono.mp3",
 	"res://audio/music/el_hadji_ndiaye_weet.mp3",
 	"res://audio/music/pape_et_cheikh_sogni.mp3",
 	"res://audio/music/choeurs_senegal_wolof.mp3",
+	"res://audio/music/mamy_mbaye_teranga_joj.mp3",
 	"res://audio/music/baaba_maal_joj.mp3",
 	"res://audio/music/kine_lam_niany.mp3",
 	"res://audio/music/iss814_joj.mp3",
@@ -136,8 +144,12 @@ func _process(_delta: float) -> void:
 	if _radio_task != -1 and WorkerThreadPool.is_task_completed(_radio_task):
 		WorkerThreadPool.wait_for_task_completion(_radio_task)
 		_radio_task = -1
-		_track_streams[19] = _wav(_track_samples[0], false)
-		_track_streams[20] = _wav(_track_samples[2], false)
+		var proc_idx_0: int = MUSIC_FILES.size()
+		var proc_idx_1: int = MUSIC_FILES.size() + 1
+		if proc_idx_0 < _track_streams.size():
+			_track_streams[proc_idx_0] = _wav(_track_samples[0], false)
+		if proc_idx_1 < _track_streams.size():
+			_track_streams[proc_idx_1] = _wav(_track_samples[2], false)
 		if _radio.stream == null and _track_streams[current_track_idx] != null:
 			_radio.stream = _track_streams[current_track_idx]
 			if _radio_wanted:
@@ -267,25 +279,36 @@ func next_radio_track() -> void:
 	set_radio_track((current_track_idx + 1) % _track_streams.size())
 
 
-## Sélectionne et joue un morceau aléatoire parmi les morceaux disponibles (avec priorité aux morceaux phares)
+## Sélectionne et joue un morceau aléatoire parmi les morceaux disponibles (rotation complète équitable avec priorité aux hymnes JOJ 2026 et classiques)
 func play_random_track(avoid_current: bool = true) -> void:
 	var available: Array[int] = []
 	for i in _track_streams.size():
 		if _track_streams[i] != null:
 			if not avoid_current or i != current_track_idx:
-				var weight: int = 3 if (i in PRIORITY_INDICES) else 1
+				if _track_streams.size() > 5 and i in _played_history:
+					continue
+				var weight: int = 2 if (i in JOJ_INDICES or i in PRIORITY_INDICES) else 1
 				for w in weight:
 					available.append(i)
-	# Si aucun autre morceau n'est disponible pour éviter la répétition, prendre tous les morceaux valides
+	# Si l'historique a filtré trop de morceaux, vider l'historique et tirer parmi tous les morceaux
+	if available.is_empty():
+		_played_history.clear()
+		for i in _track_streams.size():
+			if _track_streams[i] != null:
+				if not avoid_current or i != current_track_idx:
+					var weight: int = 2 if (i in JOJ_INDICES or i in PRIORITY_INDICES) else 1
+					for w in weight:
+						available.append(i)
 	if available.is_empty():
 		for i in _track_streams.size():
 			if _track_streams[i] != null:
-				var weight: int = 3 if (i in PRIORITY_INDICES) else 1
-				for w in weight:
-					available.append(i)
+				available.append(i)
 	if available.is_empty():
 		return
 	var rand_idx: int = available[randi() % available.size()]
+	_played_history.append(rand_idx)
+	if _played_history.size() > 6:
+		_played_history.pop_front()
 	_radio_wanted = true
 	set_radio_track(rand_idx)
 
