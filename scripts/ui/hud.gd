@@ -1351,7 +1351,8 @@ func _process(delta: float) -> void:
 		rp_txt = main.prison.status
 	if trip == "" and arena_txt == "" and rp_txt != "":
 		trip = rp_txt
-	_objective.text = trip if trip != "" else (arena_txt if arena_txt != "" else main.jobs.objective)
+	var mission_txt: String = main.missions.objective if (main != null and main.get("missions") != null) else ""
+	_objective.text = trip if trip != "" else (arena_txt if arena_txt != "" else (mission_txt if mission_txt != "" else main.jobs.objective))
 	if _objective.text == "" and main.tutorial:
 		_objective.text = main.tutorial.objective
 	_police.text = main.police.status

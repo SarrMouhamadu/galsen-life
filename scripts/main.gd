@@ -42,6 +42,7 @@ const Prison = preload("res://scripts/police/prison.gd")
 const Fishing = preload("res://scripts/world/fishing.gd")
 const Cooking = preload("res://scripts/world/cooking.gd")
 const Tutorial = preload("res://scripts/jobs/tutorial.gd")
+const MissionManager = preload("res://scripts/jobs/mission_manager.gd")
 const ShaderWarmup = preload("res://scripts/world/shader_warmup.gd")
 const Stade = preload("res://scripts/world/stade.gd")
 const Ter = preload("res://scripts/transport/ter.gd")
@@ -99,6 +100,7 @@ var city_hall = null ## mairie, élections, banque en ligne
 var prison = null ## garde à vue au commissariat
 var fishing = null ## pêche à l'Anse Bernard
 var tutorial = null ## guide des premiers pas (nouveaux joueurs)
+var missions = null ## missions et quêtes de Dakar (mission_manager.gd)
 var cooking = null ## cuisine à la maison
 var hud
 var sun: DirectionalLight3D
@@ -314,6 +316,12 @@ func _ready() -> void:
 	tutorial = Tutorial.new()
 	tutorial.main = self
 	add_child(tutorial)
+	missions = MissionManager.new()
+	missions.main = self
+	missions.city = city
+	missions.player = player
+	add_child(missions)
+	player.providers.append(missions)
 	player.providers.append(interiors)
 	# Sans position sauvegardée, on se réveille chez soi
 	if not GameState.has_saved_position and housing.home_position() != null:

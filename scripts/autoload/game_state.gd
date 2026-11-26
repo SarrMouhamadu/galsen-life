@@ -45,6 +45,7 @@ var rental := {}
 ## Faction en ligne (scripts/net/factions.gd) : {id, xp, civil (tenue de ville pendant le service)}
 var faction := {}
 var tuto := {} ## guide des premiers pas (scripts/jobs/tutorial.gd) : {step, done}
+var missions := {"active": "", "step": 0, "completed": []} ## missions et quêtes de Dakar (scripts/jobs/mission_manager.gd)
 ## Point GPS posé sur la carte (null = aucun)
 var waypoint = null
 ## Niveau de recherche de la police (0 à 5 étoiles). Non sauvegardé.
@@ -513,6 +514,7 @@ func save_game() -> void:
 		"vehicles": vehicles,
 		"rental": rental,
 		"tuto": tuto,
+		"missions": missions,
 	}
 	if Net.is_server:
 		return
@@ -599,6 +601,8 @@ func apply_save(data: Dictionary) -> void:
 	# Parties d'avant le guide des premiers pas : elles le sautent
 	var tt = data.get("tuto", {"done": true})
 	tuto = tt if tt is Dictionary else {"done": true}
+	var ms = data.get("missions", {"active": "", "step": 0, "completed": []})
+	missions = ms if ms is Dictionary else {"active": "", "step": 0, "completed": []}
 
 
 func new_game() -> void:
@@ -631,6 +635,7 @@ func _reset_state() -> void:
 	garde_robe = {}
 	faction = {}
 	tuto = {}
+	missions = {"active": "", "step": 0, "completed": []}
 	vehicles = []
 	rental = {}
 	waypoint = null

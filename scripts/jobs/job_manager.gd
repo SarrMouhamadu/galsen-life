@@ -94,6 +94,8 @@ func _process(delta: float) -> void:
 			_update_taxi(pos, veh)
 		"livraison":
 			_update_livraison(delta, pos)
+		"livraison_maiga":
+			_update_livraison_maiga(delta, pos)
 		"cafe":
 			_update_cafe(delta, pos)
 		"entreprise":
@@ -184,6 +186,38 @@ func _update_livraison(delta: float, pos: Vector3) -> void:
 		GameState.notify.emit("Retourne chez Adja pour une autre livraison (ou parle-lui pour finir le service et toucher ta paie).")
 
 
+# --- Livraison Fast-Food Maïga Express --------------------------------------
+
+func _start_livraison_maiga(pos: Vector3) -> void:
+	var a: Dictionary = city.random_address(pos, 110.0, 280.0)
+	var dist := _flat_dist(pos, a["pos"])
+	time_left = dist / 6.5 + 28.0
+	job = "livraison_maiga"
+	_set_target(a["name"], a["pos"], Color("f59e0b"))
+	GameState.notify.emit("Amadou Maïga te confie 2 sandwichs complets tout chauds. Fonce vite livrer le client !")
+
+
+func _update_livraison_maiga(delta: float, pos: Vector3) -> void:
+	time_left -= delta
+	var d := _flat_dist(pos, target_pos)
+	objective = "LIVRAISON MAÏGA — %s (%d m) — %d s" % [target_name, int(d), maxi(0, int(time_left))]
+	if d < 5.5:
+		var pay := 1200
+		if time_left > 0.0:
+			pay += int(time_left) * 30
+			GameState.notify.emit("« Sandwich bi dafa saf ! » Le client te laisse un généreux pourboire.")
+		else:
+			pay = 600
+			GameState.notify.emit("« Dafa tardé ! » (c'est en retard !) Paiement de base.")
+		if employment and employment.shift == "maiga":
+			employment.earn("maiga", pay, "Livraison Maïga faite")
+		else:
+			GameState.add_money(pay, "Livraison Maïga Express")
+		GameState.stats["livraisons_maiga"] = GameState.stats.get("livraisons_maiga", 0) + 1
+		cancel()
+		GameState.notify.emit("Livraison terminée ! Passe au restaurant Maïga pour une autre commande.")
+
+
 # --- Café Touba --------------------------------------------------------------
 
 func _update_cafe(delta: float, pos: Vector3) -> void:
@@ -259,15 +293,36 @@ func try_interact() -> bool:
 			else:
 				GameState.notify.emit("Il te faut %s pour manger." % GameState.fcfa(DIBI_PRICE))
 		"maiga":
-			if not on_foot:
+			if not on_foot and job != "livraison_maiga":
 				return false
-			if GameState.spend(MAIGA_PRICE):
-				GameState.hunger = 100.0
-				GameState.health = minf(100.0, GameState.health + 30.0)
-				GameState.stats["maiga"] = GameState.stats.get("maiga", 0) + 1
-				GameState.notify.emit("Sandwich Maïga bu neex ! Pain brochette, spaghetti chaud & piment doux (-%s)." % GameState.fcfa(MAIGA_PRICE))
+			if job == "livraison_maiga":
+				GameState.notify.emit("Tu as déjà une livraison Maïga en cours !")
+				return true
+			if main and main.hud:
+				var choices: Array = [
+					["Manger un sandwich Maïga (%s)" % GameState.fcfa(MAIGA_PRICE), func():
+						if GameState.spend(MAIGA_PRICE):
+							GameState.hunger = 100.0
+							GameState.health = minf(100.0, GameState.health + 30.0)
+							GameState.stats["maiga"] = GameState.stats.get("maiga", 0) + 1
+							GameState.notify.emit("Sandwich Maïga bu neex ! Pain brochette, spaghetti chaud & piment doux (-%s)." % GameState.fcfa(MAIGA_PRICE))
+						else:
+							GameState.notify.emit("Il te faut %s pour manger chez Maïga." % GameState.fcfa(MAIGA_PRICE))
+					],
+					["Prendre une livraison Maïga Express", func():
+						_start_livraison_maiga(player.get_world_position())
+					]
+				]
+				main.hud.show_choices("Restaurant Maïga — Fast Food Dakarais", choices, func(): pass)
+				return true
 			else:
-				GameState.notify.emit("Il te faut %s pour manger chez Maïga." % GameState.fcfa(MAIGA_PRICE))
+				if GameState.spend(MAIGA_PRICE):
+					GameState.hunger = 100.0
+					GameState.health = minf(100.0, GameState.health + 30.0)
+					GameState.stats["maiga"] = GameState.stats.get("maiga", 0) + 1
+					GameState.notify.emit("Sandwich Maïga bu neex ! (-%s)." % GameState.fcfa(MAIGA_PRICE))
+				else:
+					GameState.notify.emit("Il te faut %s pour manger chez Maïga." % GameState.fcfa(MAIGA_PRICE))
 	return true
 
 
@@ -287,8 +342,8 @@ func get_hint() -> String:
 			if on_foot:
 				return "Manger un dibi (%s)" % GameState.fcfa(DIBI_PRICE)
 		"maiga":
-			if on_foot:
-				return "Manger chez Maïga (%s)" % GameState.fcfa(MAIGA_PRICE)
+			if on_foot or job == "livraison_maiga":
+				return "Restaurant Maïga (Commander / Livraison)"
 	return ""
 
 

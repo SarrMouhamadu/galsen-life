@@ -13,6 +13,7 @@ const NPC := {
 }
 const APPS := [
 	["Messages", "messages", Color("2a9d8f")],
+	["Missions (Quêtes)", "missions", Color("f59e0b")],
 	["Wave", "wave", Color("1dc8ff")],
 	["Banque (compte, virements)", "bank", Color("1d3557")],
 	["Orange Money", "om", Color("ff7900")],
@@ -236,6 +237,8 @@ func _show(app: String) -> void:
 			_home()
 		"messages":
 			_messages()
+		"missions":
+			_missions_app()
 		"chat":
 			_chat()
 		"wave", "om":
@@ -1435,6 +1438,115 @@ Paie : %s — Horaires : %s
 		_content.add_child(_button("GPS vers l'auto-école", func():
 			main.gps.set_waypoint(sp, "Auto-école Teranga")
 			close(), Color("1d3557")))
+
+
+# --- Missions & Quêtes urbaines de Dakar --------------------------------------------
+
+func _missions_app() -> void:
+	_title.text = "Missions & Quêtes Dakar"
+	if main == null or main.missions == null:
+		_content.add_child(_note("Système de missions indisponible."))
+		return
+
+	var mgr = main.missions
+	var completed_list: Array = GameState.missions.get("completed", [])
+
+	# 1. Mission en cours (si active)
+	if mgr.has_active_mission():
+		var m: Dictionary = mgr.get_active_mission()
+		var steps: Array = m["steps"]
+		var cur_step: int = mgr.step_idx
+
+		var active_card := PanelContainer.new()
+		var ac_sb := StyleBoxFlat.new()
+		ac_sb.bg_color = Color(0.18, 0.12, 0.05, 0.95)
+		ac_sb.border_color = Color("f59e0b")
+		ac_sb.set_border_width_all(2)
+		ac_sb.set_corner_radius_all(10)
+		ac_sb.content_margin_left = 10
+		ac_sb.content_margin_right = 10
+		ac_sb.content_margin_top = 8
+		ac_sb.content_margin_bottom = 8
+		active_card.add_theme_stylebox_override("panel", ac_sb)
+		_content.add_child(active_card)
+
+		var ac_vbox := VBoxContainer.new()
+		ac_vbox.add_theme_constant_override("separation", 4)
+		active_card.add_child(ac_vbox)
+
+		ac_vbox.add_child(_label("🎯 EN COURS : %s %s" % [m["icon"], m["title"]], 15, Color("facc15")))
+		ac_vbox.add_child(_note("Donneur d'ordre : %s — Prime : %s" % [m["giver"], GameState.fcfa(m["reward"])]))
+
+		if cur_step < steps.size():
+			var st: Dictionary = steps[cur_step]
+			var pp: Vector3 = main.player.get_world_position() if main.player else Vector3.ZERO
+			var dist := int(Vector2(pp.x - mgr.target_pos.x, pp.z - mgr.target_pos.z).length())
+			var timer_txt := " — ⏱ %ds" % int(mgr.time_left) if mgr.time_left > 0.0 else ""
+			ac_vbox.add_child(_label("Étape %d/%d : %s (%dm)%s" % [cur_step + 1, steps.size(), st["text"], dist, timer_txt], 13, Color.WHITE))
+
+		var btn_row := HBoxContainer.new()
+		btn_row.add_theme_constant_override("separation", 6)
+		ac_vbox.add_child(btn_row)
+
+		var b_gps := _button("Activer GPS", func():
+			main.gps.set_waypoint(mgr.target_pos, mgr.target_name)
+			close(), Color("6a4c93"))
+		b_gps.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_row.add_child(b_gps)
+
+		var b_abort := _button("Abandonner", func():
+			mgr.cancel_mission()
+			_show("missions"), Color("991b1b"))
+		b_abort.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_row.add_child(b_abort)
+
+	# 2. Liste de toutes les missions disponibles
+	_content.add_child(_label("Contrats urbains disponibles (%d terminées)" % completed_list.size(), 14, Color("fef08a")))
+	_content.add_child(_note("Accepte une mission pour guider ton GPS et remporter la prime."))
+
+	for id in mgr.MISSIONS:
+		var m: Dictionary = mgr.MISSIONS[id]
+		var is_active: bool = (mgr.active_id == id)
+		var is_done: bool = id in completed_list
+
+		var card := PanelContainer.new()
+		var card_sb := StyleBoxFlat.new()
+		card_sb.bg_color = Color(0.12, 0.15, 0.20, 0.85) if not is_active else Color(0.20, 0.15, 0.08, 0.9)
+		card_sb.set_border_width_all(1)
+		card_sb.border_color = Color("38bdf8") if not is_done else Color("10b981")
+		card_sb.set_corner_radius_all(8)
+		card_sb.content_margin_left = 8
+		card_sb.content_margin_right = 8
+		card_sb.content_margin_top = 6
+		card_sb.content_margin_bottom = 6
+		card.add_theme_stylebox_override("panel", card_sb)
+		_content.add_child(card)
+
+		var cv := VBoxContainer.new()
+		cv.add_theme_constant_override("separation", 3)
+		card.add_child(cv)
+
+		var top_row := HBoxContainer.new()
+		cv.add_child(top_row)
+
+		var tag := "✔ TERMINÉE" if is_done else ("⚡ EN COURS" if is_active else "⭐ DISPONIBLE")
+		var tag_col: Color = Color("34d399") if is_done else (Color("fbbf24") if is_active else Color("60a5fa"))
+		top_row.add_child(_label("%s %s" % [m["icon"], m["title"]], 14, Color.WHITE))
+		var tag_lbl := _label(tag, 11, tag_col, HORIZONTAL_ALIGNMENT_RIGHT)
+		tag_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		top_row.add_child(tag_lbl)
+
+		cv.add_child(_note("Par : %s — Prime : %s (%d étapes)" % [m["giver"], GameState.fcfa(m["reward"]), m["steps"].size()]))
+		cv.add_child(_note(m["desc"]))
+
+		if not is_active:
+			var btn_text := "Recommencer" if is_done else "Accepter le contrat"
+			var m_id: String = id
+			var btn := _button(btn_text, func():
+				mgr.start_mission(m_id)
+				close(), Color("f59e0b") if not is_done else Color("059669"))
+			btn.custom_minimum_size = Vector2(0, 32)
+			cv.add_child(btn)
 
 
 # --- Utilitaires -------------------------------------------------------------------------
