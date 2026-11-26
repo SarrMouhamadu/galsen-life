@@ -113,6 +113,8 @@ var _stuck_t := 1.0 ## prochaine vérification « coincé dans un bâtiment »
 
 
 func _ready() -> void:
+	# Coupure automatique de la musique d'accueil pour faire place aux sons de la ville et des véhicules
+	Audio.stop_music()
 	CrashReport.step("chargement de la ville")
 	_build_environment()
 	city = City.new()

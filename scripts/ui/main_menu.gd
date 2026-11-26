@@ -511,6 +511,7 @@ func _on_login(ok: bool, message: String) -> void:
 		elif "Mot de passe incorrect" in message:
 			_status.text = "Mot de passe incorrect."
 	if ok:
+		Audio.stop_music()
 		var cfg := ConfigFile.new()
 		cfg.load(SETTINGS)
 		cfg.set_value("net", "pseudo", _pseudo.text.strip_edges())
@@ -520,6 +521,7 @@ func _on_login(ok: bool, message: String) -> void:
 
 
 func _start_offline() -> void:
+	Audio.stop_music()
 	var chosen_p: String = _pseudo.text.strip_edges() if _pseudo else ""
 	var cfg := ConfigFile.new()
 	cfg.load(SETTINGS)

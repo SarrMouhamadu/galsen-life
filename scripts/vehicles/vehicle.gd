@@ -880,8 +880,8 @@ func set_driver(d) -> void:
 		speed = clampf(speed * 0.4, 0.0, 3.5)
 		_make_lights()
 		set_process(true)
-		if vehicle_type in RADIO_TYPES:
-			Audio.set_radio(true)
+		# Ne pas forcer la radio automatiquement : laisse place aux sons du moteur et du trafic,
+		# sauf si le joueur l'a déjà allumée ou l'active volontairement avec 'R' / smartphone.
 	else:
 		Audio.set_engine(false)
 		Audio.set_radio(false)
@@ -973,9 +973,7 @@ func resume_traffic() -> void:
 
 func set_passenger(p) -> void:
 	passenger = p
-	if vehicle_type in RADIO_TYPES and p != null:
-		Audio.set_radio(true)
-	elif p == null and driver == null:
+	if p == null and driver == null:
 		Audio.set_radio(false)
 
 

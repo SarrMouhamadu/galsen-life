@@ -246,6 +246,11 @@ func set_radio(on: bool) -> void:
 		_radio.stop()
 
 
+## Coupe automatiquement la musique lors de la connexion pour faire place aux sons des actions, des véhicules et de la ville
+func stop_music() -> void:
+	set_radio(false)
+
+
 func set_radio_track(idx: int) -> void:
 	current_track_idx = clampi(idx, 0, _track_streams.size() - 1)
 	if _track_streams[current_track_idx] != null:
@@ -254,7 +259,8 @@ func set_radio_track(idx: int) -> void:
 		if was_playing:
 			_radio_wanted = true
 			_radio.play()
-	GameState.notify.emit("Radio : %s" % TRACK_NAMES[current_track_idx])
+	if _radio_wanted or _radio.playing:
+		GameState.notify.emit("Radio : %s" % TRACK_NAMES[current_track_idx])
 
 
 func next_radio_track() -> void:

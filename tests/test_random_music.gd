@@ -59,12 +59,19 @@ func _run() -> void:
 	assert(audio.current_track_idx != old_track, "La fin d'un morceau doit enchaîner aléatoirement sur un nouveau morceau")
 	print("OK: Enchaînement automatique après fin de morceau validé (passage à [%d] %s)" % [audio.current_track_idx, audio.TRACK_NAMES[audio.current_track_idx]])
 
-	# 5. Test des contrôles radio
-	audio.set_radio(false)
-	assert(not audio.is_radio_playing(), "set_radio(false) doit éteindre la radio")
+	# 5. Test des contrôles radio et coupure automatique à la connexion
+	audio.stop_music()
+	assert(not audio.is_radio_playing(), "stop_music() doit couper la radio à la connexion")
+	assert(not audio._radio_wanted, "stop_music() doit désactiver _radio_wanted")
+	print("OK: Coupure automatique de la musique à la connexion validée")
+
+	# Réactivation manuelle par le joueur
 	audio.set_radio(true)
-	assert(audio.is_radio_playing(), "set_radio(true) doit allumer la radio")
-	print("OK: Contrôles marche/arrêt de la radio validés")
+	assert(audio.is_radio_playing(), "set_radio(true) doit réactiver la musique")
+	audio.stop_music()
+	audio.toggle_radio()
+	assert(audio.is_radio_playing(), "toggle_radio() doit réactiver la musique")
+	print("OK: Réactivation de la musique par le joueur validée")
 
 	print("--- TOUS LES TESTS DE MUSIQUE ALÉATOIRE SONT PASSÉS AVEC SUCCÈS ! ---")
 	quit(0)
