@@ -15,6 +15,8 @@ const DIRECT_ARGS := ["--screenshot=", "--test-taxi", "--portrait", "--showcase"
 var is_light_mode := false
 
 var _bg: ColorRect
+var _bg_texture: TextureRect
+var _bg_overlay: ColorRect
 var _scroll: ScrollContainer
 var _margin: MarginContainer
 var _center_box: CenterContainer
@@ -159,10 +161,24 @@ func _input(event: InputEvent) -> void:
 
 
 func _build() -> void:
-	# 1. Fond d'écran réactif
+	# 1. Fond d'écran photographique de Dakar avec superposition réactive
 	_bg = ColorRect.new()
 	_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(_bg)
+
+	_bg_texture = TextureRect.new()
+	_bg_texture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_bg_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_bg_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	if ResourceLoader.exists("res://textures/ui/dakar_corniche.jpg"):
+		_bg_texture.texture = load("res://textures/ui/dakar_corniche.jpg")
+	elif ResourceLoader.exists("res://textures/ui/dakar_bg.jpg"):
+		_bg_texture.texture = load("res://textures/ui/dakar_bg.jpg")
+	add_child(_bg_texture)
+
+	_bg_overlay = ColorRect.new()
+	_bg_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_bg_overlay)
 
 	# 2. Scroll container plein écran
 	_scroll = ScrollContainer.new()
@@ -195,6 +211,44 @@ func _build() -> void:
 	_hero_box.add_theme_constant_override("separation", 14)
 	_hero_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	_master_container.add_child(_hero_box)
+
+	# Carte photographique du Monument de la Renaissance
+	if ResourceLoader.exists("res://textures/world/renaissance_monument.jpg"):
+		var preview_panel := PanelContainer.new()
+		var preview_st := StyleBoxFlat.new()
+		preview_st.set_corner_radius_all(12)
+		preview_st.bg_color = Color(0, 0, 0, 0.4)
+		preview_st.border_width_left = 1
+		preview_st.border_width_top = 1
+		preview_st.border_width_right = 1
+		preview_st.border_width_bottom = 1
+		preview_st.border_color = Color(1, 1, 1, 0.25)
+		preview_panel.clip_contents = true
+		preview_panel.add_theme_stylebox_override("panel", preview_st)
+
+		var preview_img := TextureRect.new()
+		preview_img.texture = load("res://textures/world/renaissance_monument.jpg")
+		preview_img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		preview_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		preview_img.custom_minimum_size = Vector2(320, 150)
+		preview_panel.add_child(preview_img)
+
+		var caption_box := PanelContainer.new()
+		caption_box.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+		var cap_st := StyleBoxFlat.new()
+		cap_st.bg_color = Color(0, 0, 0, 0.65)
+		cap_st.content_margin_top = 4.0
+		cap_st.content_margin_bottom = 4.0
+		caption_box.add_theme_stylebox_override("panel", cap_st)
+
+		var caption := Label.new()
+		caption.text = "📍 Monument de la Renaissance Africaine • Dakar"
+		caption.add_theme_font_size_override("font_size", 11)
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		caption_box.add_child(caption)
+		preview_panel.add_child(caption_box)
+
+		_hero_box.add_child(preview_panel)
 
 	var hero_badge := Label.new()
 	hero_badge.text = "🇸🇳 SÉNÉGAL • DAKAR 3D"
@@ -509,6 +563,8 @@ func apply_theme() -> void:
 
 	if _bg:
 		_bg.color = col_bg
+	if _bg_overlay:
+		_bg_overlay.color = Color(0.96, 0.97, 0.99, 0.82) if is_light_mode else Color(0.06, 0.08, 0.12, 0.84)
 
 	# 2. Carte formulaire
 	if _card_panel:

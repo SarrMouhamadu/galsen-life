@@ -423,10 +423,33 @@ func _build_model() -> void:
 			for k in 4:
 				Mk.box(self, Vector3(0.06, 0.25, s.z * 0.7), Vector3(-s.x * 0.45 + k * s.x * 0.3, 0.68 + s.y, 0.3), Color("e5e5e5"))
 			Mk.box(self, Vector3(0.6, s.y * 0.9, 0.06), Vector3(0, 0.4 + s.y * 0.5, s.z / 2.0 + 0.05), Color("dddddd"))
-			var side_l := Mk.label(self, "Touba — Dakar", Vector3(-s.x / 2.0 - 0.02, 0.4 + s.y * 0.25, 0), 48, Color("c1121f"), false)
-			side_l.rotation.y = -PI / 2.0
-			var side_r := Mk.label(self, "Touba — Dakar", Vector3(s.x / 2.0 + 0.02, 0.4 + s.y * 0.25, 0), 48, Color("c1121f"), false)
-			side_r.rotation.y = PI / 2.0
+			if ResourceLoader.exists("res://textures/world/car_rapide_side.svg"):
+				var cr_mat := StandardMaterial3D.new()
+				cr_mat.albedo_texture = load("res://textures/world/car_rapide_side.svg")
+				cr_mat.roughness = 0.4
+				cr_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+				var qm := QuadMesh.new()
+				qm.size = Vector2(s.z * 0.85, s.y * 0.58)
+
+				var side_l := MeshInstance3D.new()
+				side_l.mesh = qm
+				side_l.material_override = cr_mat
+				side_l.position = Vector3(-s.x / 2.0 - 0.02, 0.4 + s.y * 0.35, 0)
+				side_l.rotation.y = -PI / 2.0
+				add_child(side_l)
+
+				var side_r := MeshInstance3D.new()
+				side_r.mesh = qm
+				side_r.material_override = cr_mat
+				side_r.position = Vector3(s.x / 2.0 + 0.02, 0.4 + s.y * 0.35, 0)
+				side_r.rotation.y = PI / 2.0
+				add_child(side_r)
+			else:
+				var side_l := Mk.label(self, "Touba — Dakar", Vector3(-s.x / 2.0 - 0.02, 0.4 + s.y * 0.25, 0), 48, Color("c1121f"), false)
+				side_l.rotation.y = -PI / 2.0
+				var side_r := Mk.label(self, "Touba — Dakar", Vector3(s.x / 2.0 + 0.02, 0.4 + s.y * 0.25, 0), 48, Color("c1121f"), false)
+				side_r.rotation.y = PI / 2.0
 		"jakarta":
 			# Maxi-Scooter T-MAX de Luxe : carénage profilé sport, bulle teintée, double optique et selle confort
 			Mk.box(self, Vector3(0.48, 0.48, 1.6), Vector3(0, 0.62, 0), Color("121316"))

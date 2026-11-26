@@ -17,6 +17,7 @@ func _run() -> void:
 	
 	assert(menu.get("_pseudo") != null, "_pseudo doit être instancié")
 	assert(menu.get("_password") != null, "_password doit être instancié")
+	assert(menu.get("_bg_texture") != null, "_bg_texture doit être instancié")
 	assert(menu.get("_avatar") != null, "_avatar doit être instancié")
 	assert(menu.get("_offline_btn") != null, "_offline_btn doit être instancié")
 	assert(menu.get("_connect_btn") != null, "_connect_btn doit être instancié")

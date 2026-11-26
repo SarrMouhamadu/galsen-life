@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+  <defs>
+    <filter id="road_shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Grand panneau autoroute / corniche bleu officiel -->
+  <rect width="1024" height="512" rx="20" fill="#0055a5" stroke="#ffffff" stroke-width="12"/>
+
+  <!-- Flèches et destinations -->
+  <g transform="translate(48, 60)">
+    <!-- Destination 1: Plateau / Centre-Ville -->
+    <rect width="928" height="100" rx="12" fill="#003d75"/>
+    <text x="60" y="66" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="#ffffff" letter-spacing="2">
+      ↑  PLATEAU / CENTRE-VILLE
+    </text>
+    <text x="880" y="66" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="32" fill="#facc15" text-anchor="end">
+      5 km
+    </text>
+  </g>
+
+  <g transform="translate(48, 180)">
+    <!-- Destination 2: Monument de la Renaissance / Almadies -->
+    <rect width="928" height="100" rx="12" fill="#003d75"/>
+    <text x="60" y="66" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="#ffffff" letter-spacing="2">
+      ↗  MONUMENT RENAISSANCE • ALMADIES
+    </text>
+    <text x="880" y="66" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="32" fill="#facc15" text-anchor="end">
+      2 km
+    </text>
+  </g>
+
+  <!-- Bandeau officiel JOJ Dakar 2026 -->
+  <g transform="translate(48, 305)">
+    <rect width="928" height="150" rx="16" fill="#15803d" stroke="#facc15" stroke-width="4" filter="url(#road_shadow)"/>
+    
+    <text x="464" y="62" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="42" fill="#ffffff" text-anchor="middle" letter-spacing="3">
+      DAKAR 2026
+    </text>
+    <text x="464" y="104" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="28" fill="#facc15" text-anchor="middle" letter-spacing="2">
+      JEUX OLYMPIQUES DE LA JEUNESSE
+    </text>
+    <text x="464" y="132" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="20" fill="#dcfce7" text-anchor="middle">
+      Bienvenue à Dakar • Teranga &amp; Fraternité
+    </text>
+  </g>
+</svg>

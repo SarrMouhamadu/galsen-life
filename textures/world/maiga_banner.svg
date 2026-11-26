@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="256" viewBox="0 0 1024 256">
+  <defs>
+    <linearGradient id="bg_grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff5eb"/>
+      <stop offset="100%" stop-color="#ffe4c4"/>
+    </linearGradient>
+    <linearGradient id="red_banner" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b91c1c"/>
+      <stop offset="50%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-10%" width="110%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Fond général -->
+  <rect width="1024" height="256" fill="url(#bg_grad)" stroke="#b91c1c" stroke-width="8" rx="16"/>
+
+  <!-- Bordure tricolore sénégalaise en haut -->
+  <rect x="0" y="0" width="341" height="14" fill="#00853f"/>
+  <rect x="341" y="0" width="342" height="14" fill="#fdef42"/>
+  <rect x="683" y="0" width="341" height="14" fill="#e31b23"/>
+
+  <!-- Bordure tricolore sénégalaise en bas -->
+  <rect x="0" y="242" width="341" height="14" fill="#00853f"/>
+  <rect x="341" y="242" width="342" height="14" fill="#fdef42"/>
+  <rect x="683" y="242" width="341" height="14" fill="#e31b23"/>
+
+  <!-- Ruban rouge principal -->
+  <rect x="24" y="24" width="976" height="96" rx="12" fill="url(#red_banner)" filter="url(#shadow)"/>
+  <rect x="28" y="28" width="968" height="88" rx="8" fill="none" stroke="#fdef42" stroke-width="3" stroke-dasharray="10 5"/>
+
+  <!-- Titre Principal FAST FOOD MAÏGA -->
+  <text x="512" y="72" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="#ffffff" text-anchor="middle" letter-spacing="3" filter="url(#shadow)">
+    FAST FOOD MAÏGA
+  </text>
+  <text x="512" y="104" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" fill="#fdef42" text-anchor="middle" letter-spacing="5">
+    ★ DIBITERIE DAKAROISE &amp; TANGANA ★
+  </text>
+
+  <!-- Menu Spécialités au centre -->
+  <rect x="40" y="132" width="700" height="92" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)"/>
+  
+  <text x="60" y="162" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="20" fill="#991b1b">
+    SPÉCIALITÉS DAKAR :
+  </text>
+  <text x="60" y="190" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="16" fill="#1e293b">
+    • Dibi Agneau &amp; Bœuf grillé au feu de bois  • Brochettes marinées
+  </text>
+  <text x="60" y="212" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="16" fill="#1e293b">
+    • Sandwich Foie / Omelette garnie  • Café Touba épicé  • Boissons fraîches
+  </text>
+
+  <!-- Macaron Ouvert 24/24 -->
+  <g transform="translate(760, 132)">
+    <rect width="224" height="92" rx="10" fill="#047857" filter="url(#shadow)"/>
+    <rect x="4" y="4" width="216" height="84" rx="8" fill="none" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="112" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="22" fill="#ffffff" text-anchor="middle">
+      OUVERT 24H/24
+    </text>
+    <text x="112" y="62" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="15" fill="#a7f3d0" text-anchor="middle">
+      7J / 7 • SERVICE RAPIDE
+    </text>
+    <text x="112" y="80" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#ffffff" text-anchor="middle">
+      LIVRAISON : 77 800 00 00
+    </text>
+  </g>
+</svg>

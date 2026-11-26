@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+  <defs>
+    <filter id="car_shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Moitié supérieure : Jaune éclatant Car Rapide -->
+  <rect x="0" y="0" width="1024" height="256" fill="#f6c21e"/>
+  <!-- Moitié inférieure : Bleu royal Car Rapide -->
+  <rect x="0" y="256" width="1024" height="256" fill="#1a468e"/>
+
+  <!-- Frise décorative géométrique traditionnelle dakaroise -->
+  <g transform="translate(0, 240)">
+    <rect width="1024" height="32" fill="#d97706"/>
+    <!-- Damiers / chevrons -->
+    <path d="M 0,0 L 32,16 L 0,32 Z M 64,0 L 96,16 L 64,32 Z M 128,0 L 160,16 L 128,32 Z M 192,0 L 224,16 L 192,32 Z M 256,0 L 288,16 L 256,32 Z M 320,0 L 352,16 L 320,32 Z M 384,0 L 416,16 L 384,32 Z M 448,0 L 480,16 L 448,32 Z M 512,0 L 544,16 L 512,32 Z M 576,0 L 608,16 L 576,32 Z M 640,0 L 672,16 L 640,32 Z M 704,0 L 736,16 L 704,32 Z M 768,0 L 800,16 L 768,32 Z M 832,0 L 864,16 L 832,32 Z M 896,0 L 928,16 L 896,32 Z M 960,0 L 992,16 L 960,32 Z" fill="#ffffff"/>
+  </g>
+
+  <!-- Inscription calligraphique ALHAMDOULILAH sur fond jaune -->
+  <text x="512" y="110" font-family="Georgia, 'Times New Roman', serif" font-weight="900" font-size="68" fill="#1e3a8a" text-anchor="middle" letter-spacing="6" filter="url(#car_shadow)">
+    ALHAMDOULILAH
+  </text>
+  <text x="512" y="180" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" fill="#b91c1c" text-anchor="middle" letter-spacing="8">
+    ★ TOUBA DAROU KHOUDOSS ★
+  </text>
+
+  <!-- Bandeau destination et prière sur le bleu -->
+  <text x="512" y="340" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="52" fill="#ffffff" text-anchor="middle" letter-spacing="4" filter="url(#car_shadow)">
+    DAKAR - COLOBANE - PIKINE
+  </text>
+  <text x="512" y="410" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="36" fill="#fde047" text-anchor="middle" letter-spacing="6">
+    NDIAGA NDIAYE • TRANSPORT URBAIN
+  </text>
+
+  <!-- Drapeaux du Sénégal latéraux -->
+  <g transform="translate(60, 40)">
+    <rect width="24" height="60" fill="#00853f"/>
+    <rect x="24" width="24" height="60" fill="#fdef42"/>
+    <rect x="48" width="24" height="60" fill="#e31b23"/>
+    <polygon points="36,25 39,32 46,32 41,36 43,43 36,39 29,43 31,36 26,32 33,32" fill="#00853f"/>
+  </g>
+  <g transform="translate(892, 40)">
+    <rect width="24" height="60" fill="#00853f"/>
+    <rect x="24" width="24" height="60" fill="#fdef42"/>
+    <rect x="48" width="24" height="60" fill="#e31b23"/>
+    <polygon points="36,25 39,32 46,32 41,36 43,43 36,39 29,43 31,36 26,32 33,32" fill="#00853f"/>
+  </g>
+
+  <!-- Plaque d'immatriculation sénégalaise en bas au centre -->
+  <g transform="translate(392, 440)">
+    <rect width="240" height="50" rx="6" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+    <text x="120" y="35" font-family="'Courier New', monospace" font-weight="900" font-size="32" fill="#ffffff" text-anchor="middle" letter-spacing="3">
+      DK-9382-AB
+    </text>
+  </g>
+</svg>

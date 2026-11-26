@@ -604,6 +604,26 @@ func _build_job_decor() -> void:
 		if "Restaurant Maïga" in p_name and p_name != "Restaurant Maïga":
 			_stall_maiga(p_name, "StallMaiga_%d" % idx)
 			idx += 1
+	_build_kiosks_and_signs()
+
+
+func _build_kiosks_and_signs() -> void:
+	# Kiosques Wave & Orange Money dans les carrefours clés de Dakar
+	if places.has("Place de l'Indépendance"):
+		var p_indep: Vector3 = places["Place de l'Indépendance"]
+		_kiosk(p_indep + Vector3(8.0, 0, 12.0), 0.4, "wave")
+		_kiosk(p_indep + Vector3(-10.0, 0, 12.0), -0.3, "orange")
+		_road_sign(p_indep + Vector3(18.0, 0, -8.0), 0.0)
+
+	if places.has("Restaurant Maïga (Médina)"):
+		var p_medina: Vector3 = places["Restaurant Maïga (Médina)"]
+		_kiosk(p_medina + Vector3(10.0, 0, 6.0), 1.2, "wave")
+		_kiosk(p_medina + Vector3(-8.0, 0, -6.0), -1.1, "orange")
+
+	if places.has("Hôpital Principal"):
+		var p_hopital: Vector3 = places["Hôpital Principal"]
+		_kiosk(p_hopital + Vector3(12.0, 0, -10.0), 0.8, "orange")
+		_road_sign(p_hopital + Vector3(-14.0, 0, 8.0), PI / 2.0)
 
 
 func _stall_maiga(place_name: String = "Restaurant Maïga", holder_name: String = "StallMaiga") -> void:
@@ -629,9 +649,33 @@ func _stall_maiga(place_name: String = "Restaurant Maïga", holder_name: String 
 		for sz in [-1, 1]:
 			Mk.cyl(holder, 0.05, 0.05, 2.5, Vector3(sx * 1.6, 1.25, sz * 0.8), Color("333333"), false, 4)
 	Mk.box(holder, Vector3(3.6, 0.08, 2.1), Vector3(0, 2.5, 0), Color("e67e22"))
-	var sign_front := Mk.label(holder, "RESTAURANT MAÏGA — FAST FOOD", Vector3(0, 2.2, 1.08), 38, Color("fefae0"), false)
-	sign_front.outline_size = 8
-	sign_front.outline_modulate = Color("111111")
+
+	# Bannière réaliste texturée FAST FOOD MAÏGA
+	if ResourceLoader.exists("res://textures/world/maiga_banner.svg"):
+		var banner_mesh := QuadMesh.new()
+		banner_mesh.size = Vector2(3.5, 0.88)
+		var banner_mat := StandardMaterial3D.new()
+		banner_mat.albedo_texture = load("res://textures/world/maiga_banner.svg")
+		banner_mat.roughness = 0.35
+		banner_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		var banner_front := MeshInstance3D.new()
+		banner_front.mesh = banner_mesh
+		banner_front.material_override = banner_mat
+		banner_front.position = Vector3(0, 2.25, 1.06)
+		holder.add_child(banner_front)
+	else:
+		var sign_front := Mk.label(holder, "RESTAURANT MAÏGA — FAST FOOD", Vector3(0, 2.2, 1.08), 38, Color("fefae0"), false)
+		sign_front.outline_size = 8
+		sign_front.outline_modulate = Color("111111")
+
+	# Éclairage d'ambiance nocturne réaliste (lumière dorée du réchaud/comptoir)
+	var omni := OmniLight3D.new()
+	omni.light_color = Color("ffba08")
+	omni.light_energy = 1.2
+	omni.omni_range = 6.0
+	omni.position = Vector3(0, 2.1, 0.2)
+	holder.add_child(omni)
+
 	# Tables et chaises pour les clients
 	var Furn = load("res://scripts/util/furniture.gd")
 	Furn.place(holder, "painted_wooden_table", Vector3(2.4, 0, 1.8), 0.0, true, 0.6)
@@ -642,6 +686,75 @@ func _stall_maiga(place_name: String = "Restaurant Maïga", holder_name: String 
 	cook.position = Vector3(0, 0.0, -0.3)
 	cook.rotation.y = 0.0
 	cook.play_clip("idle", 0.0)
+
+
+func _kiosk(pos: Vector3, yaw: float, type: String) -> void:
+	var holder := Node3D.new()
+	holder.name = "Kiosk_" + type
+	add_child(holder)
+	holder.position = Vector3(pos.x, 0.05, pos.z)
+	holder.rotation.y = yaw
+
+	var is_wave := (type == "wave")
+	var body_col := Color("0ea5e9") if is_wave else Color("18181b")
+	var roof_col := Color("0284c7") if is_wave else Color("ea580c")
+	var tex_path := "res://textures/world/wave_kiosk.svg" if is_wave else "res://textures/world/orange_money.svg"
+
+	# Structure du kiosque
+	Mk.box(holder, Vector3(2.0, 2.2, 1.8), Vector3(0, 1.1, 0), body_col, true)
+	Mk.box(holder, Vector3(1.4, 0.9, 0.2), Vector3(0, 0.45, 0.85), Color("334155"), true)
+	Mk.box(holder, Vector3(2.4, 0.15, 2.2), Vector3(0, 2.25, 0), roof_col)
+
+	# Panneau enseigne texturé
+	if ResourceLoader.exists(tex_path):
+		var mat := StandardMaterial3D.new()
+		mat.albedo_texture = load(tex_path)
+		mat.roughness = 0.3
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+		var mesh := QuadMesh.new()
+		mesh.size = Vector2(1.2, 1.2)
+
+		var sign := MeshInstance3D.new()
+		sign.mesh = mesh
+		sign.material_override = mat
+		sign.position = Vector3(0, 1.5, 0.92)
+		holder.add_child(sign)
+
+	# Agent dans le kiosque
+	var agent_model := "femme_ville" if is_wave else "homme_ville"
+	var agent = load("res://scripts/util/real_character.gd").create(holder, agent_model, hash(pos))
+	agent.position = Vector3(0, 0, 0)
+	agent.play_clip("idle", 0.0)
+
+
+func _road_sign(pos: Vector3, yaw: float) -> void:
+	if not ResourceLoader.exists("res://textures/world/road_sign.svg"):
+		return
+	var holder := Node3D.new()
+	holder.name = "RoadSign"
+	add_child(holder)
+	holder.position = Vector3(pos.x, 0.05, pos.z)
+	holder.rotation.y = yaw
+
+	# Deux poteaux métalliques
+	Mk.cyl(holder, 0.08, 0.08, 4.0, Vector3(-1.4, 2.0, 0), Color("64748b"), false, 6)
+	Mk.cyl(holder, 0.08, 0.08, 4.0, Vector3(1.4, 2.0, 0), Color("64748b"), false, 6)
+
+	# Grand panneau routier double-face
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = load("res://textures/world/road_sign.svg")
+	mat.roughness = 0.4
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+	var mesh := QuadMesh.new()
+	mesh.size = Vector2(3.6, 1.8)
+
+	var panel := MeshInstance3D.new()
+	panel.mesh = mesh
+	panel.material_override = mat
+	panel.position = Vector3(0, 3.2, 0)
+	holder.add_child(panel)
 
 
 func _stall(place: String, color: Color) -> void:
