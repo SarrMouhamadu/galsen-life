@@ -6,6 +6,8 @@ const Minimap = preload("res://scripts/ui/minimap.gd")
 const MapScreen = preload("res://scripts/ui/map_screen.gd")
 const Phone = preload("res://scripts/ui/phone.gd")
 const EmoteMenu = preload("res://scripts/ui/emote_menu.gd")
+const TEX_MIC_ON := preload("res://textures/ui/mic_icon_white.svg")
+const TEX_MIC_MUTED := preload("res://textures/ui/mic_icon_muted.svg")
 
 var main
 var _money: Label
@@ -119,9 +121,12 @@ func _ready() -> void:
 	root.add_child(_voice_dock)
 
 	_voice_dock_btn = Button.new()
-	_voice_dock_btn.text = "🎙️❌ MICRO"
-	_voice_dock_btn.custom_minimum_size = Vector2(134, 44)
-	_voice_dock_btn.add_theme_font_size_override("font_size", 14)
+	_voice_dock_btn.icon = TEX_MIC_MUTED
+	_voice_dock_btn.text = " COUPÉ"
+	_voice_dock_btn.expand_icon = true
+	_voice_dock_btn.add_theme_constant_override("icon_max_width", 26)
+	_voice_dock_btn.custom_minimum_size = Vector2(136, 44)
+	_voice_dock_btn.add_theme_font_size_override("font_size", 13)
 	_voice_dock_btn.focus_mode = Control.FOCUS_NONE
 	_style_voice_btn(_voice_dock_btn, false, "local")
 	_voice_dock_btn.button_down.connect(_on_mic_press_down)
@@ -228,9 +233,12 @@ func _ready() -> void:
 	_emote_btn = emote_btn
 	# Chat vocal : maintenir pour parler ou appuyer pour basculer (V / B au clavier)
 	_mic_btn = Button.new()
-	_mic_btn.text = " 🎙️❌ MICRO "
+	_mic_btn.icon = TEX_MIC_MUTED
+	_mic_btn.text = " COUPÉ "
+	_mic_btn.expand_icon = true
+	_mic_btn.add_theme_constant_override("icon_max_width", 22)
 	_mic_btn.custom_minimum_size = Vector2(0, 38)
-	_mic_btn.add_theme_font_size_override("font_size", 14)
+	_mic_btn.add_theme_font_size_override("font_size", 13)
 	_mic_btn.focus_mode = Control.FOCUS_NONE
 	_style_voice_btn(_mic_btn, false, "local")
 	_mic_btn.button_down.connect(_on_mic_press_down)
@@ -1275,13 +1283,17 @@ func _process(delta: float) -> void:
 		_radio_dock_btn.visible = (Net.online and Net.social.my_group != "") or preview_online
 
 		if talking == "local":
-			_voice_dock_btn.text = "🎙️ ● EN DIRECT"
-			_mic_btn.text = " 🎙️ ● MICRO "
+			_voice_dock_btn.icon = TEX_MIC_ON
+			_voice_dock_btn.text = " EN DIRECT"
+			_mic_btn.icon = TEX_MIC_ON
+			_mic_btn.text = " EN DIRECT "
 			_style_voice_btn(_voice_dock_btn, true, "local")
 			_style_voice_btn(_mic_btn, true, "local")
 		else:
-			_voice_dock_btn.text = "🎙️❌ MICRO"
-			_mic_btn.text = " 🎙️❌ MICRO "
+			_voice_dock_btn.icon = TEX_MIC_MUTED
+			_voice_dock_btn.text = " COUPÉ"
+			_mic_btn.icon = TEX_MIC_MUTED
+			_mic_btn.text = " COUPÉ "
 			_style_voice_btn(_voice_dock_btn, false, "local")
 			_style_voice_btn(_mic_btn, false, "local")
 
