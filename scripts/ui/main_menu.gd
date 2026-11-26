@@ -112,29 +112,30 @@ func _build() -> void:
 	_margin.add_theme_constant_override("margin_left", 16)
 	_margin.add_theme_constant_override("margin_right", 16)
 	_margin.add_theme_constant_override("margin_top", 16)
-	_margin.add_theme_constant_override("margin_bottom", 30)
+	_margin.add_theme_constant_override("margin_bottom", 24)
 	_scroll.add_child(_margin)
 
-	# VBoxContainer directement dans MarginContainer (évite le bogue de CenterContainer à Y négatif)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 8)
+	v.add_theme_constant_override("separation", 10)
 	v.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var vp_size := get_viewport_rect().size
-	v.custom_minimum_size = Vector2(clampf(vp_size.x - 32.0, 280.0, 480.0), 0)
+	v.custom_minimum_size = Vector2(clampf(vp_size.x - 32.0, 280.0, 440.0), 0)
 	_content_vbox = v
 	_margin.add_child(v)
 
+	# Titre épuré
 	var title := Label.new()
 	title.text = "GALSEN-LIFE"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 38)
+	title.add_theme_font_size_override("font_size", 34)
 	title.add_theme_color_override("font_color", Color("fdef42"))
 	v.add_child(title)
 
 	var sub := Label.new()
-	sub.text = "Dalal ak jàmm ci Dakar !"
+	sub.text = "Dakar"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub.add_theme_font_size_override("font_size", 16)
+	sub.add_theme_font_size_override("font_size", 14)
+	sub.add_theme_color_override("font_color", Color(0.65, 0.75, 0.85))
 	v.add_child(sub)
 
 	var cfg := ConfigFile.new()
@@ -155,41 +156,62 @@ func _build() -> void:
 	_channel.visible = false
 	v.add_child(_channel)
 
-	# --- 1. Profil du Joueur (partagé solo et en ligne) ---
-	var profile_box := VBoxContainer.new()
-	profile_box.add_theme_constant_override("separation", 6)
-	v.add_child(profile_box)
-
-	var p_hdr := Label.new()
-	p_hdr.text = "👤 Ton personnage à Dakar :"
-	p_hdr.add_theme_font_size_override("font_size", 15)
-	p_hdr.add_theme_color_override("font_color", Color("ffd166"))
-	profile_box.add_child(p_hdr)
-
+	# --- Profil du Joueur ---
 	var saved_p: String = str(cfg.get_value("net", "pseudo", ""))
 	var saved_pw: String = str(cfg.get_value("net", "password", ""))
 
-	_pseudo = _field(profile_box, "Pseudo (ex: Moussa, Fatou...)", saved_p)
+	_pseudo = _field(v, "Pseudo", saved_p)
 
 	_avatar = OptionButton.new()
-	_avatar.custom_minimum_size = Vector2(0, 44)
-	_avatar.add_theme_font_size_override("font_size", 16)
+	_avatar.custom_minimum_size = Vector2(0, 46)
+	_avatar.add_theme_font_size_override("font_size", 15)
 	for a in Net.AVATARS:
 		_avatar.add_item(AVATAR_NAMES.get(a, a))
 	_avatar.select(maxi(0, Net.AVATARS.find(cfg.get_value("net", "avatar", "heros"))))
-	profile_box.add_child(_avatar)
+	var av_sb := StyleBoxFlat.new()
+	av_sb.bg_color = Color(0.11, 0.14, 0.19, 0.95)
+	av_sb.border_color = Color(0.25, 0.33, 0.44, 0.8)
+	av_sb.border_width_left = 1
+	av_sb.border_width_top = 1
+	av_sb.border_width_right = 1
+	av_sb.border_width_bottom = 1
+	av_sb.corner_radius_top_left = 8
+	av_sb.corner_radius_top_right = 8
+	av_sb.corner_radius_bottom_right = 8
+	av_sb.corner_radius_bottom_left = 8
+	av_sb.content_margin_left = 12.0
+	av_sb.content_margin_right = 12.0
+	_avatar.add_theme_stylebox_override("normal", av_sb)
+	v.add_child(_avatar)
 
-	# --- 2. Bouton Mode Hors-Ligne (Solo) ---
-	var solo_box := VBoxContainer.new()
-	solo_box.add_theme_constant_override("separation", 4)
-	v.add_child(solo_box)
+	_password = _field(v, "Mot de passe", saved_pw)
+	_password.secret = true
 
+	# Enchaînement naturel au clavier virtuel
+	_pseudo.text_submitted.connect(func(_t): _password.grab_focus())
+	_password.text_submitted.connect(func(_t): _on_connect())
+
+	# Option créer un compte
+	_create = CheckBox.new()
+	_create.text = " Créer un compte"
+	_create.custom_minimum_size = Vector2(0, 36)
+	_create.add_theme_font_size_override("font_size", 15)
+	_create.add_theme_color_override("font_color", Color(0.80, 0.85, 0.90))
+	_create.add_theme_color_override("font_pressed_color", Color("7cfc9a"))
+	v.add_child(_create)
+
+	# --- Boutons d'action principaux ---
+	var actions_box := VBoxContainer.new()
+	actions_box.add_theme_constant_override("separation", 8)
+	v.add_child(actions_box)
+
+	# 1. Mode Solo
 	_offline_btn = Button.new()
-	_offline_btn.text = "🎮 JOUER HORS-LIGNE (SOLO)"
-	_offline_btn.custom_minimum_size = Vector2(0, 50)
-	_offline_btn.add_theme_font_size_override("font_size", 18)
+	_offline_btn.text = "🎮 JOUER EN SOLO"
+	_offline_btn.custom_minimum_size = Vector2(0, 48)
+	_offline_btn.add_theme_font_size_override("font_size", 16)
 	var solo_st := StyleBoxFlat.new()
-	solo_st.bg_color = Color(0.12, 0.38, 0.28, 0.95)
+	solo_st.bg_color = Color(0.10, 0.32, 0.22, 0.95)
 	solo_st.border_color = Color("7cfc9a")
 	solo_st.border_width_left = 2
 	solo_st.border_width_top = 2
@@ -202,61 +224,71 @@ func _build() -> void:
 	_offline_btn.add_theme_stylebox_override("normal", solo_st)
 	_offline_btn.add_theme_stylebox_override("hover", solo_st)
 	_offline_btn.pressed.connect(_start_offline)
-	solo_box.add_child(_offline_btn)
+	actions_box.add_child(_offline_btn)
 
-	var solo_desc := Label.new()
-	solo_desc.text = "✓ Tout Dakar en solo · Métiers · Véhicules · 100% Hors-ligne"
-	solo_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	solo_desc.add_theme_font_size_override("font_size", 12)
-	solo_desc.add_theme_color_override("font_color", Color("90e0ef"))
-	solo_box.add_child(solo_desc)
+	# 2. Mode En Ligne
+	_connect_btn = Button.new()
+	_connect_btn.text = "🌐 SE CONNECTER"
+	_connect_btn.custom_minimum_size = Vector2(0, 48)
+	_connect_btn.add_theme_font_size_override("font_size", 16)
+	var net_st := StyleBoxFlat.new()
+	net_st.bg_color = Color(0.18, 0.24, 0.35, 0.95)
+	net_st.border_color = Color("90e0ef")
+	net_st.border_width_left = 2
+	net_st.border_width_top = 2
+	net_st.border_width_right = 2
+	net_st.border_width_bottom = 2
+	net_st.corner_radius_top_left = 8
+	net_st.corner_radius_top_right = 8
+	net_st.corner_radius_bottom_right = 8
+	net_st.corner_radius_bottom_left = 8
+	_connect_btn.add_theme_stylebox_override("normal", net_st)
+	_connect_btn.add_theme_stylebox_override("hover", net_st)
+	_connect_btn.pressed.connect(_on_connect)
+	actions_box.add_child(_connect_btn)
 
-	var sep := HSeparator.new()
-	v.add_child(sep)
+	_create.toggled.connect(func(pressed: bool):
+		if pressed:
+			_connect_btn.text = "🌐 CRÉER MON COMPTE"
+		else:
+			_connect_btn.text = "🌐 SE CONNECTER"
+	)
 
-	# --- 3. Mode En Ligne (Multijoueur) ---
-	var online_title := Label.new()
-	online_title.text = "🌐 OU JOUER EN LIGNE (MULTIJOUEUR DAKAR)"
-	online_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	online_title.add_theme_font_size_override("font_size", 16)
-	online_title.add_theme_color_override("font_color", Color("7cfc9a"))
-	v.add_child(online_title)
+	# --- Code ami (replié par défaut) ---
+	var friend_toggle_btn := Button.new()
+	friend_toggle_btn.text = "🤝 Code ami (optionnel)"
+	friend_toggle_btn.flat = true
+	friend_toggle_btn.custom_minimum_size = Vector2(0, 32)
+	friend_toggle_btn.add_theme_font_size_override("font_size", 13)
+	friend_toggle_btn.add_theme_color_override("font_color", Color(0.60, 0.75, 0.85))
+	v.add_child(friend_toggle_btn)
 
-	_password = _field(v, "Mot de passe", saved_pw)
-	_password.secret = true
-
-	# Enchaînement rapide et naturel au clavier virtuel
-	_pseudo.text_submitted.connect(func(_t): _password.grab_focus())
-	_password.text_submitted.connect(func(_t): _on_connect())
-
-	# Code ami optionnel pour rejoindre directement un ami à Dakar
 	var f_box := VBoxContainer.new()
 	f_box.add_theme_constant_override("separation", 6)
+	f_box.visible = false
 	v.add_child(f_box)
 
-	var f_header := HBoxContainer.new()
-	f_header.add_theme_constant_override("separation", 8)
-	f_box.add_child(f_header)
-
-	var f_label := Label.new()
-	f_label.text = "🤝 Rejoindre un ami (optionnel) :"
-	f_label.add_theme_font_size_override("font_size", 14)
-	f_label.add_theme_color_override("font_color", Color("90e0ef"))
-	f_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	f_header.add_child(f_label)
+	friend_toggle_btn.pressed.connect(func():
+		f_box.visible = !f_box.visible
+		if f_box.visible:
+			friend_toggle_btn.text = "🤝 Masquer code ami"
+			call_deferred("_scroll_to_control", f_box)
+		else:
+			friend_toggle_btn.text = "🤝 Code ami (optionnel)"
+	)
 
 	var f_row := HBoxContainer.new()
 	f_row.add_theme_constant_override("separation", 6)
 	f_box.add_child(f_row)
 
-	_friend_code = _field(f_row, "Code ami (ex: GAL-12345)", "")
+	_friend_code = _field(f_row, "Code d'un ami (ex: GAL-12345)", "")
 	_friend_code.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_friend_code.text_submitted.connect(func(_t): _on_connect())
 
 	var paste_btn := Button.new()
 	paste_btn.text = "Coller"
-	paste_btn.custom_minimum_size = Vector2(75, 44)
-	paste_btn.add_theme_font_size_override("font_size", 14)
+	paste_btn.custom_minimum_size = Vector2(70, 44)
+	paste_btn.add_theme_font_size_override("font_size", 13)
 	paste_btn.pressed.connect(func():
 		var clip := DisplayServer.clipboard_get().strip_edges()
 		if clip != "":
@@ -265,132 +297,66 @@ func _build() -> void:
 	f_row.add_child(paste_btn)
 
 	var my_code_row := HBoxContainer.new()
-	my_code_row.add_theme_constant_override("separation", 8)
+	my_code_row.add_theme_constant_override("separation", 6)
 	f_box.add_child(my_code_row)
 
 	var init_p: String = cfg.get_value("net", "pseudo", "")
 	var my_c_val := Net.generate_friend_code(init_p if init_p != "" else "Joueur")
 	var my_code_label := Label.new()
-	my_code_label.text = "Ton code ami : %s" % my_c_val
-	my_code_label.add_theme_font_size_override("font_size", 13)
+	my_code_label.text = "Mon code : %s" % my_c_val
+	my_code_label.add_theme_font_size_override("font_size", 12)
 	my_code_label.add_theme_color_override("font_color", Color("fdef42"))
 	my_code_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	my_code_row.add_child(my_code_label)
 
 	var copy_my_code_btn := Button.new()
-	copy_my_code_btn.text = "📋 Partager mon code"
-	copy_my_code_btn.custom_minimum_size = Vector2(160, 34)
-	copy_my_code_btn.add_theme_font_size_override("font_size", 13)
+	copy_my_code_btn.text = "Copier mon code"
+	copy_my_code_btn.custom_minimum_size = Vector2(130, 32)
+	copy_my_code_btn.add_theme_font_size_override("font_size", 12)
 	copy_my_code_btn.pressed.connect(func():
 		var cur_p := _pseudo.text.strip_edges()
 		var c := Net.generate_friend_code(cur_p if cur_p != "" else "Joueur")
 		DisplayServer.clipboard_set(c)
-		_status.text = "Code ami %s copié ! Partage-le à ton ami pour jouer ensemble." % c
+		_status.text = "Code ami %s copié !" % c
 	)
 	my_code_row.add_child(copy_my_code_btn)
 
 	_pseudo.text_changed.connect(func(new_p: String):
 		var c := Net.generate_friend_code(new_p.strip_edges() if new_p.strip_edges() != "" else "Joueur")
-		my_code_label.text = "Ton code ami : %s" % c
+		my_code_label.text = "Mon code : %s" % c
 	)
 
-	# Case à cocher "Créer un compte"
-	_create = CheckBox.new()
-	_create.text = " Nouveau joueur ? Créer un compte"
-	_create.custom_minimum_size = Vector2(0, 44)
-	_create.add_theme_font_size_override("font_size", 17)
-	_create.add_theme_color_override("font_color", Color("e2e8f0"))
-	_create.add_theme_color_override("font_pressed_color", Color("7cfc9a"))
-	_create.add_theme_color_override("font_hover_color", Color.WHITE)
-	_create.add_theme_color_override("font_hover_pressed_color", Color("7cfc9a"))
-	
-	var create_box := StyleBoxFlat.new()
-	create_box.bg_color = Color(0.12, 0.16, 0.22, 0.9)
-	create_box.border_color = Color(0.30, 0.40, 0.52, 0.8)
-	create_box.border_width_left = 2
-	create_box.border_width_top = 2
-	create_box.border_width_right = 2
-	create_box.border_width_bottom = 2
-	create_box.corner_radius_top_left = 8
-	create_box.corner_radius_top_right = 8
-	create_box.corner_radius_bottom_right = 8
-	create_box.corner_radius_bottom_left = 8
-	create_box.content_margin_left = 14.0
-	create_box.content_margin_right = 14.0
-	create_box.content_margin_top = 8.0
-	create_box.content_margin_bottom = 8.0
-	_create.add_theme_stylebox_override("normal", create_box)
-	_create.add_theme_stylebox_override("hover", create_box)
-	
-	var create_box_pressed := create_box.duplicate() as StyleBoxFlat
-	create_box_pressed.bg_color = Color(0.08, 0.24, 0.16, 0.95)
-	create_box_pressed.border_color = Color("7cfc9a")
-	_create.add_theme_stylebox_override("pressed", create_box_pressed)
-	_create.add_theme_stylebox_override("hover_pressed", create_box_pressed)
-	v.add_child(_create)
-
-	_connect_btn = _button("Se connecter", _on_connect)
-	_connect_btn.custom_minimum_size = Vector2(0, 48)
-	_connect_btn.add_theme_font_size_override("font_size", 19)
-	v.add_child(_connect_btn)
-
-	_create.toggled.connect(func(pressed: bool):
-		if pressed:
-			_create.text = " ✓ Créer un nouveau compte"
-			_connect_btn.text = "Créer mon compte et jouer"
-		else:
-			_create.text = " Nouveau joueur ? Créer un compte"
-			_connect_btn.text = "Se connecter"
-	)
-
+	# --- Statut (concis, seulement sur action) ---
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.add_theme_color_override("font_color", Color("ffd166"))
-	_status.add_theme_font_size_override("font_size", 14)
-
-	# Si le joueur vient d'installer l'application (pas de compte local sauvé), on active directement le mode création
-	if saved_p == "":
-		_create.button_pressed = true
-		_status.text = "Bienvenue à Dakar ! Choisis ton pseudo et ton mot de passe pour commencer."
-	elif saved_pw != "":
-		_create.button_pressed = false
-		_status.text = "Identifiants mémorisés pour %s. Touche « Se connecter » !" % saved_p
-	else:
-		_create.button_pressed = false
-		_status.text = "Saisis ton mot de passe pour %s." % saved_p
+	_status.add_theme_font_size_override("font_size", 13)
 	v.add_child(_status)
 
+	if saved_p == "":
+		_create.button_pressed = true
+		_connect_btn.text = "🌐 CRÉER MON COMPTE"
+	else:
+		_create.button_pressed = false
+
+	# Bouton de secours hors-ligne en cas d'échec serveur
 	_offline_fallback_btn = Button.new()
-	_offline_fallback_btn.text = "🎮 Continuer en Mode Hors-Ligne (Solo)"
-	_offline_fallback_btn.custom_minimum_size = Vector2(0, 48)
-	_offline_fallback_btn.add_theme_font_size_override("font_size", 16)
-	var fb_st := StyleBoxFlat.new()
-	fb_st.bg_color = Color(0.14, 0.42, 0.30, 0.95)
-	fb_st.border_color = Color("7cfc9a")
-	fb_st.border_width_left = 2
-	fb_st.border_width_top = 2
-	fb_st.border_width_right = 2
-	fb_st.border_width_bottom = 2
-	fb_st.corner_radius_top_left = 8
-	fb_st.corner_radius_top_right = 8
-	fb_st.corner_radius_bottom_right = 8
-	fb_st.corner_radius_bottom_left = 8
-	_offline_fallback_btn.add_theme_stylebox_override("normal", fb_st)
-	_offline_fallback_btn.add_theme_stylebox_override("hover", fb_st)
+	_offline_fallback_btn.text = "🎮 Continuer en Solo"
+	_offline_fallback_btn.custom_minimum_size = Vector2(0, 44)
+	_offline_fallback_btn.add_theme_font_size_override("font_size", 15)
+	_offline_fallback_btn.add_theme_stylebox_override("normal", solo_st)
+	_offline_fallback_btn.add_theme_stylebox_override("hover", solo_st)
 	_offline_fallback_btn.pressed.connect(_start_offline)
 	_offline_fallback_btn.visible = false
 	v.add_child(_offline_fallback_btn)
 
-	var note := Label.new()
-	note.text = "Ne réutilise pas un mot de passe important. Carte : © OpenStreetMap."
-	note.add_theme_font_size_override("font_size", 12)
-	note.add_theme_color_override("font_color", Color("999999"))
-	v.add_child(note)
-
+	# Crédits
 	var credits := _button("Crédits", _show_credits)
 	credits.flat = true
-	credits.custom_minimum_size = Vector2(0, 34)
-	credits.add_theme_font_size_override("font_size", 15)
+	credits.custom_minimum_size = Vector2(0, 30)
+	credits.add_theme_font_size_override("font_size", 13)
+	credits.add_theme_color_override("font_color", Color(0.5, 0.55, 0.6))
 	v.add_child(credits)
 
 
@@ -438,8 +404,29 @@ func _field(parent: Control, placeholder: String, value: String) -> LineEdit:
 	var e := LineEdit.new()
 	e.placeholder_text = placeholder
 	e.text = value
-	e.custom_minimum_size = Vector2(0, 44)
-	e.add_theme_font_size_override("font_size", 16)
+	e.custom_minimum_size = Vector2(0, 46)
+	e.add_theme_font_size_override("font_size", 15)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.11, 0.14, 0.19, 0.95)
+	sb.border_color = Color(0.25, 0.33, 0.44, 0.8)
+	sb.border_width_left = 1
+	sb.border_width_top = 1
+	sb.border_width_right = 1
+	sb.border_width_bottom = 1
+	sb.corner_radius_top_left = 8
+	sb.corner_radius_top_right = 8
+	sb.corner_radius_bottom_right = 8
+	sb.corner_radius_bottom_left = 8
+	sb.content_margin_left = 12.0
+	sb.content_margin_right = 12.0
+	e.add_theme_stylebox_override("normal", sb)
+	var sb_focus := sb.duplicate() as StyleBoxFlat
+	sb_focus.border_color = Color("7cfc9a")
+	sb_focus.border_width_left = 2
+	sb_focus.border_width_top = 2
+	sb_focus.border_width_right = 2
+	sb_focus.border_width_bottom = 2
+	e.add_theme_stylebox_override("focus", sb_focus)
 	e.focus_entered.connect(func():
 		call_deferred("_scroll_to_control", e)
 	)
@@ -450,8 +437,8 @@ func _field(parent: Control, placeholder: String, value: String) -> LineEdit:
 func _button(text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(0, 48)
-	b.add_theme_font_size_override("font_size", 19)
+	b.custom_minimum_size = Vector2(0, 46)
+	b.add_theme_font_size_override("font_size", 16)
 	b.pressed.connect(cb)
 	return b
 
@@ -460,7 +447,7 @@ func _on_connect() -> void:
 	_pseudo.text = _pseudo.text.strip_edges()
 	_password.text = _password.text.strip_edges()
 	if _pseudo.text.length() < 3 or _password.text.length() < 4:
-		_status.text = "Pseudo d'au moins 3 caractères et mot de passe d'au moins 4 caractères."
+		_status.text = "Pseudo (min 3 car.) et mot de passe (min 4 car.) requis."
 		return
 
 	# Connexion automatique des tests (--online=...) : on ne touche pas aux réglages du joueur
@@ -490,7 +477,7 @@ func _on_connect() -> void:
 		Net.pending_friend_join_code = _friend_code.text.strip_edges().to_upper()
 
 	_connect_btn.disabled = true
-	_status.text = "Connexion au serveur..."
+	_status.text = "Connexion..."
 	if _offline_fallback_btn:
 		_offline_fallback_btn.visible = false
 
@@ -499,7 +486,7 @@ func _on_connect() -> void:
 	conn_timer.timeout.connect(func():
 		if not Net.online and _connect_btn and is_instance_valid(_connect_btn) and _connect_btn.disabled:
 			_connect_btn.disabled = false
-			_status.text = "Le serveur met du temps à répondre. Vérifie ta connexion ou joue en mode hors-ligne !"
+			_status.text = "Serveur injoignable pour l'instant. Joue en solo !"
 			if _offline_fallback_btn and is_instance_valid(_offline_fallback_btn):
 				_offline_fallback_btn.visible = true
 	)
@@ -513,17 +500,16 @@ func _on_login(ok: bool, message: String) -> void:
 	if not ok:
 		if _offline_fallback_btn and is_instance_valid(_offline_fallback_btn):
 			_offline_fallback_btn.visible = true
-		# Auto-correction intelligente pour guider immédiatement le joueur
 		if "Compte inconnu" in message or "inconnu" in message:
 			_create.button_pressed = true
-			_status.text = "Compte non trouvé. Touche « Créer mon compte et jouer » pour le créer !"
+			_status.text = "Compte introuvable. Touche « Créer mon compte »."
 		elif "déjà pris" in message and _create.button_pressed:
 			_create.button_pressed = false
-			_status.text = "Ce compte existe déjà. Touche « Se connecter » avec ton mot de passe."
+			_status.text = "Ce compte existe déjà. Touche « Se connecter »."
 		elif "déjà connecté" in message:
-			_status.text = "Connexion précédente en cours de libération. Touche à nouveau « Se connecter » !"
+			_status.text = "Session en cours de déconnexion. Réessaie."
 		elif "Mot de passe incorrect" in message:
-			_status.text = "Mot de passe incorrect. Vérifie les majuscules et minuscules."
+			_status.text = "Mot de passe incorrect."
 	if ok:
 		var cfg := ConfigFile.new()
 		cfg.load(SETTINGS)
