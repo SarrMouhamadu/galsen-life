@@ -1,18 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <!-- Découpe nette de la barre diagonale -->
+    <mask id="cutout_circle">
+      <rect width="128" height="128" fill="#ffffff"/>
+      <line x1="97" y1="31" x2="31" y2="97" stroke="#000000" stroke-width="14" stroke-linecap="round"/>
+    </mask>
+  </defs>
+
   <!-- Fond circulaire sombre avec contour rouge -->
-  <circle cx="64" cy="64" r="60" fill="#201518" stroke="#e63946" stroke-width="4"/>
-  <!-- Capsule du microphone -->
-  <rect x="51" y="26" width="26" height="50" rx="13" fill="#d8dce2"/>
-  <!-- Berceau en U -->
-  <path d="M 40,54 C 40,82 88,82 88,54" fill="none" stroke="#d8dce2" stroke-width="6.5" stroke-linecap="round"/>
-  <!-- Pied vertical -->
-  <line x1="64" y1="82" x2="64" y2="98" stroke="#d8dce2" stroke-width="6.5" stroke-linecap="round"/>
-  <!-- Socle horizontal -->
-  <line x1="48" y1="98" x2="80" y2="98" stroke="#d8dce2" stroke-width="6.5" stroke-linecap="round"/>
-  <!-- Ombre de la croix pour contraste maximal -->
-  <line x1="30" y1="30" x2="98" y2="98" stroke="#000000" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
-  <line x1="98" y1="30" x2="30" y2="98" stroke="#000000" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
-  <!-- Croix rouge vif sur le micro -->
-  <line x1="30" y1="30" x2="98" y2="98" stroke="#e63946" stroke-width="9.5" stroke-linecap="round"/>
-  <line x1="98" y1="30" x2="30" y2="98" stroke="#e63946" stroke-width="9.5" stroke-linecap="round"/>
+  <circle cx="64" cy="64" r="60" fill="#221619" stroke="#ef4444" stroke-width="4"/>
+
+  <!-- Silhouette du micro avec découpe -->
+  <g mask="url(#cutout_circle)">
+    <rect x="48" y="24" width="32" height="54" rx="16" fill="#dce2e8"/>
+    <path d="M 37,58 C 37,86 91,86 91,58" fill="none" stroke="#dce2e8" stroke-width="7" stroke-linecap="round"/>
+    <line x1="64" y1="86" x2="64" y2="102" stroke="#dce2e8" stroke-width="7" stroke-linecap="round"/>
+    <line x1="46" y1="102" x2="82" y2="102" stroke="#dce2e8" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <!-- Ombre de la barre pour contraste -->
+  <line x1="97" y1="31" x2="31" y2="97" stroke="#000000" stroke-width="12" stroke-linecap="round" opacity="0.4"/>
+  <!-- Barre rouge diagonale traversante (icône micro muet officielle) -->
+  <line x1="97" y1="31" x2="31" y2="97" stroke="#ef4444" stroke-width="8" stroke-linecap="round"/>
 </svg>
