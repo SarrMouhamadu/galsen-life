@@ -27,6 +27,27 @@ const HURT := ["Aïe !", "Wouy !", "Yow, bàyyi ma !", "Lan la ?!", "Dangay def 
 const ANGRY := ["Ñëwal fii ! (viens ici !)", "Dinaa la dóor ! (je vais te frapper !)", "Yaa ngi may xas ?!", "Kaay ! Kaay ! (viens !)"]
 const SCARED := ["Wallaay ! Ndimbal ! (au secours !)", "Police ! Police !", "Dama ragal ! (j'ai peur !)"]
 
+const VENDOR_ITEMS := {
+	"arachides": {"name": "Arachides chaudes", "price": 100, "satiety": 15, "shouts": ["« Gerte thiaf ! Arachides chaudes ! »", "« Arachides bien grillées ! 100 F ! »"]},
+	"cafe": {"name": "Café Touba", "price": 100, "satiety": 12, "shouts": ["« Café Touba chaud ! Café Touba ! »", "« Café Touba bu tàkk ! 100 FCFA ! »"]},
+	"eau": {"name": "Sachet d'eau fraîche", "price": 50, "satiety": 8, "shouts": ["« Ndox mu sedd ! Sachet d'eau 50 francs ! »", "« De l'eau fraîche ! Ndox ! »"]},
+	"fruits": {"name": "Mangues & Bananes", "price": 150, "satiety": 20, "shouts": ["« Mangues fraîches, bananes douces ! »", "« Fruits du marché ! »"]},
+	"mouchoirs": {"name": "Mouchoirs & Lunettes", "price": 200, "satiety": 5, "shouts": ["« Mouchoirs, lunettes, chargeurs ! »", "« Yow grand, amna lunettes ! »"]},
+}
+
+var is_vendor := false
+var vendor_type := ""
+var vendor_item := ""
+var vendor_price := 100
+var vendor_satiety := 15
+var _vendor_shout_t := 0.0
+
+var is_crossing := false
+var _cross_phase := 0.0
+var _cross_cd := 0.0
+var _cross_start_pos := Vector3.ZERO
+var _cross_end_pos := Vector3.ZERO
+
 var knocked := false
 var health := 100.0
 var mood := "" ## "" (promenade), "fight" (se bat contre le joueur), "flee" (s'enfuit)
@@ -81,6 +102,23 @@ func setup(p_city, rng: RandomNumberGenerator, near: Vector3) -> void:
 	cs.position.y = 0.85
 	_body.add_child(cs)
 	add_child(_body)
+
+	# Vendeurs ambulants : environ 25% des piétons vendent des articles dans les rues
+	is_vendor = rng.randf() < 0.25
+	if is_vendor:
+		var v_keys: Array = VENDOR_ITEMS.keys()
+		vendor_type = v_keys[rng.randi() % v_keys.size()]
+		var v_data: Dictionary = VENDOR_ITEMS[vendor_type]
+		vendor_item = v_data["name"]
+		vendor_price = v_data["price"]
+		vendor_satiety = v_data["satiety"]
+		_vendor_shout_t = rng.randf_range(4.0, 15.0)
+	else:
+		vendor_type = ""
+		vendor_item = ""
+
+	_cross_cd = rng.randf_range(6.0, 22.0)
+
 	_model = RealCharacter.create(self, RealCharacter.random_ped_name(rng), rng.randi())
 	_bubble = Mk.label(self, "", Vector3(0, 2.1, 0), Mk.NAME_SIZE, Color.WHITE)
 	_bubble.visible = false
@@ -98,6 +136,8 @@ func respawn(near: Vector3, min_d: float, max_d: float) -> void:
 	_last_target = position
 	_vel = _speed
 	knocked = false
+	is_crossing = false
+	_cross_phase = 0.0
 	_set_solid(true)
 	_dodge = 0.0
 	_dodge_target = 0.0
@@ -118,7 +158,56 @@ func _process(delta: float) -> void:
 	if mood != "":
 		_brawl(delta)
 		return
+
+	# Comportement de vendeur ambulant : crie ses produits
+	if is_vendor:
+		_vendor_shout_t -= delta
+		if _vendor_shout_t <= 0.0:
+			_vendor_shout_t = randf_range(12.0, 25.0)
+			if VENDOR_ITEMS.has(vendor_type):
+				var shouts: Array = VENDOR_ITEMS[vendor_type]["shouts"]
+				say(shouts.pick_random())
+
+	# Comportement de traversant : marche à travers la rue
+	if is_crossing:
+		var cross_vec := _cross_end_pos - _cross_start_pos
+		var cross_len := cross_vec.length()
+		if cross_len > 0.1:
+			var car_close := _check_incoming_car()
+			if car_close and _cross_phase < 0.25:
+				_cross_wait += delta
+				if _cross_wait < 2.5:
+					_model.locomote(0.0)
+					return
+			_cross_phase += (_speed * 1.35 / cross_len) * delta
+			var cur_p := _cross_start_pos.lerp(_cross_end_pos, clampf(_cross_phase, 0.0, 1.0))
+			position = cur_p
+			var f_dir := Vector2(cross_vec.x, cross_vec.z)
+			if f_dir.length() > 0.01:
+				_model.rotation.y = lerp_angle(_model.rotation.y, atan2(-f_dir.x, -f_dir.y), 1.0 - exp(-10.0 * delta))
+			_model.locomote(_speed * 1.35)
+			if _cross_phase >= 1.0:
+				is_crossing = false
+				_side = -_side
+				_cross_cd = randf_range(15.0, 35.0)
+				_last_target = position
+		return
+
 	var L: float = city.segment_length(_from, _to)
+
+	# Déclenchement de la traversée de rue (traversants)
+	_cross_cd -= delta
+	if _cross_cd <= 0.0 and L > 8.0:
+		var near_zebra: bool = city.zebras.has(Vector2i(_from, _to)) or city.zebras.has(Vector2i(_to, _from))
+		var want_cross := false
+		if near_zebra:
+			want_cross = randf() < 0.65
+		elif _t > 4.0 and _t < L - 4.0:
+			want_cross = randf() < 0.35
+		if want_cross:
+			start_crossing()
+			return
+
 	_look_t -= delta
 	if _look_t <= 0.0:
 		_look_t = 0.25
@@ -163,6 +252,51 @@ func _process(delta: float) -> void:
 		_model.rotation.y = lerp_angle(_model.rotation.y, atan2(-head.x, -head.y), 1.0 - exp(-8.0 * delta))
 	if _act_t <= 0.0:
 		_model.locomote(_vel)
+
+
+## Démarre une traversée de la rue vers le trottoir opposé
+func start_crossing() -> void:
+	if is_crossing or knocked or city == null:
+		return
+	var cur_side_pt: Vector3 = city.sidewalk_point(_from, _to, _t, _side)
+	var opp_t: float = clampf(_t + randf_range(2.0, 5.0), 0.0, city.segment_length(_from, _to))
+	var opp_side_pt: Vector3 = city.sidewalk_point(_from, _to, opp_t, -_side)
+	_cross_start_pos = cur_side_pt
+	_cross_end_pos = opp_side_pt
+	_t = opp_t
+	is_crossing = true
+	_cross_phase = 0.0
+	_cross_wait = 0.0
+
+
+## Vérifie si une voiture approche rapidement de la trajectoire du piéton
+func _check_incoming_car() -> bool:
+	var me: Vector3 = global_position
+	for v in get_tree().get_nodes_in_group("vehicles"):
+		if absf(v.speed) < 2.0:
+			continue
+		var to_v: Vector3 = v.global_position - me
+		to_v.y = 0.0
+		if to_v.length() < 14.0:
+			var fwd: Vector3 = -v.global_transform.basis.z * signf(v.speed)
+			if fwd.dot(-to_v.normalized()) > 0.45:
+				return true
+	return false
+
+
+## Achète un article auprès d'un vendeur ambulant
+func buy(buyer) -> void:
+	if not is_vendor:
+		talk()
+		return
+	if not GameState.spend(vendor_price):
+		say("« Amul xaalis ? » (pas d'argent ?) Il te faut %s." % GameState.fcfa(vendor_price))
+		return
+	GameState.hunger = minf(100.0, GameState.hunger + vendor_satiety)
+	GameState.health = minf(100.0, GameState.health + 10.0)
+	Audio.play_sfx("coin", -10.0)
+	say("« Jërëjëf grand ! Yàlla na la barkeel ! »")
+	GameState.notify.emit("Tu as acheté : %s (-%s)." % [vendor_item, GameState.fcfa(vendor_price)])
 
 ## Direction perpendiculaire au trottoir (vers l'extérieur de la rue)
 func _across() -> Vector3:

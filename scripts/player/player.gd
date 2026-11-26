@@ -162,7 +162,10 @@ func _interact() -> void:
 		return
 	var p = _nearest_ped()
 	if p:
-		p.talk()
+		if p.get("is_vendor") == true:
+			p.buy(self)
+		else:
+			p.talk()
 
 
 func get_interaction_hint() -> String:
@@ -193,7 +196,10 @@ func get_interaction_hint() -> String:
 			return "Prendre le volant : " + v.display_name
 		else:
 			return "Conduire : " + v.display_name
-	if _nearest_ped():
+	var np = _nearest_ped()
+	if np:
+		if np.get("is_vendor") == true:
+			return "Acheter : %s (%s)" % [np.get("vendor_item"), GameState.fcfa(np.get("vendor_price"))]
 		return "Parler au passant"
 	return ""
 

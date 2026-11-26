@@ -105,6 +105,23 @@ func build_data_only() -> void:
 		if not places.has(required):
 			places[required] = node_pos[_drive_nodes[0]]
 			place_info[required] = [0, 0, 0.0, 1.0, 0.0]
+	# Réseau de Fast-Foods Restaurants Maïga dans les grands quartiers de Dakar
+	const MAIGA_HUBS := {
+		"Restaurant Maïga (Médina)": [-835.0, -782.0, -2.34, -0.70, 0.72],
+		"Restaurant Maïga (Petersen)": [-98.0, -122.0, -1.80, -0.22, 0.97],
+		"Restaurant Maïga (Marché Sandaga)": [220.0, 563.0, 0.91, 0.61, -0.79],
+		"Restaurant Maïga (Marché Tilène)": [-1051.0, -760.0, -0.78, 0.71, 0.70],
+		"Restaurant Maïga (Gare de Dakar)": [692.0, -53.0, 0.61, 0.82, -0.57],
+		"Restaurant Maïga (Fass Delorme)": [-1097.0, -1624.0, -2.41, -0.74, 0.67],
+		"Restaurant Maïga (Rebeuss)": [-97.0, -502.0, -0.03, 1.00, 0.03],
+		"Restaurant Maïga (Grande Mosquée)": [-240.0, -377.0, -2.43, -0.76, 0.65],
+		"Restaurant Maïga (Stade Iba Mar Diop)": [-816.0, -601.0, -0.77, 0.72, 0.70],
+		"Restaurant Maïga (Marché Kermel)": [1191.0, 465.0, -1.55, 0.02, 1.00],
+	}
+	for m_name in MAIGA_HUBS:
+		var d: Array = MAIGA_HUBS[m_name]
+		places[m_name] = Vector3(d[0], 0.3, d[1])
+		place_info[m_name] = [d[0], d[1], d[2], d[3], d[4]]
 	if not places.has("Stade Iba Mar Diop"):
 		places["Stade Iba Mar Diop"] = Vector3(-730.0, 0.3, -532.0)
 		place_info["Stade Iba Mar Diop"] = [-730.0, -532.0, 0.0, 1.0, 0.0]
@@ -581,17 +598,22 @@ func _build_job_decor() -> void:
 	_stall("Café Touba", Color("6f4518"))
 	_stall("Chez Adja", Color("e76f51"))
 	_stall("Dibiterie", Color("9d0208"))
-	_stall_maiga()
+	_stall_maiga("Restaurant Maïga", "StallMaiga")
+	var idx := 1
+	for p_name in places.keys():
+		if "Restaurant Maïga" in p_name and p_name != "Restaurant Maïga":
+			_stall_maiga(p_name, "StallMaiga_%d" % idx)
+			idx += 1
 
 
-func _stall_maiga() -> void:
-	if not place_info.has("Restaurant Maïga"):
+func _stall_maiga(place_name: String = "Restaurant Maïga", holder_name: String = "StallMaiga") -> void:
+	if not place_info.has(place_name):
 		return
-	var info: Array = place_info["Restaurant Maïga"]
+	var info: Array = place_info[place_name]
 	var n := Vector3(info[3], 0, info[4])
-	var pos: Vector3 = off_road(places["Restaurant Maïga"] + n * 2.2, n, 1.5)
+	var pos: Vector3 = off_road(places[place_name] + n * 2.2, n, 1.5)
 	var holder := Node3D.new()
-	holder.name = "StallMaiga"
+	holder.name = holder_name
 	add_child(holder)
 	holder.position = Vector3(pos.x, 0.07, pos.z)
 	holder.rotation.y = info[2]
@@ -616,7 +638,7 @@ func _stall_maiga() -> void:
 	for x in [1.7, 3.1]:
 		Furn.place(holder, "plastic_monobloc_chair_01", Vector3(x, 0, 2.6), PI)
 	# Cuisinier Maïga derrière le comptoir
-	var cook = load("res://scripts/util/real_character.gd").create(holder, "homme_tunique", 0)
+	var cook = load("res://scripts/util/real_character.gd").create(holder, "homme_tunique", hash(place_name))
 	cook.position = Vector3(0, 0.0, -0.3)
 	cook.rotation.y = 0.0
 	cook.play_clip("idle", 0.0)

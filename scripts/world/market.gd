@@ -35,8 +35,8 @@ const STREET := {
 	"fruits": ["Étal de fruits", [["Mangue", 200, 0], ["Orange", 100, 0], ["Banane", 100, 0], ["Sachet d'arachides", 100, 0]]],
 	"recharge": ["Kiosque", [["Bouteille d'eau", 300, 0], ["Biscuits", 150, 0], ["Sachet d'eau", 50, 0]]],
 }
-const STREET_VENDORS := 4 ## vendeurs de rue affichés en même temps (téléphones)
-const STREET_RANGE := 45.0
+const STREET_VENDORS := 28 ## vendeurs de rue affichés en même temps
+const STREET_RANGE := 80.0
 const KEEP_RENT := 1000 ## location d'un étal de rue pour la journée
 const KEEP_RANGE := 5.0 ## au-delà, le joueur a quitté son étal
 const WOOD := "res://world/textures/wood.jpg" ## bois (ambientCG Wood051, CC0)

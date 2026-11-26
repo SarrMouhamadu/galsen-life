@@ -41,6 +41,15 @@ func _ready() -> void:
 		{"id": "dibi", "pos": city.places["Dibiterie"], "title": "Dibiterie", "sub": "Manger", "color": Color("d62828")},
 		{"id": "maiga", "pos": city.places.get("Restaurant Maïga", city.places["Dibiterie"]), "title": "Restaurant Maïga", "sub": "Fast-Food / Manger", "color": Color("e67e22")},
 	]
+	for p_name in city.places.keys():
+		if "Restaurant Maïga" in p_name and p_name != "Restaurant Maïga":
+			_spots.append({
+				"id": "maiga",
+				"pos": city.places[p_name],
+				"title": p_name,
+				"sub": "Fast-Food / Manger",
+				"color": Color("e67e22")
+			})
 	for s in _spots:
 		_make_spot_marker(s)
 	_beam = Node3D.new()

@@ -17,25 +17,25 @@ const NAMES := {"minimal": "Minimal", "faible": "Faible", "moyen": "Moyen", "ele
 const PROFILES := {
 	"minimal": {
 		"scale": 0.55, "msaa": Viewport.MSAA_DISABLED, "shadows": false, "shadow_dist": 0.0, "shadow_size": 512,
-		"view": 170.0, "peds": 6, "cars": 8, "lamp_lights": 0, "lamp_pools": 6, "rain": 150, "puddles": false,
+		"view": 170.0, "peds": 18, "cars": 8, "lamp_lights": 0, "lamp_pools": 6, "rain": 150, "puddles": false,
 		"reflections": false, "lod": 8.0, "char_range": 45.0, "car_range": 110.0, "window_lights": false,
 		"glow": false, "ssao": false, "ssr": false, "vfog": false,
 	},
 	"faible": {
 		"scale": 0.7, "msaa": Viewport.MSAA_DISABLED, "shadows": false, "shadow_dist": 0.0, "shadow_size": 1024,
-		"view": 240.0, "peds": 14, "cars": 16, "lamp_lights": 0, "lamp_pools": 10, "rain": 500, "puddles": false,
+		"view": 240.0, "peds": 35, "cars": 16, "lamp_lights": 0, "lamp_pools": 10, "rain": 500, "puddles": false,
 		"reflections": false, "lod": 4.0, "char_range": 70.0, "car_range": 160.0, "window_lights": false,
 		"glow": false, "ssao": false, "ssr": false, "vfog": false,
 	},
 	"moyen": {
 		"scale": 0.95, "msaa": Viewport.MSAA_2X, "shadows": true, "shadow_dist": 65.0, "shadow_size": 2048,
-		"view": 420.0, "peds": 22, "cars": 24, "lamp_lights": 4, "lamp_pools": 16, "rain": 1400, "puddles": true,
+		"view": 420.0, "peds": 55, "cars": 24, "lamp_lights": 4, "lamp_pools": 16, "rain": 1400, "puddles": true,
 		"reflections": true, "lod": 2.0, "char_range": 110.0, "car_range": 250.0, "window_lights": true,
 		"glow": true, "ssao": true, "ssr": false, "vfog": false,
 	},
 	"eleve": {
 		"scale": 1.0, "msaa": Viewport.MSAA_2X, "shadows": true, "shadow_dist": 110.0, "shadow_size": 4096,
-		"view": 650.0, "peds": 30, "cars": 32, "lamp_lights": 8, "lamp_pools": 24, "rain": 3000, "puddles": true,
+		"view": 650.0, "peds": 85, "cars": 32, "lamp_lights": 8, "lamp_pools": 24, "rain": 3000, "puddles": true,
 		"reflections": true, "lod": 1.0, "char_range": 150.0, "car_range": 320.0, "window_lights": true,
 		"glow": true, "ssao": true, "ssr": true, "vfog": true,
 	},
