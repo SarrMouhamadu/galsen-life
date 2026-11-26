@@ -16,6 +16,7 @@ const MAIGA_PRICE := 1000
 
 var city
 var player
+var main = null
 var employment = null ## emploi : patrons, contrats (employment.gd)
 var _taxi_warned = null
 var job := ""
@@ -300,30 +301,28 @@ func try_interact() -> bool:
 				return true
 			if main and main.hud:
 				var choices: Array = [
-					["Manger un sandwich Maïga (%s)" % GameState.fcfa(MAIGA_PRICE), func():
-						if GameState.spend(MAIGA_PRICE):
-							GameState.hunger = 100.0
-							GameState.health = minf(100.0, GameState.health + 30.0)
-							GameState.stats["maiga"] = GameState.stats.get("maiga", 0) + 1
-							GameState.notify.emit("Sandwich Maïga bu neex ! Pain brochette, spaghetti chaud & piment doux (-%s)." % GameState.fcfa(MAIGA_PRICE))
-						else:
-							GameState.notify.emit("Il te faut %s pour manger chez Maïga." % GameState.fcfa(MAIGA_PRICE))
-					],
-					["Prendre une livraison Maïga Express", func():
-						_start_livraison_maiga(player.get_world_position())
-					]
+					["Manger un sandwich Maïga (%s)" % GameState.fcfa(MAIGA_PRICE), _manger_maiga],
+					["Prendre une livraison Maïga Express", _choisir_livraison_maiga]
 				]
 				main.hud.show_choices("Restaurant Maïga — Fast Food Dakarais", choices, func(): pass)
 				return true
 			else:
-				if GameState.spend(MAIGA_PRICE):
-					GameState.hunger = 100.0
-					GameState.health = minf(100.0, GameState.health + 30.0)
-					GameState.stats["maiga"] = GameState.stats.get("maiga", 0) + 1
-					GameState.notify.emit("Sandwich Maïga bu neex ! (-%s)." % GameState.fcfa(MAIGA_PRICE))
-				else:
-					GameState.notify.emit("Il te faut %s pour manger chez Maïga." % GameState.fcfa(MAIGA_PRICE))
+				_manger_maiga()
 	return true
+
+
+func _manger_maiga() -> void:
+	if GameState.spend(MAIGA_PRICE):
+		GameState.hunger = 100.0
+		GameState.health = minf(100.0, GameState.health + 30.0)
+		GameState.stats["maiga"] = GameState.stats.get("maiga", 0) + 1
+		GameState.notify.emit("Sandwich Maïga bu neex ! Pain brochette, spaghetti chaud & piment doux (-%s)." % GameState.fcfa(MAIGA_PRICE))
+	else:
+		GameState.notify.emit("Il te faut %s pour manger chez Maïga." % GameState.fcfa(MAIGA_PRICE))
+
+
+func _choisir_livraison_maiga() -> void:
+	_start_livraison_maiga(player.get_world_position())
 
 
 func get_hint() -> String:

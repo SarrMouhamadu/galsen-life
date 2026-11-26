@@ -156,6 +156,7 @@ func _ready() -> void:
 	player.camera_rig = camera_rig
 
 	jobs = JobManager.new()
+	jobs.main = self
 	jobs.city = city
 	jobs.player = player
 	add_child(jobs)

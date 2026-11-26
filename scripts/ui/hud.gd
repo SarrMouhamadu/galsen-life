@@ -6,8 +6,8 @@ const Minimap = preload("res://scripts/ui/minimap.gd")
 const MapScreen = preload("res://scripts/ui/map_screen.gd")
 const Phone = preload("res://scripts/ui/phone.gd")
 const EmoteMenu = preload("res://scripts/ui/emote_menu.gd")
-const TEX_MIC_ON := preload("res://textures/ui/mic_icon_white.svg")
-const TEX_MIC_MUTED := preload("res://textures/ui/mic_icon_muted.svg")
+const TEX_MIC_ON := preload("res://textures/ui/mic_on.svg")
+const TEX_MIC_MUTED := preload("res://textures/ui/mic_muted.svg")
 
 var main
 var _money: Label
