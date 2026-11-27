@@ -9,6 +9,7 @@ const RUN_SPEED := 6.5
 const JUMP_VELOCITY := 5.5
 const GRAVITY := 18.0
 const MAX_STEP_HEIGHT := 0.25 ## hauteur max franchissable sans sauter (trottoirs 0.16m, bordures 0.14-0.20m)
+const PUBLIC_TRANSPORTS := ["bus", "coach", "car_rapide", "ndiaga", "brt", "taxi"]
 
 var camera_rig = null
 var job_manager = null
@@ -29,6 +30,35 @@ var _step_dist := 0.0
 var _step_smooth_y := 0.0 ## lissage visuel du passage de bordure / trottoir
 var is_sitting := false ## état assis (chaise ou geste au sol)
 var sitting_chair: Node3D = null ## chaise occupée
+
+
+func is_public_transport(v) -> bool:
+	return v != null and v.vehicle_type in PUBLIC_TRANSPORTS
+
+
+func can_drive_vehicle(v) -> bool:
+	if v == null:
+		return false
+	if not is_public_transport(v):
+		return true
+	if v.get_meta("player_driver", false) == true:
+		return true
+	if v.get_meta("taxi_patron", false) == true:
+		return true
+	if v.get_meta("owned", false) == true:
+		return true
+	if v.has_meta("rental"):
+		return true
+	return false
+
+
+func board_public_transport(v) -> void:
+	if v == null:
+		return
+	if transit and transit.board_vehicle(v):
+		return
+	ride(v)
+	v.set_passenger(self)
 
 
 func start_emote(clip: String) -> void:
@@ -127,7 +157,10 @@ func _physics_process(delta: float) -> void:
 	elif Input.is_action_just_pressed("steal") and current_vehicle == null:
 		var sv = _nearest_vehicle(1.5)
 		if sv:
-			enter_vehicle(sv)
+			if is_public_transport(sv) and not can_drive_vehicle(sv):
+				board_public_transport(sv)
+			else:
+				enter_vehicle(sv)
 	if current_vehicle:
 		global_position = current_vehicle.global_position
 		return
@@ -315,14 +348,18 @@ func _interact() -> void:
 	if ch:
 		sit_on_chair(ch)
 		return
+	# Si un transport en commun est à portée, monter en tant que passager
+	if transit and transit.try_interact():
+		return
 	# Si une moto ou une charrette est à portée, monter directement dessus
 	var v = _nearest_vehicle()
 	if v and v.vehicle_type in ["jakarta", "grosse_moto", "charette"]:
 		enter_vehicle(v)
 		return
-	if transit and transit.try_interact():
-		return
 	if v:
+		if is_public_transport(v) and not can_drive_vehicle(v):
+			board_public_transport(v)
+			return
 		enter_vehicle(v)
 		return
 	var p = _nearest_ped()
@@ -360,6 +397,8 @@ func get_interaction_hint() -> String:
 		return "Entrer dans le Studio Personnage"
 	var v = _nearest_vehicle()
 	if v:
+		if is_public_transport(v) and not can_drive_vehicle(v):
+			return "Monter comme passager : " + v.display_name
 		var stolen: bool = v.ai_enabled or v.route_active or v.vehicle_type in ["police", "army"]
 		if v.vehicle_type in ["jakarta", "grosse_moto"]:
 			return "Monter sur la moto : " + v.display_name
@@ -416,7 +455,13 @@ func open_character_studio() -> void:
 	)
 
 
-func enter_vehicle(v) -> void:
+func enter_vehicle(v, force_driver: bool = false) -> void:
+	if v == null:
+		return
+	# Les transports en commun ne sont jamais conduits par le joueur (sauf patron taxi ou propriétaire)
+	if not force_driver and is_public_transport(v) and not can_drive_vehicle(v):
+		board_public_transport(v)
+		return
 	stop_emote()
 	# Voiture du trafic partagé (en ligne) : elle devient une voiture locale, volée
 	if v.has_meta("net_id"):

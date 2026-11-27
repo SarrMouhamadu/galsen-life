@@ -206,7 +206,7 @@ func _run() -> void:
 	await _wait(0.5)
 	_check("« Descente ! »", player.riding == null)
 
-	# Voler un taxi (touche G) reste possible
+	# Transports en commun : monter dans un taxi fait monter comme passager
 	gs.wanted = 0
 	var taxi2 = null
 	for v in main.traffic:
@@ -215,8 +215,20 @@ func _run() -> void:
 			break
 	player.global_position = taxi2.global_position + Vector3(0, 0.5, 0)
 	player.enter_vehicle(taxi2)
-	_check("taxi volé (+1 étoile)", player.current_vehicle == taxi2 and gs.wanted == 1)
-	player.exit_vehicle()
+	_check("taxi comme passager (sans conduire)", player.current_vehicle == null and player.riding == taxi2)
+	player.end_ride()
+
+	# Voler un véhicule civil (clando / berline) reste passible d'une étoile
+	var car_civil = null
+	for v in main.traffic:
+		if v.vehicle_type in ["clando", "suv"] and v.ai_enabled:
+			car_civil = v
+			break
+	if car_civil:
+		player.global_position = car_civil.global_position + Vector3(0, 0.5, 0)
+		player.enter_vehicle(car_civil)
+		_check("voiture civile volée (+1 étoile)", player.current_vehicle == car_civil and gs.wanted == 1)
+		player.exit_vehicle()
 
 	# Armée : 4 étoiles et plus
 	player.global_position = city.places["Porte du Millénaire"] + Vector3(0, 0.5, 0)

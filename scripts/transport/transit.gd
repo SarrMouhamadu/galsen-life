@@ -266,7 +266,8 @@ func _board_bus(bus) -> void:
 		GameState.notify.emit("Le receveur : « Il faut %s pour le bus ! »" % GameState.fcfa(BUS_FARE))
 		_waiting = null
 		return
-	GameState.notify.emit("Tu montes dans le bus %s (-%s). [E] pour descendre au prochain arrêt." % [bus.line_name, GameState.fcfa(BUS_FARE)])
+	var bus_label: String = bus.line_name if bus.line_name != "" else bus.display_name
+	GameState.notify.emit("Tu montes dans le %s (-%s). [E] pour descendre." % [bus_label, GameState.fcfa(BUS_FARE)])
 	_start_ride(bus, "bus")
 
 
@@ -292,19 +293,29 @@ func _end_ride() -> void:
 	v.set_passenger(null)
 	if _ride_kind == "taxi":
 		v.resume_traffic()
-	elif _ride_kind == "car_rapide":
+	elif _ride_kind == "car_rapide" or _ride_kind == "bus":
 		v.hold = false
+		if not v.route_active and v.ai_city != null:
+			v.resume_traffic()
 
 
 ## Le joueur appuie sur ACTION pendant le trajet.
 func ride_interact() -> void:
 	match _ride_kind:
 		"bus":
-			_want_stop = true
-			GameState.notify.emit("Tu descendras au prochain arrêt.")
+			if _ride != null and _ride.route_active:
+				_want_stop = true
+				GameState.notify.emit("Tu descendras au prochain arrêt.")
+			else:
+				if _ride != null:
+					_ride.hold = true
+					_ride.route_active = false
+				_alight = true
+				GameState.notify.emit("« Arrêt chauffeur ! » Tu descends du bus.")
 		_:
-			_ride.hold = true
-			_ride.route_active = false
+			if _ride != null:
+				_ride.hold = true
+				_ride.route_active = false
 			_alight = true
 
 
@@ -323,13 +334,13 @@ func _public_vehicle_near(pp: Vector3) -> Variant:
 	for v in get_tree().get_nodes_in_group("vehicles"):
 		if v.driver != null or v.passenger != null or v.chasing:
 			continue
-		var reach: float = maxf(v.size.z * 0.5 + 2.8, 5.0)
-		var d_horiz := Vector2(pp.x - v.global_position.x, pp.z - v.global_position.z).length()
-		if d_horiz > reach or absf(pp.y - v.global_position.y) > 3.0:
+		if v.get_meta("taxi_patron", false) or v.get_meta("owned", false) or v.has_meta("rental") or v.get_meta("player_driver", false):
 			continue
-		if v.vehicle_type in ["taxi", "car_rapide", "ndiaga"] and (v.ai_enabled or v.has_meta("net_id")):
-			return v
-		if v.line_name != "" and absf(v.speed) < 2.0:
+		var reach: float = maxf(v.size.z * 0.5 + 3.0, 5.2)
+		var d_horiz := Vector2(pp.x - v.global_position.x, pp.z - v.global_position.z).length()
+		if d_horiz > reach or absf(pp.y - v.global_position.y) > 3.5:
+			continue
+		if v.vehicle_type in ["taxi", "car_rapide", "ndiaga", "bus", "coach", "brt"]:
 			return v
 	return null
 
@@ -339,6 +350,31 @@ func _stop_near(pp: Vector3) -> Variant:
 		if Vector2(pp.x - s["pos"].x, pp.z - s["pos"].z).length() < 3.5:
 			return s
 	return null
+
+
+## Fait monter le joueur comme passager dans un transport en commun.
+func board_vehicle(v) -> bool:
+	if v == null or _ride != null or player.current_vehicle != null:
+		return false
+	if v.has_meta("net_id"):
+		v.get_meta("net_owner").convert(v)
+	if v.vehicle_type == "taxi":
+		_hail_taxi(v)
+		return true
+	elif v.line_name != "" or v.vehicle_type in ["bus", "coach", "brt"]:
+		_board_bus(v)
+		return true
+	elif v.vehicle_type in ["car_rapide", "ndiaga"]:
+		if GameState.spend(CAR_RAPIDE_FARE):
+			if v.vehicle_type == "ndiaga":
+				GameState.notify.emit("Tu montes dans le Ndiaga Ndiaye (-%s). L'apprenti tape sur la carrosserie : « Colobane, Grand-Yoff ! »" % GameState.fcfa(CAR_RAPIDE_FARE))
+			else:
+				GameState.notify.emit("Tu montes dans le car rapide (-%s). L'apprenti crie : « Petersen, Sandaga, Médina ! »" % GameState.fcfa(CAR_RAPIDE_FARE))
+			_start_ride(v, "car_rapide")
+		else:
+			GameState.notify.emit("L'apprenti : « C'est %s, grand ! »" % GameState.fcfa(CAR_RAPIDE_FARE))
+		return true
+	return false
 
 
 func try_interact() -> bool:
@@ -357,22 +393,7 @@ func try_interact() -> bool:
 	var v = _public_vehicle_near(pp)
 	if v == null:
 		return false
-	if v.has_meta("net_id"):
-		v.get_meta("net_owner").convert(v) # le taxi quitte le trafic partagé
-	if v.line_name != "":
-		_board_bus(v)
-	elif v.vehicle_type in ["car_rapide", "ndiaga"]:
-		if GameState.spend(CAR_RAPIDE_FARE):
-			if v.vehicle_type == "ndiaga":
-				GameState.notify.emit("Tu montes dans le Ndiaga Ndiaye (-%s). L'apprenti tape sur la carrosserie : « Colobane, Grand-Yoff ! »" % GameState.fcfa(CAR_RAPIDE_FARE))
-			else:
-				GameState.notify.emit("Tu montes dans le car rapide (-%s). L'apprenti crie : « Petersen, Sandaga, Médina ! »" % GameState.fcfa(CAR_RAPIDE_FARE))
-			_start_ride(v, "car_rapide")
-		else:
-			GameState.notify.emit("L'apprenti : « C'est %s, grand ! »" % GameState.fcfa(CAR_RAPIDE_FARE))
-	else:
-		_hail_taxi(v)
-	return true
+	return board_vehicle(v)
 
 
 func get_hint() -> String:
@@ -384,8 +405,8 @@ func get_hint() -> String:
 		return "Ne plus attendre le bus" if _waiting == s else "Attendre le bus %s (%s)" % [s["line"], GameState.fcfa(BUS_FARE)]
 	var v = _public_vehicle_near(pp)
 	if v != null:
-		var price := "" if v.vehicle_type == "taxi" else " (%s)" % GameState.fcfa(BUS_FARE if v.line_name != "" else CAR_RAPIDE_FARE)
-		return "Monter comme passager : %s%s   •   [G] Conduire" % [v.display_name, price]
+		var price := "" if v.vehicle_type == "taxi" else " (%s)" % GameState.fcfa(BUS_FARE if (v.line_name != "" or v.vehicle_type in ["bus", "coach", "brt"]) else CAR_RAPIDE_FARE)
+		return "Monter comme passager : %s%s" % [v.display_name, price]
 	return ""
 
 

@@ -329,7 +329,10 @@ func _ready() -> void:
 			if pl and is_instance_valid(pl):
 				var sv = pl._nearest_vehicle(1.5)
 				if sv:
-					pl.enter_vehicle(sv)
+					if pl.is_public_transport(sv) and not pl.can_drive_vehicle(sv):
+						pl.board_public_transport(sv)
+					else:
+						pl.enter_vehicle(sv)
 				else:
 					pl._interact()
 	)
@@ -1404,11 +1407,18 @@ func _process(delta: float) -> void:
 		_prompt.text = hint
 	elif GameState.gamepad_active:
 		if nv != null:
-			_prompt.text = "🎮 [Y/△] " + hint + "   [X/□] Voler"
+			if p.is_public_transport(nv) and not p.can_drive_vehicle(nv):
+				_prompt.text = "🎮 [Y/△] " + hint
+			else:
+				_prompt.text = "🎮 [Y/△] " + hint + "   [X/□] Voler"
 		else:
 			_prompt.text = "🎮 [Y/△] " + hint
 	elif nv != null:
-		var prefix: String = "Touche ici ou bouton [%s] : " % ("MOTO" if nv.vehicle_type in ["jakarta", "grosse_moto"] else "AUTO") if GameState.touch_ui else "[E] ou [G] "
+		var prefix: String = ""
+		if GameState.touch_ui:
+			prefix = "Touche ici ou bouton [%s] : " % ("MOTO" if nv.vehicle_type in ["jakarta", "grosse_moto"] else ("MONTER" if (p.is_public_transport(nv) and not p.can_drive_vehicle(nv)) else "AUTO"))
+		else:
+			prefix = "[E] " if (p.is_public_transport(nv) and not p.can_drive_vehicle(nv)) else "[E] ou [G] "
 		_prompt.text = prefix + hint
 	else:
 		_prompt.text = ("ACTION : " if GameState.touch_ui else "[E] ") + hint
@@ -1420,6 +1430,8 @@ func _process(delta: float) -> void:
 		if nv != null:
 			if nv.vehicle_type in ["jakarta", "grosse_moto"]:
 				_touch.veh_label = "MOTO"
+			elif p.is_public_transport(nv) and not p.can_drive_vehicle(nv):
+				_touch.veh_label = "MONTER"
 			else:
 				_touch.veh_label = "AUTO"
 		else:

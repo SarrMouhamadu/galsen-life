@@ -134,7 +134,8 @@ func _run() -> void:
 	# 3. Test du véhicule et du retour au point de départ en voiture
 	var VehicleScript = load("res://scripts/vehicles/vehicle.gd")
 	var car = VehicleScript.new()
-	car.vehicle_type = "taxi"
+	car.vehicle_type = "clando"
+	car.set_meta("owned", true)
 	root.add_child(car)
 	car.global_position = Vector3(-800, 1.0, -800) # Au fin fond de la Médina
 	car.speed = 15.0
@@ -143,7 +144,7 @@ func _run() -> void:
 
 	# Monter le joueur dans la voiture
 	player.enter_vehicle(car)
-	assert(player.current_vehicle == car, "Le joueur doit être au volant du taxi")
+	assert(player.current_vehicle == car, "Le joueur doit être au volant de sa voiture")
 	if player.camera_rig:
 		assert(is_equal_approx(player.camera_rig.yaw, car.rotation.y), "La caméra doit être orientée dans l'axe du véhicule")
 
@@ -159,9 +160,44 @@ func _run() -> void:
 	assert(car.speed == 0.0, "La voiture doit être à l'arrêt")
 	assert(car.condition >= 85.0, "La voiture doit être réparée lors du rapatriement")
 	assert(car.fuel >= 80.0, "La voiture doit être ravitaillée lors du rapatriement")
+	player.exit_vehicle()
 	print("  [OK] Rapatriement complet de la voiture et du joueur au point de départ validé")
 
-	# Test de l'orientation de tous les modèles de véhicules (notamment Berline sf_bmw2002)
+	# 4. Test Transports en commun : passager vs conducteur
+	var public_types := ["bus", "coach", "car_rapide", "ndiaga", "brt", "taxi"]
+	for ptype in public_types:
+		var pv = VehicleScript.new()
+		pv.vehicle_type = ptype
+		root.add_child(pv)
+		assert(player.is_public_transport(pv), "Le véhicule %s doit être identifié comme transport en commun" % ptype)
+		assert(not player.can_drive_vehicle(pv), "Le joueur ne doit pas avoir le droit de conduire %s par défaut" % ptype)
+
+		# Entrer dans le transport : le joueur monte comme PASSAGER, jamais comme conducteur
+		player.enter_vehicle(pv)
+		assert(player.current_vehicle == null, "Le joueur ne doit PAS être au volant du transport en commun %s" % ptype)
+		assert(player.riding == pv, "Le joueur doit être passager (riding) dans %s" % ptype)
+		assert(pv.passenger == player, "Le véhicule %s doit avoir le joueur comme passager" % ptype)
+		assert(pv.driver == null, "Le véhicule %s ne doit pas avoir le joueur comme conducteur" % ptype)
+
+		# Descente du transport
+		player.end_ride()
+		assert(player.riding == null, "Le joueur doit avoir quitté le transport %s" % ptype)
+		pv.queue_free()
+	print("  [OK] Tous les transports en commun (bus, coach, car rapide, ndiaga, brt, taxi) font monter comme passager sans conduire !")
+
+	# Exceptions de conduite autorisées : taxi du patron (service Pape Diop) ou véhicule acheté
+	var taxi_patron = VehicleScript.new()
+	taxi_patron.vehicle_type = "taxi"
+	taxi_patron.set_meta("taxi_patron", true)
+	root.add_child(taxi_patron)
+	assert(player.can_drive_vehicle(taxi_patron), "Le joueur doit pouvoir conduire le taxi confié par le patron")
+	player.enter_vehicle(taxi_patron)
+	assert(player.current_vehicle == taxi_patron, "Le joueur doit être au volant du taxi patron en service")
+	player.exit_vehicle()
+	taxi_patron.queue_free()
+	print("  [OK] Conduite autorisée pour le taxi de patron en service validée")
+
+	# 5. Test de l'orientation de tous les modèles de véhicules (notamment Berline sf_bmw2002)
 	var clando_bmw = VehicleScript.new()
 	clando_bmw.vehicle_type = "clando"
 	clando_bmw.model_override = "sf_bmw2002"
@@ -172,5 +208,5 @@ func _run() -> void:
 	clando_bmw.queue_free()
 	print("  [OK] Orientation de tous les véhicules (y compris Berline sf_bmw2002) validée dans l'axe de marche !")
 
-	print("[PASS] Tous les tests de mouvements, décors (arbres, routes) et retour voiture sont validés avec succès !")
+	print("[PASS] Tous les tests de mouvements, transports en commun passager, décors et retour voiture sont validés avec succès !")
 	quit()
