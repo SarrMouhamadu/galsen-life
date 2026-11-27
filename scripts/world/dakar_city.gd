@@ -936,9 +936,10 @@ func _make_zebra_crossing(parent: Node3D, center: Vector3, road_yaw: float, widt
 
 	var num_stripes := int(width / 1.0)
 	var half_w: float = width * 0.5
+	var mat_white: Material = Mk.concrete_pbr(Color(0.96, 0.96, 0.98, 0.95))
 	for k in num_stripes:
 		var x_pos: float = -half_w + (k + 0.5) * (width / float(num_stripes))
-		Mk.box(cross_root, Vector3(0.55, 0.02, 3.2), Vector3(x_pos, 0, 0), Color(0.96, 0.96, 0.98, 0.95), false)
+		Mk.box(cross_root, Vector3(0.55, 0.02, 3.2), Vector3(x_pos, 0, 0), Color(0.96, 0.96, 0.98, 0.95), false, mat_white)
 
 
 func _make_curb_ring(parent: Node3D, center: Vector3, radius: float, col1: Color, col2: Color) -> void:
@@ -947,11 +948,14 @@ func _make_curb_ring(parent: Node3D, center: Vector3, radius: float, col1: Color
 	parent.add_child(ring_root)
 
 	var segments := 24
+	var mat1: Material = Mk.concrete_pbr(col1)
+	var mat2: Material = Mk.concrete_pbr(col2)
 	for k in segments:
 		var ang: float = k * TAU / float(segments)
 		var p := Vector3(cos(ang) * radius, 0, sin(ang) * radius)
 		var c := col1 if k % 2 == 0 else col2
-		var curb := Mk.box(ring_root, Vector3(radius * (TAU / float(segments)) * 0.95, 0.14, 0.25), p, c, false)
+		var m := mat1 if k % 2 == 0 else mat2
+		var curb := Mk.box(ring_root, Vector3(radius * (TAU / float(segments)) * 0.95, 0.14, 0.25), p, c, false, m)
 		curb.rotation.y = -ang + PI * 0.5
 
 
@@ -968,10 +972,11 @@ func _make_road_centerline(parent: Node3D, p_start: Vector3, p_end: Vector3) -> 
 	var gap_len := 3.0
 	var step := dash_len + gap_len
 	var cur_dist := 0.0
+	var mat_line: Material = Mk.concrete_pbr(Color(0.98, 0.98, 0.98, 0.9))
 
 	while cur_dist + dash_len <= total_len:
 		var mid := p_start + dir * (cur_dist + dash_len * 0.5) + Vector3(0, 0.08, 0)
-		var dash := Mk.box(line_root, Vector3(0.18, 0.02, dash_len), mid, Color(0.98, 0.98, 0.98, 0.9), false)
+		var dash := Mk.box(line_root, Vector3(0.18, 0.02, dash_len), mid, Color(0.98, 0.98, 0.98, 0.9), false, mat_line)
 		dash.look_at_from_position(mid, mid + dir, Vector3.UP)
 		cur_dist += step
 
@@ -982,11 +987,14 @@ func _make_speed_bump(parent: Node3D, center: Vector3, road_yaw: float, width: f
 	bump_root.rotation.y = road_yaw
 	parent.add_child(bump_root)
 
-	# Dos d'âne bicolore jaune et noir
+	# Dos d'âne bicolore jaune et noir en béton PBR avec usure réaliste
 	var num_sections := int(width / 0.8)
 	var half_w: float = width * 0.5
+	var mat_yel: Material = Mk.concrete_pbr(Color("facc15"))
+	var mat_dark: Material = Mk.concrete_pbr(Color("1e293b"))
 	for k in num_sections:
 		var x_pos: float = -half_w + (k + 0.5) * (width / float(num_sections))
 		var col: Color = Color("facc15") if k % 2 == 0 else Color("1e293b")
-		Mk.box(bump_root, Vector3(0.75, 0.07, 1.2), Vector3(x_pos, 0, 0), col, false)
+		var m: Material = mat_yel if k % 2 == 0 else mat_dark
+		Mk.box(bump_root, Vector3(0.75, 0.07, 1.2), Vector3(x_pos, 0, 0), col, false, m)
 

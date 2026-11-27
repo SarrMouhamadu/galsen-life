@@ -1,12 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <!-- Fond circulaire vert d'après l'image de référence (Hex #2f7c6a) -->
   <circle cx="64" cy="64" r="58" fill="#2f7c6a"/>
-  <!-- Capsule du microphone -->
-  <rect x="49" y="25" width="30" height="52" rx="15" fill="#ffffff"/>
+  <!-- Capsule du microphone blanc pur -->
+  <rect x="50" y="25" width="28" height="52" rx="14" fill="#ffffff"/>
   <!-- Berceau en U -->
-  <path d="M 38,58 C 38,84 90,84 90,58" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
-  <!-- Pied vertical -->
-  <line x1="64" y1="84" x2="64" y2="100" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
-  <!-- Socle horizontal -->
-  <line x1="48" y1="100" x2="80" y2="100" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+  <path d="M 38,57 C 38,83 90,83 90,57" fill="none" stroke="#ffffff" stroke-width="7.5" stroke-linecap="round"/>
+  <!-- Pied vertical (se terminant avec un bout arrondi sans socle horizontal, comme dans l'image 1) -->
+  <line x1="64" y1="83" x2="64" y2="103" stroke="#ffffff" stroke-width="7.5" stroke-linecap="round"/>
 </svg>

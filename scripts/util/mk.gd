@@ -3,6 +3,47 @@ extends RefCounted
 
 static var _mats := {}
 static var _window_tex: ImageTexture
+static var _asphalt_pbr_mat: StandardMaterial3D = null
+
+
+## Matériau PBR Asphalte haute fidélité (Albedo, NormalGL, Roughness CC0) avec projection triplanaire
+static func asphalt_pbr() -> StandardMaterial3D:
+	if _asphalt_pbr_mat != null:
+		return _asphalt_pbr_mat
+	var m := StandardMaterial3D.new()
+	if ResourceLoader.exists("res://textures/pbr/asphalt_albedo.jpg"):
+		m.albedo_texture = load("res://textures/pbr/asphalt_albedo.jpg")
+		m.normal_enabled = true
+		m.normal_texture = load("res://textures/pbr/asphalt_normal.jpg")
+		m.roughness_texture = load("res://textures/pbr/asphalt_roughness.jpg")
+		m.uv1_triplanar = true
+		m.uv1_scale = Vector3(0.35, 0.35, 0.35)
+	else:
+		m.albedo_color = Color(0.2, 0.2, 0.22)
+		m.roughness = 0.88
+	_asphalt_pbr_mat = m
+	return m
+
+
+## Matériau PBR Béton haute fidélité (bordures, ralentisseurs, dalles)
+static func concrete_pbr(tint: Color = Color.WHITE) -> StandardMaterial3D:
+	var key := "concrete_pbr|%s" % tint.to_html()
+	if _mats.has(key):
+		return _mats[key]
+	var m := StandardMaterial3D.new()
+	if ResourceLoader.exists("res://textures/pbr/concrete_albedo.jpg"):
+		m.albedo_color = tint
+		m.albedo_texture = load("res://textures/pbr/concrete_albedo.jpg")
+		m.normal_enabled = true
+		m.normal_texture = load("res://textures/pbr/concrete_normal.jpg")
+		m.roughness_texture = load("res://textures/pbr/concrete_roughness.jpg")
+		m.uv1_triplanar = true
+		m.uv1_scale = Vector3(0.5, 0.5, 0.5)
+	else:
+		m.albedo_color = Color(0.72, 0.7, 0.68) * tint
+		m.roughness = 0.75
+	_mats[key] = m
+	return m
 
 
 ## Peinture de carrosserie : vernis automobile brillant (clearcoat), reflets du ciel et du soleil
