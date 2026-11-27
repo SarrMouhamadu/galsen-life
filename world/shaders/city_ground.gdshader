@@ -120,10 +120,10 @@ void asphalt(vec2 p, float edge_m, float half_m, bool road, vec4 d, inout vec3 c
 		float oil = smoothstep(0.72, 0.85, fbm(p * 0.6 + 31.0)) * smoothstep(0.7, 0.0, abs(lane - 1.7));
 		col *= 1.0 - 0.35 * oil;
 		rough -= 0.25 * oil;
-		// Sable et poussière le long des bordures, plus ou moins étalés
+		// Sable et poussière le long des bordures, plus ou moins étalés (teinte chaude latéritique)
 		float reach = 0.35 + 0.9 * fbm(p * 0.25 + 5.0);
 		float dust = smoothstep(reach, 0.0, edge_m) * (0.55 + 0.45 * mid);
-		col = mix(col, vec3(0.66, 0.58, 0.45) * mix(0.85, 1.1, lum * 0.5), dust * 0.85);
+		col = mix(col, vec3(0.70, 0.58, 0.42) * mix(0.85, 1.1, lum * 0.5), dust * 0.85);
 		rough = mix(rough, 1.0, dust);
 		wet_mask = 1.0 - 0.6 * dust;
 		// Caniveau : bande sombre au pied de la bordure

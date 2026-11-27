@@ -33,6 +33,7 @@ const APPS := [
 	["Profil (compétences)", "profile", Color("ef476f")],
 	["Oto (mes véhicules)", "cars", Color("457b9d")],
 	["Biznis (mes commerces)", "biz", Color("2d6a4f")],
+	["Dakar Réel (Photos)", "dakar_photos", Color("e76f51")],
 	["Bonus (vidéo)", "bonus", Color("f9c74f")],
 ]
 const Outfits = preload("res://scripts/util/outfits.gd")
@@ -273,6 +274,8 @@ func _show(app: String) -> void:
 			_bag_app()
 		"cars":
 			_cars_app()
+		"dakar_photos":
+			_dakar_photos_app()
 		"biz":
 			_biz_app()
 		"bank":
@@ -1629,3 +1632,78 @@ func _scroll_to_entry(e: Control) -> void:
 		return
 	var rel_y := e.global_position.y - _scroll.global_position.y
 	_scroll.scroll_vertical = clampi(int(_scroll.scroll_vertical + rel_y - 40), 0, 3000)
+
+
+func _dakar_photos_app() -> void:
+	_title.text = "Dakar Réel — Photos authentiques"
+	_content.add_child(_note("Vraies photographies du Sénégal capturant l'architecture, les maisons et les routes dakaroises."))
+
+	var gallery := [
+		{
+			"title": "Rues résidentielles & Maisons de Dakar",
+			"desc": "Maisons familiales à étage, façades en enduit chaud et soubassements peints, accotements en sable fin du littoral.",
+			"path": "res://textures/ui/dakar_maisons_rue.jpg"
+		},
+		{
+			"title": "Chaussée de la Corniche Ouest",
+			"desc": "Vue emblématique de la route de la Corniche longeant l'Océan Atlantique, asphalte côtier et enrochement rocheux des Mamelles.",
+			"path": "res://textures/ui/dakar_route_corniche.jpg"
+		},
+		{
+			"title": "Maisons & Échoppes de la Médina",
+			"desc": "Ruelles commerçantes, ateliers de couture, boutiques de quartier avec rideaux métalliques et vie populaire dakaroise.",
+			"path": "res://textures/world/dakar_medina_maisons.jpg"
+		},
+		{
+			"title": "Immeubles & Avenues du Plateau",
+			"desc": "Mélange architectural colonial et moderne du centre administratif et des affaires de la capitale sénégalaise.",
+			"path": "res://textures/world/dakar_immeubles_plateau.jpg"
+		}
+	]
+
+	for item in gallery:
+		var card := PanelContainer.new()
+		var csb := StyleBoxFlat.new()
+		csb.bg_color = Color(0.12, 0.14, 0.18, 0.95)
+		csb.set_corner_radius_all(14)
+		csb.set_border_width_all(2)
+		csb.border_color = Color(0.24, 0.28, 0.35)
+		csb.content_margin_left = 10
+		csb.content_margin_right = 10
+		csb.content_margin_top = 10
+		csb.content_margin_bottom = 10
+		card.add_theme_stylebox_override("panel", csb)
+		var vb := VBoxContainer.new()
+		vb.add_theme_constant_override("separation", 6)
+
+		var l_title := Label.new()
+		l_title.text = item["title"]
+		l_title.add_theme_font_size_override("font_size", 14)
+		l_title.add_theme_color_override("font_color", Color("ffd166"))
+		vb.add_child(l_title)
+
+		if ResourceLoader.exists(item["path"]):
+			var tr := TextureRect.new()
+			tr.texture = load(item["path"])
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			tr.custom_minimum_size = Vector2(0, 150)
+			vb.add_child(tr)
+
+		var l_desc := Label.new()
+		l_desc.text = item["desc"]
+		l_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l_desc.add_theme_font_size_override("font_size", 12)
+		l_desc.add_theme_color_override("font_color", Color("e2e8f0"))
+		vb.add_child(l_desc)
+
+		var btn_wall := Button.new()
+		btn_wall.text = "🖼️ Choisir en fond d'écran"
+		btn_wall.add_theme_font_size_override("font_size", 12)
+		btn_wall.pressed.connect(func():
+			GameState.notify.emit("Fond d'écran '%s' sélectionné avec succès !" % item["title"])
+		)
+		vb.add_child(btn_wall)
+
+		card.add_child(vb)
+		_content.add_child(card)

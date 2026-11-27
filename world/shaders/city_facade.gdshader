@@ -277,6 +277,24 @@ void fragment() {
 		}
 	}
 
+	// Soubassement protecteur et poussière de sable au sol (fidèle aux vraies maisons sénégalaises)
+	if (abs(n.y) < 0.5 && !curtain && !ribbon) {
+		// Soubassement protecteur peint (souvent bleu marine, marron ou carrelé sur les 0,9 m du bas)
+		if (y < 0.95 && layer == L_PLASTER) {
+			float sb_mask = smoothstep(0.95, 0.82, y);
+			vec2 sb_cell = vec2(floor(u / 6.0), floor(n.x * 2.0 + n.z * 2.0));
+			vec3 sb_col = mix(vec3(0.20, 0.25, 0.32), vec3(0.36, 0.26, 0.20), hash(sb_cell));
+			col = mix(col, sb_col * (0.85 + 0.2 * hash(vec2(floor(u / 0.8), 5.7))), sb_mask * 0.75);
+			rough = mix(rough, 0.58, sb_mask);
+		}
+		// Poussière de sable chaud dakarois au pied des murs
+		if (y < 0.5) {
+			float dust_mask = smoothstep(0.5, 0.0, y);
+			vec3 dust_col = vec3(0.70, 0.54, 0.38); // sable chaud latéritique de Dakar
+			col = mix(col, dust_col, dust_mask * 0.35);
+		}
+	}
+
 	col = clamp(col, 0.0, 1.0);
 	vec3 alb = to_linear(col);
 	// Pluie : façades plus sombres, surtout en bas (éclaboussures)

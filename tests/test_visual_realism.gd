@@ -19,7 +19,13 @@ func _run() -> void:
 		"res://textures/world/orange_money.svg",
 		"res://textures/world/road_sign.svg",
 		"res://textures/world/car_rapide_side.svg",
-		"res://textures/world/flag_senegal.svg"
+		"res://textures/world/flag_senegal.svg",
+		"res://textures/world/dakar_maisons_rue.jpg",
+		"res://textures/world/dakar_route_corniche.jpg",
+		"res://textures/world/dakar_immeubles_plateau.jpg",
+		"res://textures/world/dakar_medina_maisons.jpg",
+		"res://textures/ui/dakar_maisons_rue.jpg",
+		"res://textures/ui/dakar_route_corniche.jpg"
 	]
 
 	for tex_path in textures_to_check:

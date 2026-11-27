@@ -857,6 +857,63 @@ func _build_urban_decor() -> void:
 		for k in 6:
 			_make_palm_tree(decor, p_porte + Vector3(-25.0 + k * 10.0, 0, 16.0), 8.4, 0.2)
 
+	# 8. Grands panneaux photo réels de Dakar (Maisons, Architecture, Corniche, Rues authentiques)
+	_build_photo_billboards(decor)
+
+
+func _build_photo_billboards(parent: Node3D) -> void:
+	# 1. Place de l'Indépendance : Vue panoramique architecture Dakar Plateau
+	if places.has("Place de l'Indépendance"):
+		var p: Vector3 = places["Place de l'Indépendance"] + Vector3(18.0, 0, -32.0)
+		_make_photo_billboard(parent, p, 0.0, "res://textures/world/dakar_immeubles_plateau.jpg", "DAKAR PLATEAU • ARCHITECTURE CAPITALE")
+
+	# 2. Corniche Ouest / Porte du Millénaire : Vue route de la Corniche et Océan
+	if places.has("Porte du Millénaire"):
+		var p: Vector3 = places["Porte du Millénaire"] + Vector3(12.0, 0, 28.0)
+		_make_photo_billboard(parent, p, -PI * 0.25, "res://textures/world/dakar_route_corniche.jpg", "ROUTE DE LA CORNICHE OUEST • DAKAR")
+
+	# 3. Marché Tilène / Médina : Maisons et commerces de la Médina
+	if places.has("Marché Tilène"):
+		var p: Vector3 = places["Marché Tilène"] + Vector3(-25.0, 0, 20.0)
+		_make_photo_billboard(parent, p, PI * 0.5, "res://textures/world/dakar_medina_maisons.jpg", "MÉDINA • MAISONS ET COMMERCES POPULAIRES")
+
+	# 4. Marché Sandaga : Rues résidentielles de Dakar
+	if places.has("Marché Sandaga"):
+		var p: Vector3 = places["Marché Sandaga"] + Vector3(24.0, 0, -18.0)
+		_make_photo_billboard(parent, p, -PI * 0.5, "res://textures/world/dakar_maisons_rue.jpg", "RUES RÉSIDENTIELLES • DAKAR SÉNÉGAL")
+
+
+func _make_photo_billboard(parent: Node3D, pos: Vector3, yaw: float, tex_path: String, label_text: String) -> void:
+	var root := Node3D.new()
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Deux montants verticaux en acier galvanisé
+	var col_steel := Color("334155")
+	Mk.cyl(root, 0.12, 0.14, 5.2, Vector3(-2.2, 2.6, 0), col_steel, true, 8)
+	Mk.cyl(root, 0.12, 0.14, 5.2, Vector3(2.2, 2.6, 0), col_steel, true, 8)
+
+	# Cadre et panneau structurel arrière
+	Mk.box(root, Vector3(5.0, 3.0, 0.16), Vector3(0, 3.8, 0), Color("1e293b"), true)
+
+	# Face avant avec la photo réelle du Sénégal
+	if ResourceLoader.exists(tex_path):
+		var mat_photo := StandardMaterial3D.new()
+		mat_photo.albedo_texture = load(tex_path)
+		mat_photo.roughness = 0.4
+		mat_photo.metallic_specular = 0.5
+		Mk.box(root, Vector3(4.8, 2.6, 0.05), Vector3(0, 3.9, 0.1), Color.WHITE, false, mat_photo)
+
+	# Bandeau inférieur d'information
+	var l := Label3D.new()
+	l.text = label_text
+	l.font_size = 28
+	l.outline_size = 8
+	l.modulate = Color("facc15")
+	l.position = Vector3(0, 2.35, 0.12)
+	root.add_child(l)
+
 
 func _make_palm_tree(parent: Node3D, pos: Vector3, h: float, _seed_offset: float = 0.0) -> void:
 	var tree_root := Node3D.new()

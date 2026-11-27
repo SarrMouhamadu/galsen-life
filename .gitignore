@@ -19,3 +19,7 @@ _personnages_sketchfab/
 # macOS
 .DS_Store
 *.DS_Store
+
+# Fichiers UID temporaires
+*.uid
+textures/real_photos_senegal/
