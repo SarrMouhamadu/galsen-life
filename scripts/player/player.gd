@@ -341,7 +341,7 @@ func _interact() -> void:
 	# Studio de personnalisation ou atelier de stylisme
 	var st := _nearest_studio_spot()
 	if st:
-		open_character_studio()
+		open_character_studio(st.get_meta("character_id", ""))
 		return
 	# S'asseoir sur une chaise ou un banc à proximité
 	var ch := _nearest_chair()
@@ -394,7 +394,8 @@ func get_interaction_hint() -> String:
 		return "S'asseoir"
 	var st := _nearest_studio_spot()
 	if st:
-		return "Entrer dans le Studio Personnage"
+		var sname: String = str(st.get_meta("studio_name", "Studio Personnage"))
+		return "Entrer dans le " + sname
 	var v = _nearest_vehicle()
 	if v:
 		if is_public_transport(v) and not can_drive_vehicle(v):
@@ -444,9 +445,9 @@ func _nearest_studio_spot(max_d := 2.5) -> Node3D:
 	return closest
 
 
-func open_character_studio() -> void:
+func open_character_studio(initial_char_id: String = "") -> void:
 	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
-	var studio = CharacterStudioScript.new()
+	var studio = CharacterStudioScript.new(initial_char_id)
 	var root_node = get_tree().root
 	root_node.add_child(studio)
 	studio.closed.connect(func(_saved: bool):

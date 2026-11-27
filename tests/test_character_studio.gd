@@ -47,9 +47,10 @@ func _run() -> void:
 	hero.set_outfit("vert,noir,,degrade,noir,teint_caramel")
 	print("  [OK] Application dynamique du teint et de la tenue sur RealCharacter validée")
 
-	# 4. Test du Studio 3D d'édition de personnage
+	# 4. Test du Studio 3D d'édition et des Studios de chaque Personnage Principal
 	var StudioScript = load("res://scripts/ui/character_studio.gd")
 	assert(StudioScript != null, "scripts/ui/character_studio.gd doit exister")
+	assert(StudioScript.MAIN_CHARACTERS.size() >= 9, "Le catalogue doit comporter au moins 9 personnages principaux")
 
 	var studio = StudioScript.new()
 	root.add_child(studio)
@@ -60,6 +61,23 @@ func _run() -> void:
 	assert(studio.get("_character_holder") != null, "Le conteneur du personnage 3D doit exister")
 	assert(studio.get("_category_tabs") != null, "Les onglets de catégories doivent être présents")
 	assert(studio.get("_options_container") != null, "Le conteneur d'options doit être présent")
+	assert(studio.get("_hero_chips_bar") != null, "La barre de sélection des personnages principaux doit être présente")
+
+	# Test du Studio pour CHAQUE personnage principal
+	for c in StudioScript.MAIN_CHARACTERS:
+		var c_id: String = c["id"]
+		var c_name: String = c["name"]
+		var s_data: Dictionary = c["studio"]
+		assert(c_name != "", "Chaque personnage principal doit avoir un nom authentique")
+		assert(c.has("stats") and c["stats"].size() >= 4, "Chaque personnage doit avoir ses attributs")
+		assert(s_data.has("name") and s_data.has("pedestal_label"), "Chaque personnage doit avoir son studio thématique")
+
+		# Sélectionner le studio du personnage
+		studio.select_main_character(c_id, true)
+		assert(studio.current_character_id == c_id, "Le personnage actif doit être %s" % c_id)
+		assert(studio.current_avatar == c["avatar"], "Le modèle 3D doit correspondre à %s" % c["avatar"])
+		assert(studio.get("_pedestal_label").text == s_data["pedestal_label"], "Le piédestal 3D doit porter le label du studio de %s" % c_name)
+		print("    [OK] Studio validé pour : %s (%s) -> %s" % [c_name, c["title"], s_data["name"]])
 
 	# Test bascule des catégories
 	studio._switch_category("teint")
@@ -76,7 +94,7 @@ func _run() -> void:
 	var old_look: String = studio.current_outfit
 	studio._randomize_look()
 	assert(studio.current_outfit != "", "Une tenue aléatoire doit être générée")
-	print("  [OK] Studio 3D (SubViewport, Caméra 3D, Éclairage 3 points, Onglets, Aléatoire) validé")
+	print("  [OK] Studio 3D dédié pour CHAQUE Personnage Principal validé avec succès !")
 
 	# Nettoyage
 	studio.queue_free()

@@ -5,9 +5,22 @@ extends Control
 const SETTINGS := "user://net_settings.cfg"
 const MAIN := "res://scenes/main.tscn"
 const AVATAR_NAMES := {
-	"heros": "Le héros (polo)", "homme_ville": "Homme en tenue de ville", "homme_afro": "Jeune homme à l'afro",
-	"homme_tunique": "Homme en tunique", "femme_robe": "Femme en sari", "femme_jupe": "Jeune femme en jupe",
-	"femme_ville": "Jeune femme en jean", "femme_maman": "Femme en robe bleue",
+	"heros": "🦁 Modou Fall — Le Héros Dakarois",
+	"lutteur1": "🤼 Balla Ndiaye — Champion des Arènes (Lamb)",
+	"footballeur1": "⚽ Sadio Diatta — La Flèche des Lions",
+	"femme_robe": "👑 Fatou Kiné Diop — Linguère & Styliste",
+	"homme_age": "🕌 El Hadj Ousmane Sy — Doyen de la Médina",
+	"soldat": "🛡️ Capitaine Moussa Traoré — Protecteur Républicain",
+	"homme_ville": "💼 Ibrahima Cissé — L'Entrepreneur des Almadies",
+	"footballeuse": "⚡ Aïssatou Sow — La Lionne du Sénégal",
+	"femme_maman": "👵🏾 Mame Diarra — La Matriarche de la Teranga",
+	"homme_afro": "Jeune Dakarois (Afro & T-shirt)",
+	"homme_tunique": "Notable en Tunique Traditionnelle",
+	"femme_jupe": "Dakarise Moderne (Jupe élégante)",
+	"femme_ville": "Citadine Active (Chemisier & Pantalon)",
+	"lutteur2": "Bombardier — Colosse des Arènes",
+	"gardien": "Gardien de but des Lions",
+	"jayden_carter": "Jayden Carter — Invité VIP International",
 }
 ## Arguments de test qui démarrent directement la partie solo
 const DIRECT_ARGS := ["--screenshot=", "--test-taxi", "--portrait", "--showcase", "--map", "--arena", "--at=", "--look=", "--overhead=", "--phone=", "--emote=", "--fps-test", "--perf-probe", "--pos=", "--inside-test", "--audit", "--office=", "--touch-test", "--drive-test", "--lutte-test", "--fight-test", "--crowd-test", "--lutte-live", "--lutte-base=", "--latlon=", "--enter=", "--talk=", "--home=", "--dealer-test", "--city-test", "--fish-test", "--rob-test", "--impound-test", "--cook-test", "--rooms-shot", "--feet-test", "--ped-motion", "--traffic-motion", "--rooms-walk", "--rental-test", "--biz-test", "--market-scan", "--market-test", "--goods-shots", "--hud-shot", "--trade-net", "--trade-shot", "--foot-test", "--foot-net", "--foot", "--foot-night", "--tuto-test", "--touch-layout"]

@@ -83,7 +83,11 @@ const VOICE_MAX_BYTES := 2400 ## un paquet de voix (≈0,3 s) au plus
 const JOBS := {"taxi": "Taximan", "police": "Policier", "vendeur": "Vendeur", "samu": "SAMU", "gang": "Gang de la Médina", "mecanicien": "Mécanicien"}
 const SALARY := {"taxi": 500, "vendeur": 500, "mecanicien": 500} ## factions (police, samu, gang) : Factions.salary, selon le grade
 const PAY_EVERY := 120.0
-const AVATARS := ["heros", "homme_ville", "homme_afro", "homme_tunique", "femme_robe", "femme_jupe", "femme_ville", "femme_maman"]
+const AVATARS := [
+	"heros", "lutteur1", "footballeur1", "femme_robe", "homme_age", "soldat",
+	"homme_ville", "footballeuse", "femme_maman", "homme_afro", "homme_tunique",
+	"femme_jupe", "femme_ville", "lutteur2", "gardien", "jayden_carter"
+]
 
 var is_server := false
 var online := false ## connecté ET identifié

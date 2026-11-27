@@ -837,6 +837,9 @@ func _build_urban_decor() -> void:
 		# Parterres floraux géométriques sénégalais (hibiscus et bougainvilliers)
 		_make_geometric_flowerbeds(decor, p_indep)
 
+		# Studio Officiel du Plateau (Héros Dakarois)
+		_make_urban_studio(decor, p_indep + Vector3(-18.0, 0, 16.0), 0.2)
+
 	# 2. Hôpital Principal de Dakar
 	if places.has("Hôpital Principal"):
 		var p_hosp: Vector3 = places["Hôpital Principal"]
@@ -892,6 +895,8 @@ func _build_urban_decor() -> void:
 		for k in 6:
 			_make_palm_tree(decor, p_porte + Vector3(-25.0 + k * 10.0, 0, 16.0), 8.4, 0.2)
 		_make_porte_du_millenaire(decor, p_porte, -PI * 0.25)
+		# Studio des Lions de la Teranga & Athlètes
+		_make_sports_studio(decor, p_porte + Vector3(16.0, 0, 24.0), 0.5)
 
 	# 8. Stade Iba Mar Diop (Lutte sénégalaise & Sport populaire à la Médina)
 	if places.has("Stade Iba Mar Diop"):
@@ -899,11 +904,15 @@ func _build_urban_decor() -> void:
 		_make_flamboyant_tree(decor, p_stade + Vector3(20.0, 0, 16.0), 6.6)
 		_make_baobab_tree(decor, p_stade + Vector3(-24.0, 0, -18.0), 8.2)
 		_make_zebra_crossing(decor, p_stade + Vector3(0, 0, 14.0), 0.0, 8.0)
+		# Studio Arène de Lutte & Champions de Lamb
+		_make_lamb_studio(decor, p_stade + Vector3(-22.0, 0, 20.0), -0.4)
 
 	# 9. Monument de la Renaissance Africaine (Colosse de bronze de 52m, escalier et belvédère océan)
 	if places.has("Monument de la Renaissance Africaine"):
 		var p_ren: Vector3 = places["Monument de la Renaissance Africaine"]
 		_make_african_renaissance_monument(decor, p_ren, 0.35)
+		# Studio Loft Almadies & Business Tech
+		_make_almadies_studio(decor, p_ren + Vector3(24.0, 0, -18.0), 0.3)
 
 	# 10. Phare des Mamelles (Phare historique blanc de 1864 avec faisceau rotatif sur l'océan)
 	if places.has("Phare des Mamelles"):
@@ -1080,6 +1089,7 @@ func _make_tailor_workshop(parent: Node3D, pos: Vector3, yaw: float) -> void:
 	root.rotation.y = yaw
 	root.add_to_group("studio_spots")
 	root.set_meta("studio_name", "Salon & Studio de Mode de la Médina")
+	root.set_meta("character_id", "linguere")
 	parent.add_child(root)
 
 	# Enseigne élégante Studio & Stylisme de Dakar
@@ -1109,6 +1119,102 @@ func _make_tailor_workshop(parent: Node3D, pos: Vector3, yaw: float) -> void:
 	for sx in [-1, 1]:
 		Mk.cyl(root, 0.04, 0.04, 2.5, Vector3(sx * 1.3, 1.25, 0.6), Color("64748b"), false, 6)
 	Mk.box(root, Vector3(2.8, 0.05, 1.6), Vector3(0, 2.45, 0.1), Color("94a3b8"))
+
+
+## Studio Urbain Officiel du Plateau (Modou Fall / Héros Dakarois)
+func _make_urban_studio(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "UrbanStudioPlateau"
+	root.position = pos
+	root.rotation.y = yaw
+	root.add_to_group("studio_spots")
+	root.set_meta("studio_name", "Studio Officiel du Plateau")
+	root.set_meta("character_id", "heros")
+	parent.add_child(root)
+
+	# Podium terrazzo dakarois
+	Mk.cyl(root, 1.6, 1.7, 0.18, Vector3(0, 0.09, 0), Color("1e293b"), true, 16)
+	# Anneau doré d'éclairage
+	Mk.cyl(root, 1.72, 1.72, 0.04, Vector3(0, 0.11, 0), Color("ffd166"), false, 16)
+	# Mâts de projecteurs studio
+	for sx in [-1.5, 1.5]:
+		Mk.cyl(root, 0.04, 0.04, 3.2, Vector3(sx, 1.6, -1.2), Color("475569"), true, 8)
+		Mk.box(root, Vector3(0.35, 0.25, 0.2), Vector3(sx, 3.2, -1.1), Color("f8fafc"))
+	# Enseigne lumineuse Studio Plateau
+	Mk.label(root, "🎨 STUDIO DAKAR • LE HÉROS DAKAROIS", Vector3(0, 3.5, -1.0), Mk.SIGN_SIZE, Color("ffd166"))
+
+
+## Studio Arène de Lutte & Champions de Lamb (Balla Ndiaye / Bombardier)
+func _make_lamb_studio(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "LambStudioIbaMarDiop"
+	root.position = pos
+	root.rotation.y = yaw
+	root.add_to_group("studio_spots")
+	root.set_meta("studio_name", "Studio des Champions de Lamb")
+	root.set_meta("character_id", "lutteur")
+	parent.add_child(root)
+
+	# Cercle de sable de l'arène (sable ocre chaud)
+	Mk.cyl(root, 1.7, 1.8, 0.15, Vector3(0, 0.075, 0), Color("b06c3b"), true, 16)
+	# Cordeau traditionnel d'arène
+	Mk.cyl(root, 1.82, 1.82, 0.05, Vector3(0, 0.10, 0), Color("ffaa5e"), false, 16)
+	# Tam-tams traditionnels (sabars)
+	for i in [-0.8, 0.8]:
+		Mk.cyl(root, 0.16, 0.12, 0.55, Vector3(i, 0.28, -1.2), Color("5c2c10"), true, 8)
+		Mk.cyl(root, 0.17, 0.17, 0.04, Vector3(i, 0.56, -1.2), Color("fef08a"), false, 8)
+	# Mâts aux drapeaux sénégalais
+	for sx in [-1.6, 1.6]:
+		Mk.cyl(root, 0.04, 0.04, 3.4, Vector3(sx, 1.7, -1.2), Color("64748b"), true, 8)
+	Mk.label(root, "🤼 STUDIO LAMB • LES ROIS DES ARÈNES", Vector3(0, 3.6, -1.0), Mk.SIGN_SIZE, Color("ffb703"))
+
+
+## Studio des Lions de la Teranga & Sports (Sadio Diatta / Aïssatou Sow)
+func _make_sports_studio(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "SportsStudioTeranga"
+	root.position = pos
+	root.rotation.y = yaw
+	root.add_to_group("studio_spots")
+	root.set_meta("studio_name", "Studio des Lions de la Teranga")
+	root.set_meta("character_id", "footballeur")
+	parent.add_child(root)
+
+	# Cercle de pelouse verte de stade
+	Mk.cyl(root, 1.7, 1.8, 0.16, Vector3(0, 0.08, 0), Color("196f3d"), true, 16)
+	# Ligne blanche de terrain
+	Mk.cyl(root, 1.82, 1.82, 0.04, Vector3(0, 0.10, 0), Color.WHITE, false, 16)
+	# Ballon de football officiel
+	Mk.sphere(root, 0.15, Vector3(0.6, 0.25, 0.6), Color.WHITE)
+	# Projecteurs de stade inclinés
+	for sx in [-1.5, 1.5]:
+		Mk.cyl(root, 0.05, 0.05, 3.5, Vector3(sx, 1.75, -1.3), Color("334155"), true, 8)
+		Mk.box(root, Vector3(0.4, 0.25, 0.2), Vector3(sx, 3.5, -1.2), Color("22c55e"))
+	Mk.label(root, "⚽ STUDIO LIONS • GAÏNDÉS DU SÉNÉGAL", Vector3(0, 3.7, -1.0), Mk.SIGN_SIZE, Color("4ade80"))
+
+
+## Studio Loft Tech Almadies (Ibrahima Cissé / Entrepreneur)
+func _make_almadies_studio(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "AlmadiesLoftStudio"
+	root.position = pos
+	root.rotation.y = yaw
+	root.add_to_group("studio_spots")
+	root.set_meta("studio_name", "Studio Loft des Almadies")
+	root.set_meta("character_id", "entrepreneur")
+	parent.add_child(root)
+
+	# Parquet teck vitrifié
+	Mk.box(root, Vector3(3.2, 0.16, 2.6), Vector3(0, 0.08, 0), Color("1e2c3a"), true)
+	# Bordure néon cyan
+	Mk.box(root, Vector3(3.3, 0.04, 2.7), Vector3(0, 0.10, 0), Color("0ea5e9"))
+	# Bureau design en verre
+	Mk.box(root, Vector3(1.6, 0.75, 0.7), Vector3(0, 0.45, -0.7), Color("0f172a"), true)
+	Mk.box(root, Vector3(1.7, 0.04, 0.75), Vector3(0, 0.84, -0.7), Color("38bdf8"))
+	# Ordinateur portable ouvert
+	Mk.box(root, Vector3(0.35, 0.02, 0.24), Vector3(0, 0.87, -0.7), Color("e2e8f0"))
+	Mk.box(root, Vector3(0.35, 0.22, 0.02), Vector3(0, 0.98, -0.82), Color("0f172a"))
+	Mk.label(root, "💼 STUDIO LOFT • ALMADIES TECH INNOVATION", Vector3(0, 3.4, -1.0), Mk.SIGN_SIZE, Color("38bdf8"))
 
 
 func _make_palm_tree(parent: Node3D, pos: Vector3, h: float, _seed_offset: float = 0.0) -> void:
