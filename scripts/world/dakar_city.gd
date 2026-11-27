@@ -605,6 +605,7 @@ func _build_job_decor() -> void:
 			_stall_maiga(p_name, "StallMaiga_%d" % idx)
 			idx += 1
 	_build_kiosks_and_signs()
+	_build_urban_decor()
 
 
 func _build_kiosks_and_signs() -> void:
@@ -770,3 +771,222 @@ func _stall(place: String, color: Color) -> void:
 		for sz in [-1, 1]:
 			Mk.cyl(holder, 0.05, 0.05, 2.4, Vector3(sx * 1.5, 1.2, sz * 0.8), Color("444444"), false, 4)
 	Mk.box(holder, Vector3(3.4, 0.08, 2.0), Vector3(0, 2.4, 0), color)
+
+
+# --- Végétation réaliste & Marquages routiers de Dakar ---------------------------
+
+func _build_urban_decor() -> void:
+	var decor := Node3D.new()
+	decor.name = "UrbanDecor"
+	add_child(decor)
+
+	# 1. Place de l'Indépendance (Point de départ central du jeu)
+	if places.has("Place de l'Indépendance"):
+		var p_indep: Vector3 = places["Place de l'Indépendance"]
+		# Cercle de 8 superbes palmiers royaux
+		for k in 8:
+			var ang: float = k * TAU / 8.0
+			var p_palm := p_indep + Vector3(cos(ang) * 22.0, 0, sin(ang) * 22.0)
+			_make_palm_tree(decor, p_palm, 7.8, ang)
+
+		# 4 Flamboyants d'Afrique aux 4 angles
+		_make_flamboyant_tree(decor, p_indep + Vector3(30.0, 0, 26.0), 6.5)
+		_make_flamboyant_tree(decor, p_indep + Vector3(-30.0, 0, 26.0), 6.2)
+		_make_flamboyant_tree(decor, p_indep + Vector3(30.0, 0, -26.0), 6.8)
+		_make_flamboyant_tree(decor, p_indep + Vector3(-30.0, 0, -26.0), 6.4)
+
+		# 2 Baobabs majestueux sénégalais sur les espaces verts
+		_make_baobab_tree(decor, p_indep + Vector3(42.0, 0, 8.0), 8.5)
+		_make_baobab_tree(decor, p_indep + Vector3(-42.0, 0, -8.0), 8.2)
+
+		# Passages piétons zébrés blancs aux 4 abords de la Place
+		_make_zebra_crossing(decor, p_indep + Vector3(0, 0, 24.0), 0.0, 8.0)
+		_make_zebra_crossing(decor, p_indep + Vector3(0, 0, -24.0), 0.0, 8.0)
+		_make_zebra_crossing(decor, p_indep + Vector3(24.0, 0, 0), PI * 0.5, 8.0)
+		_make_zebra_crossing(decor, p_indep + Vector3(-24.0, 0, 0), PI * 0.5, 8.0)
+
+		# Bordures de trottoir bicolores peintes jaune et noir (style Dakar)
+		_make_curb_ring(decor, p_indep, 24.5, Color("facc15"), Color("1e293b"))
+
+		# Lignes blanches axiales de guidage
+		_make_road_centerline(decor, p_indep + Vector3(0, 0, 28.0), p_indep + Vector3(0, 0, 55.0))
+		_make_road_centerline(decor, p_indep + Vector3(0, 0, -28.0), p_indep + Vector3(0, 0, -55.0))
+
+	# 2. Hôpital Principal de Dakar
+	if places.has("Hôpital Principal"):
+		var p_hosp: Vector3 = places["Hôpital Principal"]
+		for k in 5:
+			_make_palm_tree(decor, p_hosp + Vector3(-18.0 + k * 8.0, 0, 16.0), 7.2, 0.2 * k)
+		_make_neem_tree(decor, p_hosp + Vector3(22.0, 0, -12.0), 5.8)
+		_make_neem_tree(decor, p_hosp + Vector3(-22.0, 0, -12.0), 5.5)
+		_make_zebra_crossing(decor, p_hosp + Vector3(0, 0, 14.0), 0.0, 7.5)
+
+	# 3. Marché Sandaga
+	if places.has("Marché Sandaga"):
+		var p_sand: Vector3 = places["Marché Sandaga"]
+		_make_baobab_tree(decor, p_sand + Vector3(25.0, 0, 18.0), 8.8)
+		_make_flamboyant_tree(decor, p_sand + Vector3(-20.0, 0, 15.0), 6.0)
+		_make_neem_tree(decor, p_sand + Vector3(-15.0, 0, -18.0), 5.4)
+		_make_zebra_crossing(decor, p_sand + Vector3(0, 0, 12.0), PI * 0.5, 7.0)
+		_make_speed_bump(decor, p_sand + Vector3(0, 0, 20.0), 0.0, 6.5)
+
+	# 4. Marché Tilène & Médina
+	if places.has("Marché Tilène"):
+		var p_til: Vector3 = places["Marché Tilène"]
+		_make_flamboyant_tree(decor, p_til + Vector3(18.0, 0, 14.0), 6.3)
+		_make_neem_tree(decor, p_til + Vector3(-16.0, 0, 12.0), 5.6)
+		_make_zebra_crossing(decor, p_til + Vector3(0, 0, 10.0), 0.0, 6.5)
+
+	# 5. Gare de Dakar
+	if places.has("Gare de Dakar"):
+		var p_gare: Vector3 = places["Gare de Dakar"]
+		for k in 6:
+			_make_palm_tree(decor, p_gare + Vector3(-20.0 + k * 8.0, 0, 15.0), 8.0, 0.1 * k)
+		_make_zebra_crossing(decor, p_gare + Vector3(0, 0, 12.0), 0.0, 8.0)
+
+	# 6. Grande Mosquée de Dakar
+	if places.has("Grande Mosquée"):
+		var p_mosq: Vector3 = places["Grande Mosquée"]
+		for k in 4:
+			_make_palm_tree(decor, p_mosq + Vector3(-15.0 + k * 10.0, 0, 20.0), 7.6, 0.3)
+		_make_flamboyant_tree(decor, p_mosq + Vector3(22.0, 0, -16.0), 6.5)
+
+	# 7. Porte du Millénaire (Corniche)
+	if places.has("Porte du Millénaire"):
+		var p_porte: Vector3 = places["Porte du Millénaire"]
+		for k in 6:
+			_make_palm_tree(decor, p_porte + Vector3(-25.0 + k * 10.0, 0, 16.0), 8.4, 0.2)
+
+
+func _make_palm_tree(parent: Node3D, pos: Vector3, h: float, _seed_offset: float = 0.0) -> void:
+	var tree_root := Node3D.new()
+	tree_root.position = pos
+	parent.add_child(tree_root)
+
+	# Tronc annelé élancé en bois chaud
+	Mk.cyl(tree_root, 0.22, 0.32, h, Vector3(0, h * 0.5, 0), Color("785d43"), true, 8)
+	# Manchon foliaire vert émeraude au sommet
+	Mk.cyl(tree_root, 0.26, 0.22, 0.7, Vector3(0, h + 0.35, 0), Color("2e7d32"), false, 8)
+
+	# Couronne de 8 palmes retombantes en éventail
+	var top := Vector3(0, h + 0.6, 0)
+	for k in 8:
+		var ang: float = k * TAU / 8.0
+		var fdir := Vector3(cos(ang), -0.25, sin(ang)).normalized()
+		var pmid := top + fdir * 1.8 + Vector3(0, 0.25, 0)
+		var ptip := top + fdir * 3.4 + Vector3(0, -0.65, 0)
+		var col_palm: Color = Color("2e7d32") if k % 2 == 0 else Color("388e3c")
+		var frond_mid := Mk.box(tree_root, Vector3(0.55, 0.05, 1.8), (top + pmid) * 0.5, col_palm, false)
+		frond_mid.look_at_from_position((top + pmid) * 0.5, pmid, Vector3.UP)
+		var frond_tip := Mk.box(tree_root, Vector3(0.42, 0.04, 1.6), (pmid + ptip) * 0.5, col_palm.lightened(0.08), false)
+		frond_tip.look_at_from_position((pmid + ptip) * 0.5, ptip, Vector3.UP)
+
+
+func _make_baobab_tree(parent: Node3D, pos: Vector3, h: float) -> void:
+	var tree_root := Node3D.new()
+	tree_root.position = pos
+	parent.add_child(tree_root)
+
+	# Tronc conique massif caractéristique du baobab sénégalais
+	Mk.cyl(tree_root, 1.3, 2.3, h * 0.65, Vector3(0, h * 0.325, 0), Color("5c4d3c"), true, 10)
+	# Branches maîtresses obliques puissantes
+	for k in 4:
+		var ang: float = k * TAU / 4.0 + 0.35
+		var b_dir := Vector3(cos(ang) * 1.8, h * 0.22, sin(ang) * 1.8)
+		Mk.cyl(tree_root, 0.45, 0.75, 2.2, Vector3(0, h * 0.62, 0) + b_dir * 0.5, Color("5c4d3c"), false, 6)
+
+	# Houppier parasol en dômes vert savane étalé
+	Mk.sphere(tree_root, 2.8, Vector3(0, h + 0.3, 0), Color("4a7c36"), Vector3(1.5, 0.65, 1.5))
+	Mk.sphere(tree_root, 2.0, Vector3(1.6, h - 0.2, 1.2), Color("3b6b28"), Vector3(1.2, 0.6, 1.2))
+	Mk.sphere(tree_root, 2.0, Vector3(-1.5, h - 0.1, -1.3), Color("558b2f"), Vector3(1.2, 0.6, 1.2))
+
+
+func _make_flamboyant_tree(parent: Node3D, pos: Vector3, h: float) -> void:
+	var tree_root := Node3D.new()
+	tree_root.position = pos
+	parent.add_child(tree_root)
+
+	# Tronc brun d'arbre d'ombrage
+	Mk.cyl(tree_root, 0.28, 0.45, h * 0.7, Vector3(0, h * 0.35, 0), Color("4e3629"), true, 8)
+	# Houppier parasol vert frais
+	Mk.sphere(tree_root, 2.8, Vector3(0, h + 0.3, 0), Color("558b2f"), Vector3(1.6, 0.55, 1.6))
+	# Fleurs écarlates / orange flamboyant typiques de Dakar
+	Mk.sphere(tree_root, 1.4, Vector3(0.9, h + 0.65, 0.7), Color("dc2626"), Vector3(1.2, 0.5, 1.2))
+	Mk.sphere(tree_root, 1.3, Vector3(-1.0, h + 0.55, -0.8), Color("ea580c"), Vector3(1.1, 0.5, 1.1))
+	Mk.sphere(tree_root, 1.2, Vector3(-0.6, h + 0.65, 0.9), Color("ef4444"), Vector3(1.1, 0.5, 1.1))
+
+
+func _make_neem_tree(parent: Node3D, pos: Vector3, h: float) -> void:
+	var tree_root := Node3D.new()
+	tree_root.position = pos
+	parent.add_child(tree_root)
+
+	# Tronc de margousier
+	Mk.cyl(tree_root, 0.22, 0.32, h * 0.6, Vector3(0, h * 0.3, 0), Color("5d4037"), true, 8)
+	# Dôme feuillu dense vert intense procurant de l'ombre
+	Mk.sphere(tree_root, 2.2, Vector3(0, h + 0.5, 0), Color("2e7d32"), Vector3(1.1, 1.0, 1.1))
+	Mk.sphere(tree_root, 1.7, Vector3(0.6, h + 0.8, -0.4), Color("388e3c"), Vector3(1.0, 0.9, 1.0))
+
+
+func _make_zebra_crossing(parent: Node3D, center: Vector3, road_yaw: float, width: float = 7.0) -> void:
+	var cross_root := Node3D.new()
+	cross_root.position = center + Vector3(0, 0.08, 0)
+	cross_root.rotation.y = road_yaw
+	parent.add_child(cross_root)
+
+	var num_stripes := int(width / 1.0)
+	var half_w: float = width * 0.5
+	for k in num_stripes:
+		var x_pos: float = -half_w + (k + 0.5) * (width / float(num_stripes))
+		Mk.box(cross_root, Vector3(0.55, 0.02, 3.2), Vector3(x_pos, 0, 0), Color(0.96, 0.96, 0.98, 0.95), false)
+
+
+func _make_curb_ring(parent: Node3D, center: Vector3, radius: float, col1: Color, col2: Color) -> void:
+	var ring_root := Node3D.new()
+	ring_root.position = center + Vector3(0, 0.12, 0)
+	parent.add_child(ring_root)
+
+	var segments := 24
+	for k in segments:
+		var ang: float = k * TAU / float(segments)
+		var p := Vector3(cos(ang) * radius, 0, sin(ang) * radius)
+		var c := col1 if k % 2 == 0 else col2
+		var curb := Mk.box(ring_root, Vector3(radius * (TAU / float(segments)) * 0.95, 0.14, 0.25), p, c, false)
+		curb.rotation.y = -ang + PI * 0.5
+
+
+func _make_road_centerline(parent: Node3D, p_start: Vector3, p_end: Vector3) -> void:
+	var line_root := Node3D.new()
+	parent.add_child(line_root)
+
+	var diff := p_end - p_start
+	var total_len := diff.length()
+	if total_len < 4.0:
+		return
+	var dir := diff.normalized()
+	var dash_len := 3.0
+	var gap_len := 3.0
+	var step := dash_len + gap_len
+	var cur_dist := 0.0
+
+	while cur_dist + dash_len <= total_len:
+		var mid := p_start + dir * (cur_dist + dash_len * 0.5) + Vector3(0, 0.08, 0)
+		var dash := Mk.box(line_root, Vector3(0.18, 0.02, dash_len), mid, Color(0.98, 0.98, 0.98, 0.9), false)
+		dash.look_at_from_position(mid, mid + dir, Vector3.UP)
+		cur_dist += step
+
+
+func _make_speed_bump(parent: Node3D, center: Vector3, road_yaw: float, width: float = 6.5) -> void:
+	var bump_root := Node3D.new()
+	bump_root.position = center + Vector3(0, 0.09, 0)
+	bump_root.rotation.y = road_yaw
+	parent.add_child(bump_root)
+
+	# Dos d'âne bicolore jaune et noir
+	var num_sections := int(width / 0.8)
+	var half_w: float = width * 0.5
+	for k in num_sections:
+		var x_pos: float = -half_w + (k + 0.5) * (width / float(num_sections))
+		var col: Color = Color("facc15") if k % 2 == 0 else Color("1e293b")
+		Mk.box(bump_root, Vector3(0.75, 0.07, 1.2), Vector3(x_pos, 0, 0), col, false)
+

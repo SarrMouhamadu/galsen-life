@@ -48,6 +48,7 @@ var tuto := {} ## guide des premiers pas (scripts/jobs/tutorial.gd) : {step, don
 var missions := {"active": "", "step": 0, "completed": []} ## missions et quêtes de Dakar (scripts/jobs/mission_manager.gd)
 ## Point GPS posé sur la carte (null = aucun)
 var waypoint = null
+var waypoint_name := ""
 ## Niveau de recherche de la police (0 à 5 étoiles). Non sauvegardé.
 var wanted := 0
 ## Mode d'affichage clair / sombre de l'interface
@@ -406,6 +407,7 @@ func _setup_input() -> void:
 	_bind_keys("voice", [KEY_V])
 	_bind_keys("voice_group", [KEY_B])
 	_bind_keys("camera_view", [KEY_X])
+	_bind_keys("car_return", [KEY_U])
 	# --- Mappage Manette Complet (PlayStation / Xbox / Switch / MFi / Backbone) ---
 	# Déplacement au Stick Gauche
 	_bind_axis("move_left", JOY_AXIS_LEFT_X, -1.0)

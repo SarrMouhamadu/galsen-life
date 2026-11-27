@@ -48,6 +48,7 @@ var _channel_btns := {}
 var _services_btn: Button
 var _phone_btn: Button
 var _mic_btn: Button
+var _car_return_btn: Button
 var _hud_t := 0.0
 var preview_online := false ## test : affiche les boutons du mode en ligne hors connexion
 var _radio_btn: Button
@@ -272,6 +273,27 @@ func _ready() -> void:
 	tr.add_child(_district)
 	_speed = _label(14, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT)
 	tr.add_child(_speed)
+
+	_car_return_btn = Button.new()
+	_car_return_btn.text = " 🚗 RETOUR DÉPART "
+	_car_return_btn.visible = false
+	_car_return_btn.focus_mode = Control.FOCUS_NONE
+	var csb := StyleBoxFlat.new()
+	csb.bg_color = Color(0.18, 0.12, 0.06, 0.92)
+	csb.border_color = Color("f59e0b")
+	csb.set_border_width_all(2)
+	csb.set_corner_radius_all(10)
+	csb.content_margin_left = 8
+	csb.content_margin_right = 8
+	csb.content_margin_top = 4
+	csb.content_margin_bottom = 4
+	_car_return_btn.add_theme_stylebox_override("normal", csb)
+	_car_return_btn.add_theme_stylebox_override("hover", csb)
+	_car_return_btn.add_theme_stylebox_override("pressed", csb)
+	_car_return_btn.add_theme_font_size_override("font_size", 12)
+	_car_return_btn.add_theme_color_override("font_color", Color("fef3c7"))
+	_car_return_btn.pressed.connect(_on_car_return_pressed)
+	tr.add_child(_car_return_btn)
 
 	# Haut centre : objectif
 	_objective = _label(16, Color("fff3b0"), HORIZONTAL_ALIGNMENT_CENTER)
@@ -1153,6 +1175,21 @@ func _on_radio_press_up() -> void:
 			main.voice.stop_talking()
 
 
+func _on_car_return_pressed() -> void:
+	var pl = GameState.player_ref
+	if pl == null or not is_instance_valid(pl):
+		return
+	var veh = pl.current_vehicle
+	if veh == null:
+		pl.return_to_start(main.city)
+		return
+	var choices: Array = [
+		["⚡ Rapatrier la voiture au départ (Place de l'Indépendance)", func(): veh.return_to_start(main.city)],
+		["📍 Itinéraire GPS vers le point de départ", func(): veh.set_gps_to_start(main.city)]
+	]
+	show_choices("Retour en Voiture — Place de l'Indépendance", choices, func(): pass)
+
+
 func _style_voice_btn(btn: Button, active: bool, channel: String) -> void:
 	var base_col: Color
 	var border_col: Color
@@ -1267,6 +1304,8 @@ func _process(delta: float) -> void:
 		_district.text += " · " + main.weather.label()
 	var veh = p.current_vehicle
 	_speed.visible = veh != null
+	if _car_return_btn:
+		_car_return_btn.visible = veh != null
 	var on: bool = Net.online or preview_online
 	_online.visible = true
 	_chat_btn.visible = true

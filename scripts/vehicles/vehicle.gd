@@ -1134,6 +1134,8 @@ func _physics_process(delta: float) -> void:
 			Audio.play_sfx("horn")
 		if Input.is_action_just_pressed("radio") and vehicle_type in RADIO_TYPES:
 			Audio.toggle_radio()
+		if Input.is_action_just_pressed("car_return"):
+			return_to_start()
 		var inp: Vector2 = GameState.get_move_input()
 		var throttle := -inp.y
 		# Gâchettes analogiques manette (R2/RT = accélérer, L2/LT = freiner / marche arrière)
@@ -1693,3 +1695,44 @@ func _obstacle_ahead() -> bool:
 	var from := global_position + Vector3(0, 0.8, 0) + fwd * (size.z / 2.0 + 0.2)
 	var q := PhysicsRayQueryParameters3D.create(from, from + fwd * 6.0, 2 | 4, [get_rid()])
 	return not get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+
+
+## Rapatrie la voiture et son conducteur au point de départ initial (Place de l'Indépendance)
+func return_to_start(city_ref = null) -> void:
+	var c = city_ref if city_ref else ai_city
+	if c == null and driver != null and is_instance_valid(driver) and driver.get_parent() != null:
+		c = driver.get_parent().get("city")
+	var dest: Vector3 = c.spawn_point if (c != null and c.get("spawn_point") != null) else Vector3(0, 0.5, 0)
+
+	# Repositionnement propre sur la chaussée à l'arrêt complet
+	global_position = dest + Vector3(0, 0.35, 0)
+	rotation = Vector3.ZERO
+	_motion_yaw = 0.0
+	slip = 0.0
+	speed = 0.0
+	velocity = Vector3.ZERO
+	_prev_speed = 0.0
+	condition = maxf(condition, 90.0)
+	fuel = maxf(fuel, 85.0)
+	_broken_warned = false
+	_dry_warned = false
+
+	if driver != null and is_instance_valid(driver):
+		driver.global_position = global_position
+		driver.velocity = Vector3.ZERO
+
+	Audio.play_sfx("horn", -8.0)
+	GameState.notify.emit("🚗 Voiture ramenée avec succès au point de départ (Place de l'Indépendance) !")
+
+
+## Configure le GPS de navigation vers le point de départ
+func set_gps_to_start(city_ref = null) -> void:
+	var c = city_ref if city_ref else ai_city
+	if c == null and driver != null and is_instance_valid(driver) and driver.get_parent() != null:
+		c = driver.get_parent().get("city")
+	var dest: Vector3 = c.spawn_point if (c != null and c.get("spawn_point") != null) else Vector3(0, 0.5, 0)
+
+	GameState.waypoint = dest
+	GameState.waypoint_name = "Point de départ (Place de l'Indépendance)"
+	GameState.notify.emit("📍 GPS configuré : cap vers le point de départ (Place de l'Indépendance) !")
+

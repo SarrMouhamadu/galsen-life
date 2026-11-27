@@ -19,6 +19,12 @@ var providers: Array = [] ## autres lieux d'action : arène, entreprises, march�
 var frozen := false ## immobilisé (combat de lutte)
 var model: Node3D
 var emote := "" ## geste en cours (menu GESTES) : s'arrête dès qu'on bouge
+var _lean_roll := 0.0
+var _lean_pitch := 0.0
+var _squash_scale := Vector3.ONE
+var _prev_on_floor := true
+var _prev_fall_vy := 0.0
+var _step_dist := 0.0
 
 
 func start_emote(clip: String) -> void:
@@ -100,6 +106,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 	elif Input.is_action_just_pressed("jump") and not GameState.typing and not no_jump:
 		velocity.y = JUMP_VELOCITY
+		_squash_scale = Vector3(0.92, 1.15, 0.92)
 
 	var inp: Vector2 = GameState.get_move_input()
 	var yaw: float = camera_rig.yaw if camera_rig else 0.0
@@ -110,13 +117,58 @@ func _physics_process(delta: float) -> void:
 	if spd == RUN_SPEED and dir.length() > 0.3 and is_on_floor():
 		GameState.energy = maxf(0.0, GameState.energy - delta * 0.12 * (1.0 - 0.07 * GameState.skill_level("endurance")))
 		GameState.add_skill("endurance", delta / 30.0)
-	velocity.x = dir.x * spd
-	velocity.z = dir.z * spd
+
+	# Accélération et décélération physique avec inertie réaliste
+	var target_vx := dir.x * spd
+	var target_vz := dir.z * spd
+	var accel_rate: float
+	if is_on_floor():
+		if dir.length() > 0.08:
+			accel_rate = 14.0 if running else 11.0
+		else:
+			accel_rate = 16.0 # Décélération progressive
+	else:
+		accel_rate = 3.5 # Inertie de l'air
+
+	velocity.x = move_toward(velocity.x, target_vx, accel_rate * delta * maxf(spd, 3.2))
+	velocity.z = move_toward(velocity.z, target_vz, accel_rate * delta * maxf(spd, 3.2))
 	move_and_slide()
+
+	# Réception au sol : tassement (squash) proportionnel à l'impact
+	var on_ground := is_on_floor()
+	if not _prev_on_floor and on_ground and _prev_fall_vy < -2.2:
+		var impact := clampf(-_prev_fall_vy / 18.0, 0.08, 0.22)
+		_squash_scale = Vector3(1.0 + impact * 0.5, 1.0 - impact, 1.0 + impact * 0.5)
+		Audio.play_sfx("thud", -12.0)
+	_prev_on_floor = on_ground
+	_prev_fall_vy = velocity.y
+	_squash_scale = _squash_scale.lerp(Vector3.ONE, 1.0 - exp(-12.0 * delta))
+	model.scale = _squash_scale
 
 	var ground_speed := Vector2(velocity.x, velocity.z).length() if is_on_floor() else 0.0
 	if dir.length() > 0.05:
-		model.rotation.y = lerp_angle(model.rotation.y, atan2(-dir.x, -dir.z), 1.0 - exp(-10.0 * delta))
+		var target_yaw := atan2(-dir.x, -dir.z)
+		model.rotation.y = lerp_angle(model.rotation.y, target_yaw, 1.0 - exp(-11.0 * delta))
+		# Roulis (roll) : le corps se penche vers l'intérieur du virage
+		var yaw_diff := wrapf(target_yaw - model.rotation.y, -PI, PI)
+		var target_roll := clampf(-yaw_diff * (ground_speed / RUN_SPEED) * 0.22, -0.18, 0.18)
+		_lean_roll = lerpf(_lean_roll, target_roll, 1.0 - exp(-10.0 * delta))
+		# Tangage (pitch) : le buste penche vers l'avant à l'effort de sprint
+		var target_pitch := clampf((ground_speed / RUN_SPEED) * 0.12, 0.0, 0.14)
+		_lean_pitch = lerpf(_lean_pitch, target_pitch, 1.0 - exp(-8.0 * delta))
+	else:
+		_lean_roll = lerpf(_lean_roll, 0.0, 1.0 - exp(-10.0 * delta))
+		_lean_pitch = lerpf(_lean_pitch, 0.0, 1.0 - exp(-10.0 * delta))
+	model.rotation.z = _lean_roll
+	model.rotation.x = _lean_pitch
+
+	# Bruitage discret des pas selon la cadence de marche
+	if ground_speed > 0.6 and is_on_floor():
+		_step_dist += ground_speed * delta
+		var step_interval: float = 1.5 if running else 1.15
+		if _step_dist >= step_interval:
+			_step_dist = 0.0
+			Audio.play_sfx("thud", -16.0)
 	_anim_lock -= delta
 	if emote != "" and (dir.length() > 0.05 or velocity.y > 0.5 or current_vehicle or riding):
 		stop_emote()
@@ -229,7 +281,8 @@ func enter_vehicle(v) -> void:
 	collision_layer = 0
 	collision_mask = 0
 	velocity = Vector3.ZERO
-	camera_rig.set_target(v)
+	if camera_rig:
+		camera_rig.set_target(v)
 	if v.vehicle_type in ["jakarta", "grosse_moto"]:
 		GameState.notify.emit("Tu es sur la %s ! Accélère." % v.display_name)
 	elif not (v.vehicle_type in ["police", "army"]):
@@ -244,7 +297,8 @@ func ride(v) -> void:
 	collision_layer = 0
 	collision_mask = 0
 	velocity = Vector3.ZERO
-	camera_rig.set_target(v)
+	if camera_rig:
+		camera_rig.set_target(v)
 	if v.vehicle_type == "taxi":
 		GameState.notify.emit("Tu es assis dans le taxi. Le taximan met la radio et démarre.")
 	elif v.vehicle_type in ["car_rapide", "ndiaga"]:
@@ -260,7 +314,8 @@ func end_ride() -> void:
 	collision_layer = 4
 	collision_mask = 1 | 2 | 16 | 32
 	visible = true
-	camera_rig.set_target(self)
+	if camera_rig:
+		camera_rig.set_target(self)
 	if v == null or not is_instance_valid(v):
 		return
 	var side: Vector3 = v.global_transform.basis.x
@@ -301,7 +356,8 @@ func exit_vehicle() -> void:
 	global_position = exit_pos + Vector3(0, 0.1, 0)
 	model.rotation.y = v.rotation.y
 	visible = true
-	camera_rig.set_target(self)
+	if camera_rig:
+		camera_rig.set_target(self)
 
 
 func _blocked(from: Vector3, to: Vector3) -> bool:
@@ -335,3 +391,17 @@ func _nearest_ped() -> Variant:
 		if p.visible and not p.knocked and global_position.distance_to(p.global_position) < 2.2:
 			return p
 	return null
+
+
+## Rapatrie le joueur (et sa voiture s'il en conduit une) au point de départ initial (Place de l'Indépendance)
+func return_to_start(city_ref = null) -> void:
+	if current_vehicle and is_instance_valid(current_vehicle):
+		current_vehicle.return_to_start(city_ref)
+		return
+	var c = city_ref if city_ref else (get_parent().get("city") if get_parent() else null)
+	var dest: Vector3 = c.spawn_point if (c != null and c.get("spawn_point") != null) else Vector3(0, 0.5, 0)
+	global_position = dest
+	velocity = Vector3.ZERO
+	Audio.play_sfx("horn", -10.0)
+	GameState.notify.emit("📍 Retour réussi au point de départ (Place de l'Indépendance) !")
+

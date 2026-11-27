@@ -542,6 +542,20 @@ func _services() -> void:
 		_content.add_child(_note("Bus et cars rapides : attends à un arrêt de bus."))
 	_content.add_child(_note("Hôpital Principal : en cas de malaise, on t'y emmène."))
 
+	# Rapatriement de véhicule et retour au point de départ
+	_content.add_child(_button("🚗 Rapatrier ma voiture au départ (Place de l'Indépendance)", func():
+		close()
+		if main and main.player:
+			main.player.return_to_start(main.city), Color("e76f51")))
+
+	_content.add_child(_button("📍 GPS : Itinéraire retour vers le départ", func():
+		close()
+		if main and main.player:
+			if main.player.current_vehicle:
+				main.player.current_vehicle.set_gps_to_start(main.city)
+			else:
+				main.gps.set_waypoint(main.city.spawn_point, "Place de l'Indépendance (Départ)"), Color("2a9d8f")))
+
 
 func _players() -> void:
 	_title.text = "Joueurs en ligne"

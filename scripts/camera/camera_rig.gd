@@ -9,6 +9,8 @@ var spring: SpringArm3D
 var camera: Camera3D
 var _look_cooldown := 0.0
 var hood_view := false ## vue capot en voiture (touche X, bouton VUE)
+var _walk_bob_t := 0.0
+var _cam_roll := 0.0
 
 
 func _ready() -> void:
@@ -95,4 +97,26 @@ func _process(delta: float) -> void:
 	if spd != null and _look_cooldown <= 0.0 and absf(spd) > 2.0:
 		yaw = lerp_angle(yaw, target.rotation.y, 1.0 - exp(-2.5 * delta))
 	spring.spring_length = lerpf(spring.spring_length, distance, 1.0 - exp(-4.0 * delta))
-	rotation = Vector3(pitch, yaw, 0.0)
+	
+	# Réalisme de mouvement : balancement naturel de la tête (head-bobbing) à pied
+	if not in_car and target.is_on_floor():
+		var vel: Vector3 = target.velocity if target.get("velocity") != null else Vector3.ZERO
+		var ground_spd := Vector2(vel.x, vel.z).length()
+		if ground_spd > 0.4:
+			_walk_bob_t += delta * ground_spd * 1.8
+			var bob_y := sin(_walk_bob_t * 2.0) * 0.032 * clampf(ground_spd / 4.5, 0.0, 1.0)
+			var bob_x := cos(_walk_bob_t) * 0.022 * clampf(ground_spd / 4.5, 0.0, 1.0)
+			camera.position = camera.position.lerp(Vector3(bob_x, bob_y, 0.0), 1.0 - exp(-12.0 * delta))
+		else:
+			camera.position = camera.position.lerp(Vector3.ZERO, 1.0 - exp(-8.0 * delta))
+	else:
+		camera.position = camera.position.lerp(Vector3.ZERO, 1.0 - exp(-8.0 * delta))
+
+	# Inclinaison dynamique de la caméra (banking roll) en virage
+	var roll_target := 0.0
+	if in_car:
+		var slip_val = target.get("slip")
+		if slip_val != null:
+			roll_target = clampf(float(slip_val) * 0.12, -0.06, 0.06)
+	_cam_roll = lerpf(_cam_roll, roll_target, 1.0 - exp(-6.0 * delta))
+	rotation = Vector3(pitch, yaw, _cam_roll)
