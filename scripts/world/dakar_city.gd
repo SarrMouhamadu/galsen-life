@@ -812,6 +812,9 @@ func _build_urban_decor() -> void:
 		_make_road_centerline(decor, p_indep + Vector3(0, 0, 28.0), p_indep + Vector3(0, 0, 55.0))
 		_make_road_centerline(decor, p_indep + Vector3(0, 0, -28.0), p_indep + Vector3(0, 0, -55.0))
 
+		# Coin thé Attaya sénégalais convivial
+		_make_attaya_spot(decor, p_indep + Vector3(16.0, 0, 18.0), 0.5)
+
 	# 2. Hôpital Principal de Dakar
 	if places.has("Hôpital Principal"):
 		var p_hosp: Vector3 = places["Hôpital Principal"]
@@ -829,6 +832,9 @@ func _build_urban_decor() -> void:
 		_make_neem_tree(decor, p_sand + Vector3(-15.0, 0, -18.0), 5.4)
 		_make_zebra_crossing(decor, p_sand + Vector3(0, 0, 12.0), PI * 0.5, 7.0)
 		_make_speed_bump(decor, p_sand + Vector3(0, 0, 20.0), 0.0, 6.5)
+		# Étal de mangues et fruits locaux sénégalais
+		_make_fruit_stall(decor, p_sand + Vector3(16.0, 0, 12.0), 0.3)
+		_make_attaya_spot(decor, p_sand + Vector3(-12.0, 0, 16.0), -0.4)
 
 	# 4. Marché Tilène & Médina
 	if places.has("Marché Tilène"):
@@ -836,6 +842,12 @@ func _build_urban_decor() -> void:
 		_make_flamboyant_tree(decor, p_til + Vector3(18.0, 0, 14.0), 6.3)
 		_make_neem_tree(decor, p_til + Vector3(-16.0, 0, 12.0), 5.6)
 		_make_zebra_crossing(decor, p_til + Vector3(0, 0, 10.0), 0.0, 6.5)
+		# Étal de fruits frais de la Médina
+		_make_fruit_stall(decor, p_til + Vector3(14.0, 0, 8.0), -0.2)
+		# Atelier de couture et confection de boubous
+		_make_tailor_workshop(decor, p_til + Vector3(-26.0, 0, 10.0), 0.8)
+		# Grande fresque murale Set Setal le long des murs
+		_make_wall_mural(decor, p_til + Vector3(-18.0, 0, 32.0), 0.0, Vector2(8.5, 2.4), "res://textures/world/dakar_fresque_murale.jpg", "FRESQUE SET SETAL • STREET ART DAKAR")
 
 	# 5. Gare de Dakar
 	if places.has("Gare de Dakar"):
@@ -857,33 +869,51 @@ func _build_urban_decor() -> void:
 		for k in 6:
 			_make_palm_tree(decor, p_porte + Vector3(-25.0 + k * 10.0, 0, 16.0), 8.4, 0.2)
 
-	# 8. Grands panneaux photo réels de Dakar (Maisons, Architecture, Corniche, Rues authentiques)
+	# 8. Stade Iba Mar Diop (Lutte sénégalaise & Sport populaire à la Médina)
+	if places.has("Stade Iba Mar Diop"):
+		var p_stade: Vector3 = places["Stade Iba Mar Diop"]
+		_make_flamboyant_tree(decor, p_stade + Vector3(20.0, 0, 16.0), 6.6)
+		_make_baobab_tree(decor, p_stade + Vector3(-24.0, 0, -18.0), 8.2)
+		_make_zebra_crossing(decor, p_stade + Vector3(0, 0, 14.0), 0.0, 8.0)
+
+	# 9. Grands panneaux photo réels de Dakar (Maisons, Architecture, Corniche, Rues authentiques)
 	_build_photo_billboards(decor)
 
 
 func _build_photo_billboards(parent: Node3D) -> void:
-	# 1. Place de l'Indépendance : Vue panoramique architecture Dakar Plateau
+	# 1. Place de l'Indépendance : Architecture Dakar Plateau et Rues résidentielles
 	if places.has("Place de l'Indépendance"):
-		var p: Vector3 = places["Place de l'Indépendance"] + Vector3(18.0, 0, -32.0)
-		_make_photo_billboard(parent, p, 0.0, "res://textures/world/dakar_immeubles_plateau.jpg", "DAKAR PLATEAU • ARCHITECTURE CAPITALE")
+		var p1: Vector3 = places["Place de l'Indépendance"] + Vector3(18.0, 0, -32.0)
+		_make_photo_billboard(parent, p1, 0.0, "res://textures/world/dakar_immeubles_plateau.jpg", "DAKAR PLATEAU • ARCHITECTURE CAPITALE")
+		var p2: Vector3 = places["Place de l'Indépendance"] + Vector3(-22.0, 0, 32.0)
+		_make_photo_billboard(parent, p2, PI, "res://textures/world/dakar_maisons_rue.jpg", "TERANGA SÉNÉGAL • RUES & MAISONS DE DAKAR")
 
 	# 2. Corniche Ouest / Porte du Millénaire : Vue route de la Corniche et Océan
 	if places.has("Porte du Millénaire"):
 		var p: Vector3 = places["Porte du Millénaire"] + Vector3(12.0, 0, 28.0)
 		_make_photo_billboard(parent, p, -PI * 0.25, "res://textures/world/dakar_route_corniche.jpg", "ROUTE DE LA CORNICHE OUEST • DAKAR")
 
-	# 3. Marché Tilène / Médina : Maisons et commerces de la Médina
-	if places.has("Marché Tilène"):
-		var p: Vector3 = places["Marché Tilène"] + Vector3(-25.0, 0, 20.0)
-		_make_photo_billboard(parent, p, PI * 0.5, "res://textures/world/dakar_medina_maisons.jpg", "MÉDINA • MAISONS ET COMMERCES POPULAIRES")
-
-	# 4. Marché Sandaga : Rues résidentielles de Dakar
+	# 3. Marché Sandaga : Façade historique néo-soudanaise et étalages
 	if places.has("Marché Sandaga"):
-		var p: Vector3 = places["Marché Sandaga"] + Vector3(24.0, 0, -18.0)
-		_make_photo_billboard(parent, p, -PI * 0.5, "res://textures/world/dakar_maisons_rue.jpg", "RUES RÉSIDENTIELLES • DAKAR SÉNÉGAL")
+		var p_sand1: Vector3 = places["Marché Sandaga"] + Vector3(26.0, 0, -18.0)
+		_make_photo_billboard(parent, p_sand1, -PI * 0.5, "res://textures/world/dakar_marche_sandaga.jpg", "MARCHÉ SANDAGA • PATRIMOINE HISTORIQUE NÉO-SOUDANAIS")
+		var p_sand2: Vector3 = places["Marché Sandaga"] + Vector3(-26.0, 0, -18.0)
+		_make_photo_billboard(parent, p_sand2, PI * 0.5, "res://textures/world/dakar_etal_marche.jpg", "FRUITS DU SÉNÉGAL • MANGUES ET PRODUITS LOCAUX")
+
+	# 4. Marché Tilène / Médina : Maisons populaires et ateliers de couture
+	if places.has("Marché Tilène"):
+		var p_til1: Vector3 = places["Marché Tilène"] + Vector3(-25.0, 0, 20.0)
+		_make_photo_billboard(parent, p_til1, PI * 0.5, "res://textures/world/dakar_medina_maisons.jpg", "MÉDINA • MAISONS ET COMMERCES POPULAIRES")
+		var p_til2: Vector3 = places["Marché Tilène"] + Vector3(28.0, 0, 20.0)
+		_make_photo_billboard(parent, p_til2, -PI * 0.5, "res://textures/world/dakar_artisanat_medina.jpg", "ATELIER DE COUTURE & BAZIN • TALENT DAKAROIS")
+
+	# 5. Stade Iba Mar Diop / Arène : Grande affiche officielle de Lamb
+	if places.has("Stade Iba Mar Diop"):
+		var p_stade: Vector3 = places["Stade Iba Mar Diop"] + Vector3(18.0, 0, 26.0)
+		_make_photo_billboard(parent, p_stade, 0.0, "res://textures/world/dakar_lutte_senegalaise.jpg", "LAMB GALSEN • GRANDE SOIRÉE DE LUTTE SÉNÉGALAISE")
 
 
-func _make_photo_billboard(parent: Node3D, pos: Vector3, yaw: float, tex_path: String, label_text: String) -> void:
+func _make_photo_billboard(parent: Node3D, pos: Vector3, yaw: float, tex_path: String, label_text: String, board_w: float = 5.0, board_h: float = 3.0) -> void:
 	var root := Node3D.new()
 	root.position = pos
 	root.rotation.y = yaw
@@ -891,19 +921,21 @@ func _make_photo_billboard(parent: Node3D, pos: Vector3, yaw: float, tex_path: S
 
 	# Deux montants verticaux en acier galvanisé
 	var col_steel := Color("334155")
-	Mk.cyl(root, 0.12, 0.14, 5.2, Vector3(-2.2, 2.6, 0), col_steel, true, 8)
-	Mk.cyl(root, 0.12, 0.14, 5.2, Vector3(2.2, 2.6, 0), col_steel, true, 8)
+	var post_span: float = board_w * 0.44
+	Mk.cyl(root, 0.12, 0.14, 5.2, Vector3(-post_span, 2.6, 0), col_steel, true, 8)
+	Mk.cyl(root, 0.12, 0.14, 5.2, Vector3(post_span, 2.6, 0), col_steel, true, 8)
 
 	# Cadre et panneau structurel arrière
-	Mk.box(root, Vector3(5.0, 3.0, 0.16), Vector3(0, 3.8, 0), Color("1e293b"), true)
+	Mk.box(root, Vector3(board_w, board_h, 0.16), Vector3(0, 2.3 + board_h * 0.5, 0), Color("1e293b"), true)
 
 	# Face avant avec la photo réelle du Sénégal
-	if ResourceLoader.exists(tex_path):
+	var tex: Texture2D = Mk.load_texture(tex_path)
+	if tex != null:
 		var mat_photo := StandardMaterial3D.new()
-		mat_photo.albedo_texture = load(tex_path)
+		mat_photo.albedo_texture = tex
 		mat_photo.roughness = 0.4
 		mat_photo.metallic_specular = 0.5
-		Mk.box(root, Vector3(4.8, 2.6, 0.05), Vector3(0, 3.9, 0.1), Color.WHITE, false, mat_photo)
+		Mk.box(root, Vector3(board_w - 0.2, board_h - 0.4, 0.05), Vector3(0, 2.3 + board_h * 0.5, 0.1), Color.WHITE, false, mat_photo)
 
 	# Bandeau inférieur d'information
 	var l := Label3D.new()
@@ -913,6 +945,120 @@ func _make_photo_billboard(parent: Node3D, pos: Vector3, yaw: float, tex_path: S
 	l.modulate = Color("facc15")
 	l.position = Vector3(0, 2.35, 0.12)
 	root.add_child(l)
+
+
+## Grande fresque murale artistique sénégalaise (Set Setal, street art de Dakar)
+func _make_wall_mural(parent: Node3D, pos: Vector3, yaw: float, size: Vector2, tex_path: String, label_text: String = "") -> void:
+	var root := Node3D.new()
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	var tex: Texture2D = Mk.load_texture(tex_path)
+	if tex != null:
+		var quad := QuadMesh.new()
+		quad.size = size
+		var mat_mural := StandardMaterial3D.new()
+		mat_mural.albedo_texture = tex
+		mat_mural.roughness = 0.7
+		mat_mural.cull_mode = BaseMaterial3D.CULL_DISABLED
+		var mi := MeshInstance3D.new()
+		mi.mesh = quad
+		mi.material_override = mat_mural
+		mi.position = Vector3(0, size.y * 0.5, 0.05)
+		root.add_child(mi)
+
+	# Encadrement maçonnerie peinte
+	Mk.box(root, Vector3(size.x + 0.2, 0.12, 0.14), Vector3(0, size.y + 0.06, 0.05), Color("1e293b"))
+	Mk.box(root, Vector3(size.x + 0.2, 0.12, 0.14), Vector3(0, 0.06, 0.05), Color("1e293b"))
+
+	if label_text != "":
+		var l := Label3D.new()
+		l.text = label_text
+		l.font_size = 26
+		l.outline_size = 6
+		l.modulate = Color("fefae0")
+		l.position = Vector3(0, size.y + 0.32, 0.08)
+		root.add_child(l)
+
+
+## Étal de fruits frais typique des marchés de Dakar (mangues, pastèques, agrumes)
+func _make_fruit_stall(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "FruitStall"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Table en bois brut sur tréteaux
+	Mk.box(root, Vector3(2.6, 0.75, 1.2), Vector3(0, 0.38, 0), Color("8d6748"), true)
+	Mk.box(root, Vector3(2.8, 0.06, 1.3), Vector3(0, 0.78, 0), Color("a47551"), true)
+
+	# Caisses inclinées de fruits sénégalais
+	# Caisse 1 : Mangues mûres dorées et vertes
+	Mk.box(root, Vector3(0.8, 0.15, 0.5), Vector3(-0.8, 0.9, -0.2), Color("c49a6c"))
+	for mx in [-0.2, 0.0, 0.2]:
+		for mz in [-0.1, 0.1]:
+			var m_col: Color = Color("f39c12") if (mx + mz) > 0 else Color("27ae60")
+			Mk.sphere(root, 0.08, Vector3(-0.8 + mx, 1.02, -0.2 + mz), m_col)
+
+	# Caisse 2 : Pastèques du Sénégal
+	Mk.box(root, Vector3(0.8, 0.15, 0.5), Vector3(0.0, 0.9, -0.2), Color("c49a6c"))
+	Mk.sphere(root, 0.13, Vector3(-0.15, 1.05, -0.2), Color("1b4332"))
+	Mk.sphere(root, 0.12, Vector3(0.15, 1.05, -0.2), Color("2d6a4f"))
+
+	# Caisse 3 : Papayes et agrumes
+	Mk.box(root, Vector3(0.8, 0.15, 0.5), Vector3(0.8, 0.9, -0.2), Color("c49a6c"))
+	for px in [-0.2, 0.0, 0.2]:
+		Mk.sphere(root, 0.07, Vector3(0.8 + px, 1.02, -0.2), Color("e67e22"))
+
+	# Parasol coloré au-dessus de l'étal
+	Mk.cyl(root, 0.04, 0.04, 2.6, Vector3(0, 1.3, -0.5), Color("444444"), false, 6)
+	Mk.cyl(root, 1.6, 0.06, 0.4, Vector3(0, 2.6, -0.5), Color("e76f51"), false, 10)
+
+
+## Coin thé Attaya sénégalais (théière émaillée, verres à thé moussants, fourneau)
+func _make_attaya_spot(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "AttayaSpot"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Petite table basse traditionnelle
+	Mk.box(root, Vector3(0.9, 0.35, 0.6), Vector3(0, 0.18, 0), Color("5c4033"), true)
+	# Tabouret en bois
+	Mk.box(root, Vector3(0.35, 0.25, 0.35), Vector3(0.6, 0.13, 0), Color("8b5a2b"), true)
+	# Fourneau à braises
+	Mk.cyl(root, 0.12, 0.10, 0.18, Vector3(-0.25, 0.44, 0), Color("222222"), false, 8)
+	# Théière émaillée bleue d'Attaya (Barada)
+	Mk.cyl(root, 0.07, 0.09, 0.16, Vector3(-0.25, 0.58, 0), Color("0077b6"), false, 8)
+	# Petits verres à thé avec mousse blanche
+	Mk.cyl(root, 0.03, 0.03, 0.07, Vector3(0.12, 0.39, -0.1), Color("f1f5f9"), false, 6)
+	Mk.cyl(root, 0.03, 0.03, 0.07, Vector3(0.22, 0.39, 0.05), Color("f1f5f9"), false, 6)
+
+
+## Atelier de couture & tailleur traditionnel de la Médina
+func _make_tailor_workshop(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "TailorWorkshop"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Table de coupe en bois
+	Mk.box(root, Vector3(2.4, 0.85, 1.2), Vector3(0, 0.43, 0), Color("78350f"), true)
+	# Machine à coudre vintage Singer (noire et dorée)
+	Mk.box(root, Vector3(0.45, 0.25, 0.2), Vector3(-0.4, 0.98, 0), Color("0f172a"), true)
+	Mk.cyl(root, 0.02, 0.02, 0.14, Vector3(-0.25, 1.0, 0), Color("f59e0b"), false, 6)
+	# Rouleaux de tissus Bazin et Wax empilés
+	var fabric_cols := [Color("0284c7"), Color("f59e0b"), Color("10b981"), Color("8b5cf6")]
+	for i in 4:
+		Mk.cyl(root, 0.06, 0.06, 0.8, Vector3(0.4, 0.92 + i * 0.07, -0.25 + i * 0.12), fabric_cols[i], false, 8)
+	# Auvent en tôle ondulée
+	for sx in [-1, 1]:
+		Mk.cyl(root, 0.04, 0.04, 2.5, Vector3(sx * 1.3, 1.25, 0.6), Color("64748b"), false, 6)
+	Mk.box(root, Vector3(2.8, 0.05, 1.6), Vector3(0, 2.45, 0.1), Color("94a3b8"))
 
 
 func _make_palm_tree(parent: Node3D, pos: Vector3, h: float, _seed_offset: float = 0.0) -> void:

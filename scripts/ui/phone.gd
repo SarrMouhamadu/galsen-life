@@ -39,6 +39,7 @@ const APPS := [
 const Outfits = preload("res://scripts/util/outfits.gd")
 const Items = preload("res://scripts/util/items.gd")
 const RealCharacter = preload("res://scripts/util/real_character.gd")
+const Mk = preload("res://scripts/util/mk.gd")
 const PRESETS := [500, 1000, 2000, 5000, 10000]
 const FEE := 0.01 ## frais des virements (1 %)
 
@@ -1640,6 +1641,31 @@ func _dakar_photos_app() -> void:
 
 	var gallery := [
 		{
+			"title": "Marché Sandaga • Patrimoine Néo-Soudanais",
+			"desc": "Architecture monumentale sahélienne du Marché Sandaga, pilastres, créneaux en terre cuite et carrefour commercial historique de Dakar.",
+			"path": "res://textures/world/dakar_marche_sandaga.jpg"
+		},
+		{
+			"title": "Lamb Galsen • Lutte Traditionnelle",
+			"desc": "Combat de lutte sénégalaise avec frappe sur le sable de Dakar, ferveur populaire, préparation mystique (bakk) et courage des champions.",
+			"path": "res://textures/world/dakar_lutte_senegalaise.jpg"
+		},
+		{
+			"title": "Fresque Set Setal • Street Art de Dakar",
+			"desc": "Grandes fresques murales citoyennes et artistiques ornant les artères de la capitale, couleurs vives et hommage aux figures du pays.",
+			"path": "res://textures/world/dakar_fresque_murale.jpg"
+		},
+		{
+			"title": "Échoppe de Fruits • Marché Sénégalais",
+			"desc": "Étalages authentiques garnis de mangues dorées, pastèques rafraîchissantes, papayes et agrumes des vergers locaux.",
+			"path": "res://textures/world/dakar_etal_marche.jpg"
+		},
+		{
+			"title": "Atelier de Couture & Bazin • Médina",
+			"desc": "Savoir-faire artisanal des tailleurs dakarois, machines à coudre traditionnelles et rouleaux de tissus wax et bazin riche.",
+			"path": "res://textures/world/dakar_artisanat_medina.jpg"
+		},
+		{
 			"title": "Rues résidentielles & Maisons de Dakar",
 			"desc": "Maisons familiales à étage, façades en enduit chaud et soubassements peints, accotements en sable fin du littoral.",
 			"path": "res://textures/ui/dakar_maisons_rue.jpg"
@@ -1682,12 +1708,13 @@ func _dakar_photos_app() -> void:
 		l_title.add_theme_color_override("font_color", Color("ffd166"))
 		vb.add_child(l_title)
 
-		if ResourceLoader.exists(item["path"]):
+		var tex: Texture2D = Mk.load_texture(item["path"])
+		if tex != null:
 			var tr := TextureRect.new()
-			tr.texture = load(item["path"])
+			tr.texture = tex
 			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			tr.custom_minimum_size = Vector2(0, 150)
+			tr.custom_minimum_size = Vector2(0, 160)
 			vb.add_child(tr)
 
 		var l_desc := Label.new()

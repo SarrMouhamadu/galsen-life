@@ -70,6 +70,19 @@ static func paint(color: Color, glass := false) -> StandardMaterial3D:
 	return m
 
 
+## Charge une texture de manière résiliente (ResourceLoader puis fallback Image.load_from_file)
+static func load_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var res = load(path)
+		if res is Texture2D:
+			return res
+	if FileAccess.file_exists(path):
+		var img := Image.load_from_file(path)
+		if img != null and not img.is_empty():
+			return ImageTexture.create_from_image(img)
+	return null
+
+
 ## Matériau PBR physique avec détection intelligente (métal, tissu, verre, maçonnerie)
 static func mat(color: Color, emission := 0.0, unshaded := false, roughness := -1.0, metallic := -1.0) -> StandardMaterial3D:
 	var key := "%s|%s|%s|%s|%s" % [color.to_html(), emission, unshaded, roughness, metallic]
@@ -297,6 +310,10 @@ static func sphere(parent: Node, radius: float, pos: Vector3, color: Color, scal
 	mi.scale = scale
 	parent.add_child(mi)
 	return mi
+
+
+static func sph(parent: Node, radius: float, pos: Vector3, color: Color, scale := Vector3.ONE) -> MeshInstance3D:
+	return sphere(parent, radius, pos, color, scale)
 
 
 ## Taille des textes flottants (police, à 1 cm par point) : noms des personnes, panneaux des lieux

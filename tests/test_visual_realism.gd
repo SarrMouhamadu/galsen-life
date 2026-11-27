@@ -24,19 +24,25 @@ func _run() -> void:
 		"res://textures/world/dakar_route_corniche.jpg",
 		"res://textures/world/dakar_immeubles_plateau.jpg",
 		"res://textures/world/dakar_medina_maisons.jpg",
+		"res://textures/world/dakar_marche_sandaga.jpg",
+		"res://textures/world/dakar_lutte_senegalaise.jpg",
+		"res://textures/world/dakar_fresque_murale.jpg",
+		"res://textures/world/dakar_etal_marche.jpg",
+		"res://textures/world/dakar_artisanat_medina.jpg",
 		"res://textures/ui/dakar_maisons_rue.jpg",
 		"res://textures/ui/dakar_route_corniche.jpg"
 	]
 
+	var Mk = load("res://scripts/util/mk.gd")
 	for tex_path in textures_to_check:
-		assert(ResourceLoader.exists(tex_path), "Texture manquante : %s" % tex_path)
-		var res = load(tex_path)
+		assert(FileAccess.file_exists(tex_path) or ResourceLoader.exists(tex_path), "Texture manquante : %s" % tex_path)
+		var res = Mk.load_texture(tex_path)
 		assert(res != null, "Impossible de charger la ressource : %s" % tex_path)
 		print("  [OK] Texture chargée avec succès : %s" % tex_path)
 
 	print("[PASS] Toutes les textures haute résolution et vectorielles sont valides !")
 
-	# Test des décors de ville DakarCity (Kiosques Wave, Orange Money, Panneaux JOJ 2026, Maïga)
+	# Test des décors de ville DakarCity (Kiosques Wave, Orange Money, Panneaux JOJ 2026, Maïga, Étalages, Attaya)
 	var DakarCityScript = load("res://scripts/world/dakar_city.gd")
 	var city = DakarCityScript.new()
 	root.add_child(city)
@@ -64,7 +70,25 @@ func _run() -> void:
 	assert(has_orange_kiosk, "Kiosque Orange Money doit être présent dans la ville")
 	assert(has_road_sign, "Panneaux routiers Dakar / JOJ 2026 doivent être présents")
 	assert(has_maiga_banner, "Bannière réaliste Maïga texturée doit être présente")
-	print("[PASS] Éléments urbains réalistes (Wave, Orange Money, Panneaux Dakar 2026, Maïga) validés !")
+
+	var urban_decor: Node3D = city.get_node_or_null("UrbanDecor")
+	assert(urban_decor != null, "UrbanDecor doit exister")
+	var has_fruit_stall := false
+	var has_attaya_spot := false
+	var has_tailor := false
+	for decor_child in urban_decor.get_children():
+		if "FruitStall" in decor_child.name:
+			has_fruit_stall = true
+		elif "AttayaSpot" in decor_child.name:
+			has_attaya_spot = true
+		elif "TailorWorkshop" in decor_child.name:
+			has_tailor = true
+
+	assert(has_fruit_stall, "Étal de fruits sénégalais doit être présent")
+	assert(has_attaya_spot, "Coin thé Attaya sénégalais doit être présent")
+	assert(has_tailor, "Atelier de tailleur/couture de la Médina doit être présent")
+	print("  [OK] Éléments culturels urbains (Fruits locaux, Thé Attaya, Tailleur Médina) validés !")
+	print("[PASS] Éléments urbains réalistes (Wave, Orange Money, Panneaux Dakar 2026, Maïga, Étalages) validés !")
 	city.queue_free()
 
 	print("--- TOUS LES TESTS DE RÉALISME VISUEL SONT PASSÉS AVEC SUCCÈS ! ---")
