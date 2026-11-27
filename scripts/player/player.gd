@@ -8,6 +8,7 @@ const WALK_SPEED := 2.0 ## marche normale d'un humain
 const RUN_SPEED := 6.5
 const JUMP_VELOCITY := 5.5
 const GRAVITY := 18.0
+const MAX_STEP_HEIGHT := 0.25 ## hauteur max franchissable sans sauter (trottoirs 0.16m, bordures 0.14-0.20m)
 
 var camera_rig = null
 var job_manager = null
@@ -25,6 +26,7 @@ var _squash_scale := Vector3.ONE
 var _prev_on_floor := true
 var _prev_fall_vy := 0.0
 var _step_dist := 0.0
+var _step_smooth_y := 0.0 ## lissage visuel du passage de bordure / trottoir
 
 
 func start_emote(clip: String) -> void:
@@ -47,6 +49,10 @@ func _ready() -> void:
 	add_to_group("player")
 	collision_layer = 4
 	collision_mask = 1 | 2 | 16 | 32
+	floor_snap_length = 0.32
+	floor_constant_speed = true
+	floor_max_angle = deg_to_rad(48.0)
+	floor_stop_on_slope = true
 	var cs := CollisionShape3D.new()
 	var cap := CapsuleShape3D.new()
 	cap.radius = 0.35
@@ -106,7 +112,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 	elif Input.is_action_just_pressed("jump") and not GameState.typing and not no_jump:
 		velocity.y = JUMP_VELOCITY
-		_squash_scale = Vector3(0.92, 1.15, 0.92)
+		_squash_scale = Vector3(0.96, 1.06, 0.96)
 
 	var inp: Vector2 = GameState.get_move_input()
 	var yaw: float = camera_rig.yaw if camera_rig else 0.0
@@ -132,11 +138,19 @@ func _physics_process(delta: float) -> void:
 
 	velocity.x = move_toward(velocity.x, target_vx, accel_rate * delta * maxf(spd, 3.2))
 	velocity.z = move_toward(velocity.z, target_vz, accel_rate * delta * maxf(spd, 3.2))
+
+	# Franchissement fluide et naturel des trottoirs et bordures (sans saut robotique)
+	_step_climb(delta)
+
 	move_and_slide()
 
-	# Réception au sol : tassement (squash) proportionnel à l'impact
+	# Raccrochage immédiat au sol lors de la descente de trottoir
+	if _prev_on_floor and not is_on_floor() and velocity.y <= 0.0:
+		apply_floor_snap()
+
+	# Réception au sol : tassement (squash) uniquement sur chute libre ou saut franc (pas sur un trottoir de 16cm)
 	var on_ground := is_on_floor()
-	if not _prev_on_floor and on_ground and _prev_fall_vy < -2.2:
+	if not _prev_on_floor and on_ground and _prev_fall_vy < -4.0:
 		var impact := clampf(-_prev_fall_vy / 18.0, 0.08, 0.22)
 		_squash_scale = Vector3(1.0 + impact * 0.5, 1.0 - impact, 1.0 + impact * 0.5)
 		Audio.play_sfx("thud", -12.0)
@@ -144,6 +158,10 @@ func _physics_process(delta: float) -> void:
 	_prev_fall_vy = velocity.y
 	_squash_scale = _squash_scale.lerp(Vector3.ONE, 1.0 - exp(-12.0 * delta))
 	model.scale = _squash_scale
+
+	# Amortissement visuel vertical soyeux lors du franchissement de marche ou trottoir
+	_step_smooth_y = lerpf(_step_smooth_y, 0.0, 1.0 - exp(-18.0 * delta))
+	model.position.y = _step_smooth_y
 
 	var ground_speed := Vector2(velocity.x, velocity.z).length() if is_on_floor() else 0.0
 	if dir.length() > 0.05:
@@ -191,6 +209,48 @@ func _physics_process(delta: float) -> void:
 ## Bloque la marche/attente le temps d'une animation (coup de poing, coup reçu)
 func lock_anim(t: float) -> void:
 	_anim_lock = maxf(_anim_lock, t)
+
+
+## Franchissement fluide et naturel des trottoirs, bordures et marches sans saut
+func _step_climb(delta: float) -> void:
+	if not is_on_floor():
+		return
+	var horiz := Vector3(velocity.x, 0.0, velocity.z)
+	if horiz.length_squared() < 0.01:
+		return
+	var test_step := horiz * delta
+	var col := KinematicCollision3D.new()
+	if not test_move(global_transform, test_step, col):
+		return # Aucun obstacle devant, avance libre
+
+	# Si l'obstacle a déjà une pente douce marchable (< 45°), move_and_slide s'en charge
+	if col.get_normal().y >= 0.7:
+		return
+
+	# L'obstacle est vertical (bordure de trottoir, marche, ralentisseur).
+	# 1. Vérifier que l'espace au-dessus est libre (hauteur max de marche)
+	var up := Vector3(0.0, MAX_STEP_HEIGHT, 0.0)
+	if test_move(global_transform, up):
+		return # Plafond bas ou obstacle trop haut
+
+	var up_xform: Transform3D = global_transform.translated(up)
+	# 2. Vérifier si on peut avancer au niveau supérieur au-dessus de la bordure
+	var forward := test_step.normalized() * maxf(test_step.length(), 0.08)
+	if test_move(up_xform, forward):
+		return # Obstacle haut (mur de maison, muret, véhicule, etc.)
+
+	# 3. Sonde vers le bas pour trouver la surface exacte du trottoir ou de la marche
+	var fwd_xform: Transform3D = up_xform.translated(forward)
+	var down_col := KinematicCollision3D.new()
+	var down := Vector3(0.0, -(MAX_STEP_HEIGHT + 0.08), 0.0)
+	if test_move(fwd_xform, down, down_col):
+		if down_col.get_normal().y >= 0.65:
+			var step_h: float = MAX_STEP_HEIGHT + down_col.get_travel().y
+			if step_h > 0.01 and step_h <= MAX_STEP_HEIGHT:
+				# Franchissement réussi : montée naturelle du corps avec compensation visuelle fluide
+				global_position.y += step_h + 0.005
+				global_position += forward
+				_step_smooth_y -= (step_h + 0.005)
 
 
 func _interact() -> void:
