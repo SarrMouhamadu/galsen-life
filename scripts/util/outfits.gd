@@ -47,16 +47,25 @@ const HAIR_COLORS := {
 	"henne": ["Henné", Color(1.5, 0.62, 0.4), 2000],
 	"blond": ["Blond décoloré", Color(2.4, 1.95, 1.2), 2500],
 }
-const PARTS := ["haut", "bas", "chapeau", "coiffure", "couleur"]
-const CATALOGS := [COLORS, COLORS, HATS, HAIRS, HAIR_COLORS]
-const PART_NAMES := ["Haut", "Bas", "Chapeau", "Coiffure", "Couleur des cheveux"]
-const MAX_LEN := 96
+## Teints de peau réalistes : id → [nom, teinte_peau, prix]
+const SKIN_TONES := {
+	"teint_ebene": ["Ébène royal", Color(0.24, 0.14, 0.10), 0],
+	"teint_chocolat": ["Chocolat chaud", Color(0.36, 0.22, 0.14), 0],
+	"teint_acajou": ["Acajou profond", Color(0.48, 0.28, 0.18), 0],
+	"teint_caramel": ["Caramel doré", Color(0.58, 0.35, 0.22), 0],
+	"teint_bronze": ["Bronze dakarois", Color(0.68, 0.42, 0.28), 0],
+	"teint_cafe_au_lait": ["Café au lait", Color(0.76, 0.52, 0.36), 0],
+}
+const PARTS := ["haut", "bas", "chapeau", "coiffure", "couleur", "teint"]
+const CATALOGS := [COLORS, COLORS, HATS, HAIRS, HAIR_COLORS, SKIN_TONES]
+const PART_NAMES := ["Haut", "Bas", "Chapeau", "Coiffure", "Couleur des cheveux", "Teint de peau"]
+const MAX_LEN := 128
 
 
-## [haut, bas, chapeau, coiffure, couleur] : les valeurs inconnues (ancienne version, tricherie) sont ignorées
+## [haut, bas, chapeau, coiffure, couleur, teint] : les valeurs inconnues (ancienne version, tricherie) sont ignorées
 static func parse(code: String) -> Array:
 	var p := code.left(MAX_LEN).split(",")
-	var out := ["", "", "", "", ""]
+	var out := ["", "", "", "", "", ""]
 	for i in mini(p.size(), PARTS.size()):
 		var v := p[i].strip_edges()
 		if CATALOGS[i].has(v):
@@ -93,4 +102,6 @@ static func item_name(item: String) -> String:
 			return "%s %s" % [PART_NAMES[i], name.to_lower()]
 		"couleur":
 			return "Cheveux " + name.to_lower()
+		"teint":
+			return "Teint " + name.to_lower()
 	return name

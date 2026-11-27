@@ -29,6 +29,7 @@ const APPS := [
 	["Défis (courses)", "races", Color("e76f51")],
 	["Lutte (écuries)", "lutte", Color("d62828")],
 	["Sapé (vêtements)", "sape", Color("9b5de5")],
+	["Studio 3D (Personnage)", "studio", Color("ffd166")],
 	["Sac (objets)", "bag", Color("e9c46a")],
 	["Profil (compétences)", "profile", Color("ef476f")],
 	["Oto (mes véhicules)", "cars", Color("457b9d")],
@@ -271,6 +272,8 @@ func _show(app: String) -> void:
 			_bonus_app()
 		"sape":
 			_sape_app()
+		"studio":
+			_open_studio_app()
 		"bag":
 			_bag_app()
 		"cars":
@@ -1129,6 +1132,7 @@ func _bonus_app() -> void:
 func _sape_app() -> void:
 	_title.text = "Sapé — Vêtements"
 	var cur := Outfits.parse(GameState.tenue)
+	_content.add_child(_button("🎨 OUVRIR LE STUDIO 3D COMPLET (Vue 360°)", func(): _show("studio"), Color("c9a227").darkened(0.2)))
 	_content.add_child(_note("Argent : %s. Achète une fois, porte-le quand tu veux. En ligne, tout le monde voit ta tenue." % GameState.fcfa(GameState.money)))
 	# Personnages d'une seule pièce : tenue et cheveux d'origine, seuls les chapeaux s'ajoutent
 	var single: bool = Net.online and Net.avatar in RealCharacter.AI_MODELS
@@ -1139,9 +1143,12 @@ func _sape_app() -> void:
 			continue
 		if i == 3:
 			_content.add_child(_label("Coiffeur", 18, Color("fdef42")))
+		elif i == 5:
+			_content.add_child(_label("Teint de peau", 18, Color("ffd166")))
 		var part: String = Outfits.PARTS[i]
 		_content.add_child(_label(Outfits.PART_NAMES[i], 15, Color.WHITE))
-		var none_text: String = ["Vêtement d'origine", "Vêtement d'origine", "Sans chapeau", "Coiffure d'origine", "Couleur d'origine"][i]
+		var none_texts := ["Vêtement d'origine", "Vêtement d'origine", "Sans chapeau", "Coiffure d'origine", "Couleur d'origine", "Teint d'origine"]
+		var none_text: String = none_texts[i] if i < none_texts.size() else "D'origine"
 		_content.add_child(_button(("✓ " if cur[i] == "" else "") + none_text, _wear.bind(i, ""), Color("495057")))
 		var catalog: Dictionary = Outfits.CATALOGS[i]
 		for id in catalog:
@@ -1194,6 +1201,14 @@ func _wear(i: int, id: String) -> void:
 	var keep := _scroll.scroll_vertical # on reste au même endroit de la liste
 	_show("sape")
 	_scroll.set_deferred("scroll_vertical", keep)
+
+
+func _open_studio_app() -> void:
+	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
+	var studio = CharacterStudioScript.new()
+	var root_node = get_tree().root
+	root_node.add_child(studio)
+	close()
 
 
 func _homes_app() -> void:

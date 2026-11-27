@@ -36,6 +36,7 @@ var _create: CheckBox
 var _status: Label
 var _connect_btn: Button
 var _offline_btn: Button
+var _studio_btn: Button
 var _offline_fallback_btn: Button
 var _theme_btn: Button
 var _compact_theme_btn: Button
@@ -422,6 +423,13 @@ func _build() -> void:
 	_offline_btn.pressed.connect(_start_offline)
 	actions_box.add_child(_offline_btn)
 
+	_studio_btn = Button.new()
+	_studio_btn.text = "🎨 STUDIO PERSONNAGE (Personnaliser)"
+	_studio_btn.custom_minimum_size = Vector2(0, 46)
+	_studio_btn.add_theme_font_size_override("font_size", 15)
+	_studio_btn.pressed.connect(_open_studio)
+	actions_box.add_child(_studio_btn)
+
 	_create.toggled.connect(func(pressed: bool):
 		if pressed:
 			_connect_btn.text = "🌐 CRÉER MON COMPTE"
@@ -656,6 +664,16 @@ func apply_theme() -> void:
 		_connect_btn.add_theme_stylebox_override("hover", connect_st)
 		_connect_btn.add_theme_color_override("font_color", Color.WHITE)
 
+	var studio_st := StyleBoxFlat.new()
+	studio_st.bg_color = Color("c9a227").darkened(0.2) if is_light_mode else Color(0.28, 0.22, 0.08, 0.95)
+	studio_st.border_color = Color("ffd166")
+	studio_st.set_border_width_all(2)
+	studio_st.set_corner_radius_all(8)
+	if _studio_btn and is_instance_valid(_studio_btn):
+		_studio_btn.add_theme_stylebox_override("normal", studio_st)
+		_studio_btn.add_theme_stylebox_override("hover", studio_st)
+		_studio_btn.add_theme_color_override("font_color", Color.WHITE)
+
 	# 5. Boutons de bascule de thème
 	var theme_st := StyleBoxFlat.new()
 	theme_st.bg_color = Color("e2e8f0") if is_light_mode else Color(0.18, 0.22, 0.29, 0.9)
@@ -883,3 +901,15 @@ func _start_offline() -> void:
 
 	Net.start_offline(chosen_p, chosen_av)
 	get_tree().change_scene_to_file(MAIN)
+
+
+func _open_studio() -> void:
+	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
+	var studio = CharacterStudioScript.new()
+	add_child(studio)
+	studio.closed.connect(func(saved: bool):
+		if saved:
+			var idx := Net.AVATARS.find(Net.avatar)
+			if idx != -1 and _avatar:
+				_avatar.select(idx)
+	)

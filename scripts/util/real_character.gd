@@ -44,6 +44,7 @@ var _current := ""
 var _anim_step := 0.0 ## niveau de détail : 0 = animé à chaque image, sinon intervalle (s) entre deux mises à jour
 var _anim_acc := 0.0
 var _clothes := [] ## [pièce, partie (haut / bas / chapeau / ""), [matériaux d'origine]] : tenues (set_outfit)
+var _skins := [] ## [pièce, [matériaux d'origine]] : maillages de peau pour l'application du teint
 var _hat: Node3D
 var _outfit := ""
 var _hairs := [] ## [pièce, [matériaux d'origine]] : cheveux du modèle (cachés par une coiffure du coiffeur)
@@ -244,6 +245,8 @@ func _style(model_name: String, tint_seed: int) -> void:
 			_clothes.append([mi, _cloth_part(mname), base])
 		elif kind == "hair":
 			_hairs.append([mi, base])
+		elif kind == "skin":
+			_skins.append([mi, base])
 
 
 ## Partie de la tenue que couvre un vêtement (chaussures : aucune)
@@ -288,6 +291,16 @@ func set_outfit(code: String) -> void:
 		_hat = _make_hat(Outfits.HATS[p[2]][1], Outfits.HATS[p[2]][2])
 	_set_hair(p[3], p[4])
 
+	# Teint de peau réaliste choisi
+	var skin_id: String = p[5] if p.size() > 5 else ""
+	var skin_tint: Color = Outfits.SKIN_TONES[skin_id][1] if (skin_id != "" and Outfits.SKIN_TONES.has(skin_id)) else Color.WHITE
+	for sk in _skins:
+		var mi: MeshInstance3D = sk[0]
+		for s in mi.mesh.get_surface_count():
+			var m = mi.mesh.surface_get_material(s)
+			if m is StandardMaterial3D:
+				mi.set_surface_override_material(s, _material_for(m, "skin", skin_tint, false))
+
 
 ## Coiffure du coiffeur (characters/hair, tools/make_hair.py) rattachée à notre squelette par le nom
 ## des os, et couleur des cheveux. Coiffure vide : cheveux d'origine du modèle.
@@ -308,6 +321,7 @@ func _set_hair(style: String, color_id: String) -> void:
 		var src := inst.find_child("coiffure", true, false) as MeshInstance3D
 		if src:
 			src.get_parent().remove_child(src)
+			src.owner = null
 			skeleton.add_child(src)
 			src.transform = Transform3D.IDENTITY
 			src.skeleton = NodePath("..")
@@ -412,7 +426,7 @@ func _material_for(m: StandardMaterial3D, kind: String, tint: Color, solid: bool
 		var sm := ShaderMaterial.new()
 		sm.shader = _skin_shader
 		sm.set_shader_parameter("albedo_tex", m.albedo_texture)
-		sm.set_shader_parameter("tint", m.albedo_color)
+		sm.set_shader_parameter("tint", m.albedo_color * tint)
 		sm.set_shader_parameter("normal_tex", _skin_nrm)
 		sm.set_shader_parameter("spec_tex", _skin_spec)
 		out = sm
@@ -424,12 +438,14 @@ func _material_for(m: StandardMaterial3D, kind: String, tint: Color, solid: bool
 		d.emission_enabled = false
 		match kind:
 			"eye":
-				# Œil humide : très brillant
-				# Globe de l'œil : la couche transparente de la cornée est découpée
+				# Œil humide et vivant : très brillant avec profondeur
 				d.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 				d.alpha_scissor_threshold = 0.5
-				d.roughness = 0.12
-				d.metallic_specular = 0.5
+				d.roughness = 0.08
+				d.metallic_specular = 0.85
+				d.clearcoat_enabled = true
+				d.clearcoat = 0.9
+				d.clearcoat_roughness = 0.06
 			"lash", "hair":
 				# Cartes de cheveux / cils : découpe nette, lissée par le MSAA, visibles des deux côtés
 				d.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR

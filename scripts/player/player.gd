@@ -305,6 +305,11 @@ func _interact() -> void:
 	if current_vehicle:
 		exit_vehicle()
 		return
+	# Studio de personnalisation ou atelier de stylisme
+	var st := _nearest_studio_spot()
+	if st:
+		open_character_studio()
+		return
 	# S'asseoir sur une chaise ou un banc à proximité
 	var ch := _nearest_chair()
 	if ch:
@@ -350,6 +355,9 @@ func get_interaction_hint() -> String:
 	var ch := _nearest_chair()
 	if ch:
 		return "S'asseoir"
+	var st := _nearest_studio_spot()
+	if st:
+		return "Entrer dans le Studio Personnage"
 	var v = _nearest_vehicle()
 	if v:
 		var stolen: bool = v.ai_enabled or v.route_active or v.vehicle_type in ["police", "army"]
@@ -381,6 +389,31 @@ func _nearest_chair(max_d := 1.8) -> Node3D:
 			min_d = d
 			closest = n
 	return closest
+
+
+func _nearest_studio_spot(max_d := 2.5) -> Node3D:
+	var closest: Node3D = null
+	var min_d := max_d
+	var spots := get_tree().get_nodes_in_group("studio_spots")
+	for s in spots:
+		if not s is Node3D or not is_instance_valid(s):
+			continue
+		var d: float = global_position.distance_to(s.global_position)
+		if d < min_d:
+			min_d = d
+			closest = s
+	return closest
+
+
+func open_character_studio() -> void:
+	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
+	var studio = CharacterStudioScript.new()
+	var root_node = get_tree().root
+	root_node.add_child(studio)
+	studio.closed.connect(func(_saved: bool):
+		if model and model.has_method("set_outfit"):
+			model.set_outfit(GameState.tenue)
+	)
 
 
 func enter_vehicle(v) -> void:

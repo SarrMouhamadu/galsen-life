@@ -1044,7 +1044,23 @@ func _make_tailor_workshop(parent: Node3D, pos: Vector3, yaw: float) -> void:
 	root.name = "TailorWorkshop"
 	root.position = pos
 	root.rotation.y = yaw
+	root.add_to_group("studio_spots")
+	root.set_meta("studio_name", "Salon & Studio de Mode de la Médina")
 	parent.add_child(root)
+
+	# Enseigne élégante Studio & Stylisme de Dakar
+	var sign_mesh := QuadMesh.new()
+	sign_mesh.size = Vector2(2.6, 0.5)
+	var sign_node := MeshInstance3D.new()
+	sign_node.mesh = sign_mesh
+	var sign_mat := StandardMaterial3D.new()
+	sign_mat.albedo_color = Color("1e293b")
+	sign_mat.emission_enabled = true
+	sign_mat.emission = Color("ffd166")
+	sign_mat.emission_energy_multiplier = 0.8
+	sign_node.material_override = sign_mat
+	sign_node.position = Vector3(0, 2.7, 0.9)
+	root.add_child(sign_node)
 
 	# Table de coupe en bois
 	Mk.box(root, Vector3(2.4, 0.85, 1.2), Vector3(0, 0.43, 0), Color("78350f"), true)
