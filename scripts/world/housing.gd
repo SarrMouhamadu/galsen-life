@@ -78,7 +78,18 @@ func _ready() -> void:
 	GameState.new_day.connect(_on_new_day)
 	Net.properties.changed.connect(_refresh)
 	Net.properties.claim_result.connect(_on_claim)
+	ensure_starter_home()
 	_refresh()
+
+
+## Garantit que chaque joueur possède une maison dès le début
+func ensure_starter_home() -> void:
+	var owned_list: Array = GameState.home.get("owned", [])
+	var rented_id: String = GameState.home.get("rented", "")
+	if owned_list.is_empty() and rented_id == "":
+		owned_list.append("studio_gueule_tapee")
+		GameState.home["owned"] = owned_list
+		GameState.save_game()
 
 
 # --- État -----------------------------------------------------------------------------
@@ -410,12 +421,77 @@ func bed_menu() -> void:
 		choices.append(["Faire une sieste (2 heures)", func(): _sleep(120.0)])
 	else:
 		choices.append(["Se reposer (en ligne, l'heure de la ville ne change pas)", func(): _sleep(0.0)])
-	if main.cooking:
-		choices.append(["Cuisiner (poisson, riz, huile du sac)", main.cooking.menu])
+	choices.append(["Cuisiner (Coin cuisine & garde-manger)", kitchen_menu])
+	choices.append(["Changer d'habits (Dressing & Studio 3D)", wardrobe_menu])
 	choices.append(["Sauvegarder la partie", func():
 		GameState.save_game()
 		GameState.notify.emit("Partie sauvegardée.")])
 	main.hud.show_choices("Ton lit", choices, func(): pass)
+
+
+func kitchen_menu() -> void:
+	if main.cooking:
+		main.cooking.menu()
+	else:
+		GameState.notify.emit("La cuisine est prête.")
+
+
+func wardrobe_menu() -> void:
+	var choices: Array = []
+	choices.append(["🎨 Ouvrir le Studio 3D complet (Look, coiffure, teint, habits)", _open_studio_in_house])
+	choices.append(["👑 Grand Boubou Bazin Royal (Fête & Vendredi)", func():
+		_apply_quick_outfit("bazin_or,bazin_or,kufi_bazin,court,noir,teint_ebene", "Grand Boubou en Bazin Royal enfilé !")
+	])
+	choices.append(["🦁 Tenue des Lions de la Teranga (Vert & Jaune)", func():
+		_apply_quick_outfit("vert,jaune,,court,noir,teint_ebene", "Maillot officiel des Lions de la Teranga enfilé !")
+	])
+	choices.append(["👕 Tenue Décontractée Dakar (T-shirt & Jean)", func():
+		_apply_quick_outfit("blanc,bleu,,degrade,noir,teint_caramel", "Tenue décontractée enfilée !")
+	])
+	choices.append(["🕌 Tunique Traditionnelle Blanche", func():
+		_apply_quick_outfit("blanc,blanc,kufi_blanc,court,gris,teint_ebene", "Tunique blanche traditionnelle enfilée !")
+	])
+	choices.append(["🎲 Tenue surprise stylée", _random_quick_outfit])
+	main.hud.show_choices("Dressing & Garde-robe de la maison", choices, func(): pass)
+
+
+func _open_studio_in_house() -> void:
+	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
+	if not CharacterStudioScript:
+		return
+	var studio = CharacterStudioScript.new(Net.avatar, false)
+	main.add_child(studio)
+	studio.closed.connect(func(saved: bool):
+		if saved:
+			if main.player and main.player.has_method("update_avatar"):
+				main.player.update_avatar(Net.avatar, GameState.tenue)
+			elif main.player and main.player.get("model") and main.player.model.has_method("set_outfit"):
+				main.player.model.set_outfit(GameState.tenue)
+			GameState.notify.emit("Tu as enfilé ta nouvelle tenue devant le miroir !")
+	)
+
+
+func _apply_quick_outfit(code: String, msg: String) -> void:
+	GameState.tenue = code
+	if main.player and main.player.has_method("update_avatar"):
+		main.player.update_avatar(Net.avatar, GameState.tenue)
+	elif main.player and main.player.get("model") and main.player.model.has_method("set_outfit"):
+		main.player.model.set_outfit(GameState.tenue)
+	GameState.save_game()
+	GameState.notify.emit(msg)
+
+
+func _random_quick_outfit() -> void:
+	var OutfitsScript = load("res://scripts/util/outfits.gd")
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var color_keys: Array = OutfitsScript.COLORS.keys()
+	var rand_top: String = str(color_keys[rng.randi() % color_keys.size()])
+	var rand_bot: String = str(color_keys[rng.randi() % color_keys.size()])
+	var hat_keys: Array = [""] + OutfitsScript.HATS.keys()
+	var rand_hat: String = str(hat_keys[rng.randi() % hat_keys.size()])
+	var code := "%s,%s,%s,court,noir,teint_ebene" % [rand_top, rand_bot, rand_hat]
+	_apply_quick_outfit(code, "Nouvelle tenue stylée enfilée !")
 
 
 func _sleep(minutes: float) -> void:

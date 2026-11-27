@@ -561,6 +561,8 @@ func apply_save(data: Dictionary) -> void:
 	employment = emp if emp is Dictionary else {}
 	var hm = data.get("home", {})
 	home = hm if hm is Dictionary else {}
+	if home.get("owned", []).is_empty() and home.get("rented", "") == "":
+		home = {"owned": ["studio_gueule_tapee"]}
 	var lt = data.get("lutte", {})
 	lutte = lt if lt is Dictionary else {}
 	var gg = data.get("garage", {})
@@ -622,7 +624,7 @@ func _reset_state() -> void:
 	bank_log = []
 	jail = 0.0
 	employment = {}
-	home = {}
+	home = {"owned": ["studio_gueule_tapee"]}
 	lutte = {}
 	garage = {}
 	day = 1

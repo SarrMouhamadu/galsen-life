@@ -14,6 +14,22 @@ const BASE := Vector3(0, -120, 0)
 const W_ROOM := 7.0 ## demi-largeur de la salle (ROOM.x / 2)
 ## Lit (comptoir des logements) quand il n'est pas au fond de la salle
 const BED_AT := {"home_loft": Vector3(5.2, 0, 1.0)}
+## Coin cuisine des logements
+const KITCHEN_AT := {
+	"home_chambre": Vector3(4.2, 0, 2.2),
+	"home_studio": Vector3(5.6, 0, 2.5),
+	"home_appartement": Vector3(5.6, 0, 2.5),
+	"home_villa": Vector3(5.6, 0, 2.5),
+	"home_loft": Vector3(-4.0, 0, 1.5)
+}
+## Dressing et armoire à vêtements des logements
+const WARDROBE_AT := {
+	"home_chambre": Vector3(5.2, 0, -1.0),
+	"home_studio": Vector3(-4.8, 0, -3.2),
+	"home_appartement": Vector3(-4.8, 0, -3.2),
+	"home_villa": Vector3(-4.8, 0, -3.2),
+	"home_loft": Vector3(4.8, 0, -2.5)
+}
 ## Loft (world/loft/loft.glb, tools/convert_interior.py) : décalage qui centre son rez-de-chaussée dans la salle
 const LOFT_OFFSET := Vector3(-3.04, 0, -1.07)
 const TITLES := {"banque": "Banque", "restaurant": "Restaurant", "station": "Boutique de la station",
@@ -84,6 +100,21 @@ func get_hint() -> String:
 		var o: Vector3 = _rooms[inside]
 		if p.global_position.distance_to(o + Vector3(0, 0, ROOM.z / 2.0 - 1.0)) < 2.2:
 			return "Sortir"
+		if inside.begins_with("home_"):
+			var bed_p: Vector3 = BED_AT.get(inside, Vector3(0, 0, -ROOM.z / 2.0 + 2.6))
+			if p.global_position.distance_to(o + bed_p) < 2.6:
+				return "Ton lit : dormir, te reposer"
+			var k_p: Vector3 = KITCHEN_AT.get(inside, Vector3(5.2, 0, 2.2))
+			if p.global_position.distance_to(o + k_p) < 2.6:
+				return "Cuisine : préparer de bons plats"
+			var w_p: Vector3 = WARDROBE_AT.get(inside, Vector3(-4.8, 0, -3.2))
+			if p.global_position.distance_to(o + w_p) < 2.6:
+				return "Dressing : changer d'habits"
+			if inside == "home_villa" and p.global_position.distance_to(o + Vector3(ROOM.x / 2.0 - 1.4, 0, -1.5)) < 2.2:
+				return "Coffre-fort"
+			if p.global_position.distance_to(o + bed_p) < 3.2:
+				return "Ton lit : dormir, te reposer"
+			return ""
 		if p.global_position.distance_to(o + BED_AT.get(inside, Vector3(0, 0, -ROOM.z / 2.0 + 2.6))) < 2.8:
 			return _counter_hint()
 		if inside == "home_villa" and p.global_position.distance_to(o + Vector3(ROOM.x / 2.0 - 1.4, 0, -1.5)) < 2.2:
@@ -108,6 +139,12 @@ func try_interact() -> bool:
 			GameState.notify.emit("La porte de la cellule est fermée : encore %d s (caution à l'accueil)." % int(ceil(GameState.jail)))
 		elif h == "Sortir":
 			_exit()
+		elif h.begins_with("Ton lit"):
+			main.housing.bed_menu()
+		elif h.begins_with("Cuisine"):
+			main.housing.kitchen_menu()
+		elif h.begins_with("Dressing"):
+			main.housing.wardrobe_menu()
 		elif h == "Coffre-fort":
 			main.housing.safe_menu()
 		else:
@@ -297,6 +334,7 @@ func _furnish_home(root: Node3D, kind: String, bz: float) -> void:
 	Mk.box(root, Vector3(bw + 0.1, 1.0, 0.08), Vector3(0, 0.5, bz - 0.78), Color("4a3728"))
 	Mk.box(root, Vector3(bw - 0.1, 0.22, 2.0), Vector3(0, 0.41, bz + 0.3), Color("f1f1f1"))
 	Mk.box(root, Vector3(bw - 0.06, 0.06, 1.3), Vector3(0, 0.54, bz + 0.68), [Color("e76f51"), Color("2a9d8f"), Color("264653"), Color("e9c46a")][kind.length() % 4])
+	Mk.label(root, "🛌 LIT • DORMIR", Vector3(0, 1.6, bz - 0.7), 20, Color("ffd166"))
 	for px in ([-0.45, 0.45] if big else [0.0]):
 		Mk.box(root, Vector3(0.6 if big else 0.55, 0.13, 0.36), Vector3(px, 0.6, bz - 0.45), Color("ffffff"))
 	for sx in ([-1.0, 1.0] if big else [1.0]):
@@ -317,10 +355,17 @@ func _furnish_home(root: Node3D, kind: String, bz: float) -> void:
 			Mk.cyl(root, 0.35, 0.35, 0.12, Vector3(3.0, 1.35, -2.0), Color("9ec1cf"), false, 12).rotation.x = PI / 2.0
 			Mk.cyl(root, 0.2, 0.16, 0.35, Vector3(4.5, 0.18, 2.5), Color("2a9d8f"), false, 10)
 			Furniture.place(root, "drawer_cabinet", Vector3(W - 0.35, 0, 1.0), -PI / 2.0)
-			# Coin repas : petite table ronde et chaises, théière sur le réchaud (ataya)
-			Furniture.place(root, "round_wooden_table_01", Vector3(3.0, 0, 2.2), 0.0, true, 0.6)
-			Furniture.place(root, "plastic_monobloc_chair_01", Vector3(3.0, 0, 3.1), PI)
-			Furniture.place(root, "plastic_monobloc_chair_01", Vector3(2.1, 0, 2.2), PI / 2.0)
+			# Coin repas & cuisine : plan de travail, réchaud, cuisinière
+			Mk.box(root, Vector3(1.4, 0.85, 0.7), Vector3(4.2, 0.425, 2.2), Color("e9ecef"), true)
+			Furniture.place(root, "electric_stove", Vector3(4.2, 0, 2.2), 0.0)
+			Mk.label(root, "🍳 CUISINE\nPréparer à manger", Vector3(4.2, 1.85, 2.2), 20, Color("ffaa5e"))
+			Furniture.place(root, "round_wooden_table_01", Vector3(2.6, 0, 2.2), 0.0, true, 0.6)
+			Furniture.place(root, "plastic_monobloc_chair_01", Vector3(2.6, 0, 3.1), PI)
+			Furniture.place(root, "plastic_monobloc_chair_01", Vector3(1.8, 0, 2.2), PI / 2.0)
+			# Dressing / Garde-robe avec grand miroir
+			Mk.box(root, Vector3(0.8, 2.1, 1.4), Vector3(W - 0.5, 1.05, -1.0), Color("4a3728"), true)
+			Mk.box(root, Vector3(0.04, 1.6, 0.8), Vector3(W - 0.92, 1.1, -1.0), Color("d8f3dc"), true)
+			Mk.label(root, "👗 DRESSING\nChanger d'habits", Vector3(W - 0.95, 2.2, -1.0), 20, Color("7cfc9a"))
 			Mk.cyl(root, 0.12, 0.14, 0.12, Vector3(-3.0, 0.06, 1.0), Color("495057"), false, 10)
 			Mk.cyl(root, 0.06, 0.08, 0.12, Vector3(-3.0, 0.18, 1.0), Color("adb5bd"), false, 10)
 			Furniture.picture(root, Vector3(-W + 0.11, 1.9, 2.5), PI / 2.0, 0.7)
@@ -336,12 +381,17 @@ func _furnish_home(root: Node3D, kind: String, bz: float) -> void:
 				Furniture.place(root, "ArmChair_01", Vector3(-4.0, 0, 2.3), PI)
 				Furniture.place(root, "ArmChair_01", Vector3(-4.0, 0, -2.3), 0.0)
 			Furniture.place(root, "drawer_cabinet", Vector3(-4.6, 0, -ROOM.z / 2.0 + 0.35))
+			# Dressing / Garde-robe avec grand miroir vertical
+			Mk.box(root, Vector3(1.6, 2.2, 0.7), Vector3(-4.8, 1.1, -ROOM.z / 2.0 + 0.45), Color("3d3128"), true)
+			Mk.box(root, Vector3(0.9, 1.7, 0.04), Vector3(-4.8, 1.15, -ROOM.z / 2.0 + 0.82), Color("d8f3dc"), true)
+			Mk.label(root, "👗 DRESSING\nChanger d'habits", Vector3(-4.8, 2.35, -ROOM.z / 2.0 + 0.85), 20, Color("7cfc9a"))
 			# Cuisine : réfrigérateur, plan de travail, cuisinière
 			Mk.box(root, Vector3(0.75, 1.8, 0.7), Vector3(W - 0.5, 0.9, 4.6), Color("f8f9fa"), true)
 			Mk.box(root, Vector3(0.04, 0.5, 0.02), Vector3(W - 0.88, 1.2, 4.35), Color("adb5bd"))
 			Mk.box(root, Vector3(0.65, 0.9, 1.8), Vector3(W - 0.45, 0.45, 2.9), Color("e9ecef"), true)
 			Mk.box(root, Vector3(0.7, 0.04, 1.85), Vector3(W - 0.45, 0.92, 2.9), Color("6c757d"))
 			Furniture.place(root, "electric_stove", Vector3(W - 0.4, 0, 1.55), -PI / 2.0)
+			Mk.label(root, "🍳 CUISINE\nPréparer à manger", Vector3(W - 0.8, 1.9, 2.5), 20, Color("ffaa5e"))
 			if big:
 				# Salle à manger : table en bois et quatre chaises
 				Furniture.place(root, "painted_wooden_table", Vector3(3.0, 0, 1.4))
@@ -394,6 +444,16 @@ func _build_loft(root: Node3D) -> void:
 		Mk.box(bed, Vector3(0.6, 0.13, 0.36), Vector3(px, 0.6, -0.45), Color("ffffff"))
 	for sx in [-1.0, 1.0]:
 		Furniture.place(bed, "ClassicNightstand_01", Vector3(sx * 1.5, 0, -0.55))
+	Mk.label(bed, "🛌 LIT • DORMIR", Vector3(0, 1.6, -0.7), 22, Color("ffd166"))
+
+	# Cuisine du loft : enseigne
+	Mk.label(root, "🍳 CUISINE\nPréparer à manger", Vector3(-4.0, 2.1, 1.5), 22, Color("ffaa5e"))
+
+	# Dressing / Garde-robe du loft
+	Mk.box(root, Vector3(1.6, 2.2, 0.7), Vector3(4.8, 1.1, -2.5), Color("3d3128"), true)
+	Mk.box(root, Vector3(0.9, 1.7, 0.04), Vector3(4.8, 1.15, -2.12), Color("d8f3dc"), true)
+	Mk.label(root, "👗 DRESSING\nChanger d'habits", Vector3(4.8, 2.35, -2.1), 22, Color("7cfc9a"))
+
 	# Lumière chaude du salon et de la mezzanine
 	for lp in [Vector3(-3.5, 3.2, 0.5), Vector3(3.0, 3.2, 0.5), Vector3(0.0, 3.2, 3.5), Vector3(-2.0, 6.5, -5.5)]:
 		var l := OmniLight3D.new()
