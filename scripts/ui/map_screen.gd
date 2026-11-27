@@ -2,9 +2,9 @@ extends Control
 ## Carte complète de Dakar (touche M ou bouton CARTE) : zoom, déplacement, lieux, arrêts de bus,
 ## entreprises. Un clic (ou un appui) pose le point GPS ; un second clic dessus l'efface.
 
-const LABELLED := ["Place de l'Indépendance", "Marché Sandaga", "Grande Mosquée", "Hôpital Principal", "Gare de Dakar",
+const LABELLED := ["Place de l'Indépendance", "Monument de la Renaissance Africaine", "Marché Sandaga", "Grande Mosquée", "Hôpital Principal", "Gare de Dakar",
 	"Marché Kermel", "Marché Tilène", "Gare routière Petersen", "Cathédrale", "Assemblée nationale",
-	"Porte du Millénaire", "Commissariat", "Caserne", "Plage de l'Anse Bernard", "Stade Iba Mar Diop",
+	"Porte du Millénaire", "Phare des Mamelles", "Commissariat", "Caserne", "Plage de l'Anse Bernard", "Stade Iba Mar Diop",
 	"Église Saint-Laurent", "Orange Money", "Wave", "Jumbo", "Jadida", "Chez Adja", "Café Touba", "Dibiterie", "Restaurant Maïga", "Garage Taxi"]
 
 var main

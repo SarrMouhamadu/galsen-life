@@ -125,6 +125,13 @@ func build_data_only() -> void:
 	if not places.has("Stade Iba Mar Diop"):
 		places["Stade Iba Mar Diop"] = Vector3(-730.0, 0.3, -532.0)
 		place_info["Stade Iba Mar Diop"] = [-730.0, -532.0, 0.0, 1.0, 0.0]
+	# Monuments et Infrastructures emblématiques de Dakar
+	if not places.has("Monument de la Renaissance Africaine"):
+		places["Monument de la Renaissance Africaine"] = Vector3(-1380.0, 16.0, -820.0)
+		place_info["Monument de la Renaissance Africaine"] = [-1380.0, -820.0, 0.0, 1.0, 0.0]
+	if not places.has("Phare des Mamelles"):
+		places["Phare des Mamelles"] = Vector3(-1440.0, 24.0, -980.0)
+		place_info["Phare des Mamelles"] = [-1440.0, -980.0, 0.0, 1.0, 0.0]
 
 
 func _load_graph(nodes: Array, edges: Array) -> void:
@@ -815,6 +822,21 @@ func _build_urban_decor() -> void:
 		# Coin thé Attaya sénégalais convivial
 		_make_attaya_spot(decor, p_indep + Vector3(16.0, 0, 18.0), 0.5)
 
+		# Grande Fontaine Centrale majestueuse de la Place de l'Indépendance
+		_make_independance_fountain(decor, p_indep)
+
+		# Grand Mât Officiel avec Drapeau National du Sénégal flottant
+		_make_national_flagpole(decor, p_indep + Vector3(-9.0, 0, 8.0), 18.0)
+
+		# Stèle Commémorative Officielle de l'Indépendance du 4 Avril 1960
+		_make_independance_monument_stele(decor, p_indep + Vector3(9.0, 0, -8.0), 0.5)
+
+		# Bancs publics en acajou (interactifs, assis) et lampadaires coloniaux doubles
+		_make_plaza_benches_and_lamps(decor, p_indep)
+
+		# Parterres floraux géométriques sénégalais (hibiscus et bougainvilliers)
+		_make_geometric_flowerbeds(decor, p_indep)
+
 	# 2. Hôpital Principal de Dakar
 	if places.has("Hôpital Principal"):
 		var p_hosp: Vector3 = places["Hôpital Principal"]
@@ -856,18 +878,20 @@ func _build_urban_decor() -> void:
 			_make_palm_tree(decor, p_gare + Vector3(-20.0 + k * 8.0, 0, 15.0), 8.0, 0.1 * k)
 		_make_zebra_crossing(decor, p_gare + Vector3(0, 0, 12.0), 0.0, 8.0)
 
-	# 6. Grande Mosquée de Dakar
+	# 6. Grande Mosquée de Dakar (Minaret andalou de 67m, croissant doré et architecture islamique)
 	if places.has("Grande Mosquée"):
 		var p_mosq: Vector3 = places["Grande Mosquée"]
 		for k in 4:
 			_make_palm_tree(decor, p_mosq + Vector3(-15.0 + k * 10.0, 0, 20.0), 7.6, 0.3)
 		_make_flamboyant_tree(decor, p_mosq + Vector3(22.0, 0, -16.0), 6.5)
+		_make_grande_mosquee_minaret(decor, p_mosq + Vector3(-8.0, 0, -6.0), 0.0)
 
-	# 7. Porte du Millénaire (Corniche)
+	# 7. Porte du Millénaire (Les 3 arches courbées géantes, statue du joueur de kora et esplanade)
 	if places.has("Porte du Millénaire"):
 		var p_porte: Vector3 = places["Porte du Millénaire"]
 		for k in 6:
 			_make_palm_tree(decor, p_porte + Vector3(-25.0 + k * 10.0, 0, 16.0), 8.4, 0.2)
+		_make_porte_du_millenaire(decor, p_porte, -PI * 0.25)
 
 	# 8. Stade Iba Mar Diop (Lutte sénégalaise & Sport populaire à la Médina)
 	if places.has("Stade Iba Mar Diop"):
@@ -876,7 +900,17 @@ func _build_urban_decor() -> void:
 		_make_baobab_tree(decor, p_stade + Vector3(-24.0, 0, -18.0), 8.2)
 		_make_zebra_crossing(decor, p_stade + Vector3(0, 0, 14.0), 0.0, 8.0)
 
-	# 9. Grands panneaux photo réels de Dakar (Maisons, Architecture, Corniche, Rues authentiques)
+	# 9. Monument de la Renaissance Africaine (Colosse de bronze de 52m, escalier et belvédère océan)
+	if places.has("Monument de la Renaissance Africaine"):
+		var p_ren: Vector3 = places["Monument de la Renaissance Africaine"]
+		_make_african_renaissance_monument(decor, p_ren, 0.35)
+
+	# 10. Phare des Mamelles (Phare historique blanc de 1864 avec faisceau rotatif sur l'océan)
+	if places.has("Phare des Mamelles"):
+		var p_phare: Vector3 = places["Phare des Mamelles"]
+		_make_phare_des_mamelles(decor, p_phare, 0.0)
+
+	# 11. Grands panneaux photo réels de Dakar (Maisons, Architecture, Corniche, Rues authentiques)
 	_build_photo_billboards(decor)
 
 
@@ -1216,4 +1250,714 @@ func _make_speed_bump(parent: Node3D, center: Vector3, road_yaw: float, width: f
 		var col: Color = Color("facc15") if k % 2 == 0 else Color("1e293b")
 		var m: Material = mat_yel if k % 2 == 0 else mat_dark
 		Mk.box(bump_root, Vector3(0.75, 0.07, 1.2), Vector3(x_pos, 0, 0), col, false, m)
+
+
+# --- Infrastructures & Monuments Emblématiques du Sénégal ----------------------------
+
+## Grande Fontaine centrale majestueuse de la Place de l'Indépendance
+func _make_independance_fountain(parent: Node3D, pos: Vector3) -> void:
+	var root := Node3D.new()
+	root.name = "IndependanceFountain"
+	root.position = pos
+	parent.add_child(root)
+
+	# Bassin extérieur circulaire en marbre blanc (diamètre 12m, margelle protectrice)
+	var mat_marble: Material = Mk.concrete_pbr(Color("f8fafc"))
+	var rim_segments := 24
+	var outer_radius := 6.0
+	for k in rim_segments:
+		var ang: float = k * TAU / float(rim_segments)
+		var p := Vector3(cos(ang) * outer_radius, 0.4, sin(ang) * outer_radius)
+		var rim_block := Mk.box(root, Vector3(outer_radius * (TAU / float(rim_segments)) * 1.05, 0.8, 0.6), p, Color("f1f5f9"), true, mat_marble)
+		rim_block.rotation.y = -ang + PI * 0.5
+
+	# Dalle de fond du bassin
+	Mk.cyl(root, outer_radius - 0.2, outer_radius - 0.2, 0.2, Vector3(0, 0.1, 0), Color("94a3b8"), true, 20)
+
+	# Nappe d'eau turquoise translucide avec reflets
+	var mat_water := StandardMaterial3D.new()
+	mat_water.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat_water.albedo_color = Color(0.12, 0.68, 0.82, 0.75)
+	mat_water.roughness = 0.04
+	mat_water.metallic_specular = 0.95
+	var water_mi := Mk.cyl(root, outer_radius - 0.35, outer_radius - 0.35, 0.05, Vector3(0, 0.65, 0), Color.WHITE, false, 20)
+	water_mi.material_override = mat_water
+
+	# Bassin intermédiaire surélevé (diamètre 6m, hauteur 1.4m)
+	Mk.cyl(root, 3.0, 3.2, 0.7, Vector3(0, 0.75, 0), Color("e2e8f0"), true, 16)
+	var water_mid := Mk.cyl(root, 2.7, 2.7, 0.05, Vector3(0, 1.15, 0), Color.WHITE, false, 16)
+	water_mid.material_override = mat_water
+
+	# Piédestal central orné et coupe supérieure en bronze sculpté
+	Mk.cyl(root, 0.9, 1.2, 1.6, Vector3(0, 1.9, 0), Color("cbd5e1"), true, 12)
+	Mk.cyl(root, 1.6, 0.5, 0.5, Vector3(0, 2.9, 0), Color("78350f"), true, 12)
+
+	# Jets d'eau verticaux et arqués
+	# 1. Grand geyser central vertical montant à 5.2 mètres
+	var mat_jet := StandardMaterial3D.new()
+	mat_jet.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat_jet.albedo_color = Color(0.9, 0.98, 1.0, 0.55)
+	mat_jet.roughness = 0.1
+	mat_jet.emission_enabled = true
+	mat_jet.emission = Color(0.6, 0.9, 1.0)
+	mat_jet.emission_energy_multiplier = 0.4
+	var jet_center := Mk.cyl(root, 0.18, 0.35, 3.2, Vector3(0, 4.7, 0), Color.WHITE, false, 8)
+	jet_center.material_override = mat_jet
+	var jet_top := Mk.cyl(root, 0.04, 0.22, 1.6, Vector3(0, 6.7, 0), Color.WHITE, false, 8)
+	jet_top.material_override = mat_jet
+
+	# 2. Huit jets d'eau périphériques inclinés vers le centre
+	for k in 8:
+		var ang: float = k * TAU / 8.0
+		var j_pos := Vector3(cos(ang) * 4.2, 0.7, sin(ang) * 4.2)
+		var jet_sub := Mk.cyl(root, 0.06, 0.12, 1.6, j_pos + Vector3(0, 0.7, 0), Color.WHITE, false, 6)
+		jet_sub.material_override = mat_jet
+		jet_sub.rotation.x = sin(ang) * 0.35
+		jet_sub.rotation.z = -cos(ang) * 0.35
+
+	# Éclairage subaquatique féerique nocturne
+	var light := OmniLight3D.new()
+	light.light_color = Color("38bdf8")
+	light.light_energy = 2.4
+	light.omni_range = 14.0
+	light.position = Vector3(0, 1.2, 0)
+	root.add_child(light)
+
+	# Panneau nominatif de la fontaine
+	Mk.label(root, "FONTAINE DE LA PLACE DE L'INDÉPENDANCE", Vector3(0, 3.4, 0), 32, Color("38bdf8"))
+
+
+## Grand Mât officiel avec Drapeau National du Sénégal flottant au vent
+func _make_national_flagpole(parent: Node3D, pos: Vector3, h: float = 18.0) -> void:
+	var root := Node3D.new()
+	root.name = "NationalFlagpole"
+	root.position = pos
+	parent.add_child(root)
+
+	# Base monumentale en granit poli biseauté
+	Mk.box(root, Vector3(2.4, 0.4, 2.4), Vector3(0, 0.2, 0), Color("0f172a"), true)
+	Mk.box(root, Vector3(1.8, 0.4, 1.8), Vector3(0, 0.6, 0), Color("1e293b"), true)
+	# Anneau de fixation en bronze doré
+	Mk.cyl(root, 0.45, 0.55, 0.4, Vector3(0, 1.0, 0), Color("f59e0b"), true, 10)
+
+	# Mât télescopique en acier chromé inoxydable brillant
+	var mat_chrome := StandardMaterial3D.new()
+	mat_chrome.albedo_color = Color("f1f5f9")
+	mat_chrome.metallic = 0.95
+	mat_chrome.roughness = 0.12
+	mat_chrome.clearcoat_enabled = true
+	mat_chrome.clearcoat = 0.9
+	var mast := Mk.cyl(root, 0.10, 0.22, h, Vector3(0, 1.0 + h * 0.5, 0), Color.WHITE, true, 10)
+	mast.material_override = mat_chrome
+
+	# Flèche supérieure : Sphère dorée (pommeau du drapeau national)
+	var mat_gold := StandardMaterial3D.new()
+	mat_gold.albedo_color = Color("fbbf24")
+	mat_gold.metallic = 0.9
+	mat_gold.roughness = 0.15
+	var finial := Mk.sphere(root, 0.32, Vector3(0, 1.0 + h + 0.32, 0), Color("fbbf24"))
+	finial.material_override = mat_gold
+
+	# Drapeau National du Sénégal flottant au vent (Vert, Jaune avec Étoile Verte, Rouge)
+	var flag_tex: Texture2D = Mk.load_texture("res://textures/world/flag_senegal.svg")
+	var flag_w := 3.8
+	var flag_h := 2.4
+	var flag_mi := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(flag_w, flag_h)
+	flag_mi.mesh = quad
+	var flag_mat := StandardMaterial3D.new()
+	flag_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	if flag_tex != null:
+		flag_mat.albedo_texture = flag_tex
+	else:
+		flag_mat.albedo_color = Color("15803d")
+	flag_mat.roughness = 0.75
+	flag_mat.rim_enabled = true
+	flag_mat.rim = 0.3
+	flag_mat.rim_tint = 0.4
+	flag_mi.material_override = flag_mat
+	# Positionné au sommet du mât, orienté vers la brise d'alizé (flottement vers l'Est)
+	flag_mi.position = Vector3(flag_w * 0.5 + 0.12, 1.0 + h - flag_h * 0.5 - 0.2, 0)
+	flag_mi.rotation.y = -0.15
+	flag_mi.rotation.z = 0.05
+	root.add_child(flag_mi)
+
+	# Projecteur architectural nocturne illuminant le drapeau national
+	var spot := SpotLight3D.new()
+	spot.light_color = Color("fffbeb")
+	spot.light_energy = 3.5
+	spot.spot_range = h + 6.0
+	spot.spot_angle = 18.0
+	spot.position = Vector3(0.5, 0.8, 0.5)
+	spot.rotation.x = -PI * 0.46
+	root.add_child(spot)
+
+	Mk.label(root, "DRAPEAU NATIONAL DU SÉNÉGAL", Vector3(0, 2.2, 0), 28, Color("fbbf24"))
+
+
+## Stèle Commémorative Officielle de l'Indépendance du Sénégal (4 Avril 1960)
+func _make_independance_monument_stele(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "IndependanceStele"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Socle double en granit noir poli
+	var mat_granite := StandardMaterial3D.new()
+	mat_granite.albedo_color = Color("0f172a")
+	mat_granite.roughness = 0.25
+	mat_granite.metallic = 0.2
+	var b1 := Mk.box(root, Vector3(3.2, 0.45, 2.2), Vector3(0, 0.225, 0), Color.WHITE, true, mat_granite)
+	var b2 := Mk.box(root, Vector3(2.6, 0.45, 1.8), Vector3(0, 0.675, 0), Color.WHITE, true, mat_granite)
+
+	# Stèle verticale monolithique sculptée
+	var stele := Mk.box(root, Vector3(1.6, 4.2, 0.7), Vector3(0, 3.0, 0), Color.WHITE, true, mat_granite)
+
+	# Étoile nationale à 5 branches dorée en relief
+	var star := Mk.cyl(root, 0.35, 0.35, 0.08, Vector3(0, 4.4, 0.38), Color("fbbf24"), false, 5)
+	star.rotation.x = PI * 0.5
+
+	# Gravure officielle commémorative en lettres d'or
+	var l_rep := Label3D.new()
+	l_rep.text = "RÉPUBLIQUE DU SÉNÉGAL"
+	l_rep.font_size = 30
+	l_rep.outline_size = 8
+	l_rep.modulate = Color("fbbf24")
+	l_rep.position = Vector3(0, 3.8, 0.38)
+	root.add_child(l_rep)
+
+	var l_date := Label3D.new()
+	l_date.text = "4 AVRIL 1960 • INDÉPENDANCE"
+	l_date.font_size = 26
+	l_date.outline_size = 6
+	l_date.modulate = Color("ffffff")
+	l_date.position = Vector3(0, 3.2, 0.38)
+	root.add_child(l_date)
+
+	var l_devise := Label3D.new()
+	l_devise.text = "« UN PEUPLE • UN BUT • UNE FOI »"
+	l_devise.font_size = 24
+	l_devise.outline_size = 6
+	l_devise.modulate = Color("f59e0b")
+	l_devise.position = Vector3(0, 2.6, 0.38)
+	root.add_child(l_devise)
+
+	# Deux urnes cérémonielles en bronze flanquant la stèle
+	for sx in [-1.5, 1.5]:
+		Mk.cyl(root, 0.28, 0.18, 0.65, Vector3(sx, 0.75, 0), Color("b45309"), true, 8)
+		Mk.sphere(root, 0.22, Vector3(sx, 1.15, 0), Color("f59e0b"))
+
+
+## Bancs publics de repos en acajou et lampadaires coloniaux doubles de la Place
+func _make_plaza_benches_and_lamps(parent: Node3D, center: Vector3) -> void:
+	# 8 bancs publics disposés en cercle de détente
+	var bench_radius := 16.5
+	for k in 8:
+		var ang: float = k * TAU / 8.0 + (PI / 8.0)
+		var b_pos := center + Vector3(cos(ang) * bench_radius, 0, sin(ang) * bench_radius)
+		_make_plaza_bench(parent, b_pos, -ang + PI * 0.5)
+
+	# 4 lampadaires coloniaux doubles de prestige aux 4 diagonales
+	var lamp_radius := 19.5
+	for k in 4:
+		var ang: float = k * TAU / 4.0 + (PI / 4.0)
+		var l_pos := center + Vector3(cos(ang) * lamp_radius, 0, sin(ang) * lamp_radius)
+		_make_colonial_dual_lamp(parent, l_pos)
+
+
+func _make_plaza_bench(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var bench := Node3D.new()
+	bench.name = "PlazaBench"
+	bench.position = pos
+	bench.rotation.y = yaw
+	# Ajout au groupe 'chairs' pour que le joueur puisse s'asseoir dessus avec réalisme !
+	bench.add_to_group("chairs")
+	parent.add_child(bench)
+
+	# Piètements en fonte verte travaillée
+	var mat_iron := StandardMaterial3D.new()
+	mat_iron.albedo_color = Color("14532d")
+	mat_iron.roughness = 0.4
+	mat_iron.metallic = 0.7
+	for sx in [-0.9, 0.9]:
+		Mk.box(bench, Vector3(0.08, 0.45, 0.6), Vector3(sx, 0.225, 0), Color.WHITE, true, mat_iron)
+		Mk.box(bench, Vector3(0.08, 0.5, 0.08), Vector3(sx, 0.65, -0.26), Color.WHITE, true, mat_iron)
+
+	# Lattes en bois d'acajou verni chaud
+	var mat_wood := StandardMaterial3D.new()
+	mat_wood.albedo_color = Color("78350f")
+	mat_wood.roughness = 0.35
+	mat_wood.clearcoat_enabled = true
+	mat_wood.clearcoat = 0.5
+	# Assise (3 lattes)
+	for i in 3:
+		Mk.box(bench, Vector3(2.0, 0.04, 0.16), Vector3(0, 0.46, -0.18 + i * 0.18), Color.WHITE, false, mat_wood)
+	# Dossier (2 lattes)
+	for i in 2:
+		Mk.box(bench, Vector3(2.0, 0.16, 0.04), Vector3(0, 0.62 + i * 0.18, -0.28), Color.WHITE, false, mat_wood)
+
+
+func _make_colonial_dual_lamp(parent: Node3D, pos: Vector3) -> void:
+	var lamp := Node3D.new()
+	lamp.name = "ColonialLamp"
+	lamp.position = pos
+	parent.add_child(lamp)
+
+	var mat_pole := StandardMaterial3D.new()
+	mat_pole.albedo_color = Color("1e293b")
+	mat_pole.metallic = 0.8
+	mat_pole.roughness = 0.3
+
+	# Fût cannelé en fonte et socle ouvragé
+	Mk.cyl(lamp, 0.3, 0.4, 0.6, Vector3(0, 0.3, 0), Color.WHITE, true, 8)
+	var pole := Mk.cyl(lamp, 0.1, 0.16, 4.6, Vector3(0, 2.9, 0), Color.WHITE, true, 8)
+	pole.material_override = mat_pole
+
+	# Traverse cintrée à double volute
+	Mk.box(lamp, Vector3(1.6, 0.1, 0.1), Vector3(0, 4.8, 0), Color.WHITE, false, mat_pole)
+
+	# Deux lanternes hexagonales pendantes avec ampoules chaudes
+	var mat_glass := StandardMaterial3D.new()
+	mat_glass.albedo_color = Color(1.0, 0.9, 0.6, 0.6)
+	mat_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat_glass.roughness = 0.1
+	mat_glass.emission_enabled = true
+	mat_glass.emission = Color("fde047")
+	mat_glass.emission_energy_multiplier = 0.8
+
+	for sx in [-0.7, 0.7]:
+		var lant := Mk.cyl(lamp, 0.24, 0.16, 0.45, Vector3(sx, 4.5, 0), Color.WHITE, false, 6)
+		lant.material_override = mat_glass
+		Mk.cyl(lamp, 0.02, 0.26, 0.15, Vector3(sx, 4.8, 0), Color("1e293b"), false, 6)
+
+	# Lumière chaleureuse des lampadaires
+	var omni := OmniLight3D.new()
+	omni.light_color = Color("fef08a")
+	omni.light_energy = 1.9
+	omni.omni_range = 13.0
+	omni.position = Vector3(0, 4.4, 0)
+	lamp.add_child(omni)
+
+
+## Parterres floraux géométriques sénégalais (Hibiscus et Bougainvilliers)
+func _make_geometric_flowerbeds(parent: Node3D, center: Vector3) -> void:
+	var mat_soil: Material = Mk.grass(Color("166534"), 0.85)
+
+	var offsets: Array[Vector3] = [
+		Vector3(14.0, 0, 14.0),
+		Vector3(-14.0, 0, 14.0),
+		Vector3(14.0, 0, -14.0),
+		Vector3(-14.0, 0, -14.0),
+	]
+
+	for i in offsets.size():
+		var fb_pos: Vector3 = center + offsets[i]
+		var fb := Node3D.new()
+		fb.name = "FlowerBed_%d" % i
+		fb.position = fb_pos
+		parent.add_child(fb)
+
+		# Bordure en béton blanc
+		Mk.cyl(fb, 3.4, 3.5, 0.25, Vector3(0, 0.12, 0), Color.WHITE, true, 16)
+		# Terreau et gazon
+		var grass_bed := Mk.cyl(fb, 3.2, 3.2, 0.05, Vector3(0, 0.22, 0), Color.WHITE, false, 16)
+		grass_bed.material_override = mat_soil
+
+		# Arbustes à fleurs tropicales du Sénégal (Hibiscus rouges et Bougainvilliers)
+		var flower_cols := [Color("dc2626"), Color("db2777"), Color("ea580c"), Color("eab308")]
+		for k in 6:
+			var ang: float = k * TAU / 6.0
+			var b_pos := Vector3(cos(ang) * 1.8, 0.55, sin(ang) * 1.8)
+			# Feuillage vert
+			Mk.sphere(fb, 0.5, b_pos, Color("15803d"), Vector3(1.1, 0.9, 1.1))
+			# Fleurs éclatantes
+			Mk.sphere(fb, 0.22, b_pos + Vector3(0, 0.25, 0), flower_cols[k % flower_cols.size()])
+		# Buisson central fleuri
+		Mk.sphere(fb, 0.7, Vector3(0, 0.65, 0), Color("166534"))
+		Mk.sphere(fb, 0.35, Vector3(0, 1.05, 0), Color("dc2626"))
+
+
+## Monument de la Renaissance Africaine (Colosse de 52m de bronze sur la colline de Ouakam)
+func _make_african_renaissance_monument(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "MonumentRenaissanceAfricaine"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# 1. Colline volcanique étagée en basalte sombre (plateforme rocheuse des Mamelles)
+	var mat_volcano := StandardMaterial3D.new()
+	mat_volcano.albedo_color = Color("292524")
+	mat_volcano.roughness = 0.9
+	mat_volcano.uv1_triplanar = true
+
+	# Terrasses rocheuses étagées
+	var t1 := Mk.cyl(root, 36.0, 44.0, 5.0, Vector3(0, 2.5, 0), Color.WHITE, true, 16)
+	t1.material_override = mat_volcano
+	var t2 := Mk.cyl(root, 28.0, 36.0, 5.0, Vector3(0, 7.5, 0), Color.WHITE, true, 16)
+	t2.material_override = mat_volcano
+	var t3 := Mk.cyl(root, 22.0, 28.0, 5.0, Vector3(0, 12.5, 0), Color.WHITE, true, 16)
+	t3.material_override = mat_volcano
+
+	# 2. Grand escalier monumental de 198 marches
+	var mat_stairs: Material = Mk.concrete_pbr(Color("d6d3d1"))
+	for step in 12:
+		var sy: float = step * 1.25
+		var sz: float = 38.0 - step * 2.5
+		Mk.box(root, Vector3(14.0, 1.3, 3.2), Vector3(0, sy + 0.65, sz), Color.WHITE, true, mat_stairs)
+		# Garde-corps en pierre sur les côtés de l'escalier
+		Mk.box(root, Vector3(0.5, 1.0, 3.2), Vector3(-7.25, sy + 1.8, sz), Color("57534e"), true)
+		Mk.box(root, Vector3(0.5, 1.0, 3.2), Vector3(7.25, sy + 1.8, sz), Color("57534e"), true)
+
+	# 3. Grande Esplanade / Belvédère sommital avec vue panoramique sur l'océan
+	Mk.cyl(root, 20.0, 22.0, 1.2, Vector3(0, 15.6, 0), Color("e7e5e4"), true, 24)
+	# Balustrade panoramique circulaire
+	for k in 24:
+		var ang: float = k * TAU / 24.0
+		var p_b := Vector3(cos(ang) * 19.5, 16.7, sin(ang) * 19.5)
+		var post := Mk.box(root, Vector3(0.35, 1.1, 0.35), p_b, Color("44403c"), true)
+		post.rotation.y = -ang
+
+	# 4. Le Colosse de Bronze Majestueux (52 mètres de hauteur !)
+	var mat_bronze := StandardMaterial3D.new()
+	mat_bronze.albedo_color = Color("78350f")
+	mat_bronze.metallic = 0.88
+	mat_bronze.roughness = 0.32
+	mat_bronze.metallic_specular = 0.75
+
+	var statue_base := Vector3(0, 16.2, 0)
+
+	# Socle rocheux sculpté d'où jaillit la famille africaine
+	var pedestal := Mk.cyl(root, 7.5, 9.5, 7.0, statue_base + Vector3(0, 3.5, 0), Color.WHITE, true, 12)
+	pedestal.material_override = mat_volcano
+
+	# L'Homme Africain (Le père athlétique jaillissant du volcan vers l'avenir)
+	# Jambes puissantes
+	var l_leg := Mk.cyl(root, 1.4, 1.8, 11.0, statue_base + Vector3(-2.2, 12.5, 1.2), Color.WHITE, true, 8)
+	l_leg.material_override = mat_bronze
+	l_leg.rotation.x = -0.15
+	var r_leg := Mk.cyl(root, 1.4, 1.8, 11.0, statue_base + Vector3(2.2, 12.5, -1.2), Color.WHITE, true, 8)
+	r_leg.material_override = mat_bronze
+	r_leg.rotation.x = 0.15
+
+	# Torse et buste colossal musclé
+	var torso := Mk.box(root, Vector3(6.5, 12.0, 4.2), statue_base + Vector3(0, 23.5, 0), Color.WHITE, true, mat_bronze)
+	torso.rotation.x = -0.08
+	# Épaules et cou
+	Mk.box(root, Vector3(8.5, 3.5, 4.5), statue_base + Vector3(0, 29.5, -0.4), Color.WHITE, true, mat_bronze)
+	var neck := Mk.cyl(root, 1.3, 1.5, 3.0, statue_base + Vector3(0, 32.0, -0.4), Color.WHITE, true, 8)
+	neck.material_override = mat_bronze
+
+	# Tête altière du père regardant vers l'horizon
+	var head := Mk.sphere(root, 2.2, statue_base + Vector3(0, 34.5, -0.4), Color.WHITE, Vector3(0.9, 1.2, 1.0))
+	head.material_override = mat_bronze
+
+	# Bras gauche portant triomphalement l'enfant vers les cieux
+	var l_arm := Mk.cyl(root, 1.0, 1.3, 9.5, statue_base + Vector3(-4.8, 33.0, 0), Color.WHITE, true, 8)
+	l_arm.material_override = mat_bronze
+	l_arm.rotation.z = -0.45
+
+	# L'Enfant porté sur l'épaule gauche
+	var child_pos := statue_base + Vector3(-5.8, 38.0, 0.2)
+	Mk.box(root, Vector3(2.0, 4.2, 1.6), child_pos, Color.WHITE, true, mat_bronze)
+	var child_head := Mk.sphere(root, 1.1, child_pos + Vector3(0, 3.0, 0), Color.WHITE)
+	child_head.material_override = mat_bronze
+	# Bras de l'enfant tendu vers l'Ouest (indiquant l'océan et l'avenir)
+	var point_arm := Mk.cyl(root, 0.35, 0.45, 4.8, child_pos + Vector3(-1.8, 3.2, 2.0), Color.WHITE, false, 6)
+	point_arm.material_override = mat_bronze
+	point_arm.rotation.x = PI * 0.45
+	point_arm.rotation.y = -0.35
+
+	# La Femme Africaine (La mère drapée se tenant gracieusement aux côtés de son époux)
+	var mat_veil := StandardMaterial3D.new()
+	mat_veil.albedo_color = Color("92400e")
+	mat_veil.metallic = 0.82
+	mat_veil.roughness = 0.4
+	mat_veil.rim_enabled = true
+	mat_veil.rim = 0.5
+
+	var woman_pos := statue_base + Vector3(4.8, 16.0, 1.8)
+	var w_torso := Mk.box(root, Vector3(3.6, 8.5, 2.8), woman_pos + Vector3(0, 4.25, 0), Color.WHITE, true, mat_bronze)
+	w_torso.rotation.z = 0.15
+	var w_head := Mk.sphere(root, 1.5, woman_pos + Vector3(0.6, 9.5, 0), Color.WHITE, Vector3(0.9, 1.1, 1.0))
+	w_head.material_override = mat_bronze
+	# Grand voile flottant en bronze sculpté dans le vent marin
+	var veil := Mk.box(root, Vector3(4.2, 12.0, 0.6), woman_pos + Vector3(2.6, 3.5, -1.8), Color.WHITE, false, mat_veil)
+	veil.rotation.y = 0.35
+	veil.rotation.x = -0.2
+
+	# 5. Grande Stèle commémorative au bas de l'escalier avec la photo réelle
+	var plaque_pos := Vector3(0, 0.5, 46.0)
+	var plaque_w := 7.0
+	var plaque_h := 4.2
+	Mk.box(root, Vector3(plaque_w + 0.6, plaque_h + 0.8, 0.4), plaque_pos + Vector3(0, plaque_h * 0.5, 0), Color("1c1917"), true)
+	var tex_photo: Texture2D = Mk.load_texture("res://textures/world/renaissance_monument.jpg")
+	if tex_photo != null:
+		var mat_p := StandardMaterial3D.new()
+		mat_p.albedo_texture = tex_photo
+		mat_p.roughness = 0.35
+		mat_p.metallic_specular = 0.6
+		Mk.box(root, Vector3(plaque_w, plaque_h, 0.08), plaque_pos + Vector3(0, plaque_h * 0.5, 0.22), Color.WHITE, false, mat_p)
+
+	# Inscription monumentale
+	var l1 := Label3D.new()
+	l1.text = "MONUMENT DE LA RENAISSANCE AFRICAINE • DAKAR"
+	l1.font_size = 36
+	l1.outline_size = 10
+	l1.modulate = Color("f59e0b")
+	l1.position = plaque_pos + Vector3(0, plaque_h + 0.85, 0.25)
+	root.add_child(l1)
+
+	var l2 := Label3D.new()
+	l2.text = "Plus haut monument d'Afrique (52 Mètres de Bronze) • Ouakam, Dakar"
+	l2.font_size = 24
+	l2.outline_size = 6
+	l2.modulate = Color("fef08a")
+	l2.position = plaque_pos + Vector3(0, plaque_h + 0.45, 0.25)
+	root.add_child(l2)
+
+	# 6. Faisceaux lumineux nocturnes (Projecteurs haute puissance vers le ciel)
+	var spot_angles: Array[float] = [-0.6, 0.6, -1.8, 1.8]
+	for sa: float in spot_angles:
+		var spot := SpotLight3D.new()
+		spot.light_color = Color("fde047")
+		spot.light_energy = 5.0
+		spot.spot_range = 95.0
+		spot.spot_angle = 24.0
+		spot.position = statue_base + Vector3(sin(sa) * 16.0, 1.5, cos(sa) * 16.0)
+		spot.rotation.x = -PI * 0.38
+		spot.rotation.y = sa
+		root.add_child(spot)
+
+	Mk.label(root, "MONUMENT DE LA RENAISSANCE AFRICAINE (52m)", statue_base + Vector3(0, 52.0, 0), 48, Color("fbbf24"))
+
+
+## Porte du Troisième Millénaire (Corniche Ouest de Dakar)
+func _make_porte_du_millenaire(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "PorteDuMillenaire"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# 1. Grande esplanade côtière pavée en pierre claire
+	var mat_esplanade: Material = Mk.concrete_pbr(Color("f8fafc"))
+	Mk.box(root, Vector3(32.0, 0.5, 24.0), Vector3(0, 0.25, 0), Color.WHITE, true, mat_esplanade)
+	# Balustrade maritime le long de la Corniche
+	Mk.box(root, Vector3(32.0, 1.0, 0.3), Vector3(0, 1.0, -11.8), Color("334155"), true)
+
+	# 2. Les Trois Arches / Piliers Courbés Monumentaux (16 mètres de haut)
+	var mat_pylons := StandardMaterial3D.new()
+	mat_pylons.albedo_color = Color("ffffff")
+	mat_pylons.roughness = 0.25
+	mat_pylons.metallic = 0.05
+	mat_pylons.clearcoat_enabled = true
+	mat_pylons.clearcoat = 0.6
+
+	# Arche 1 (Centrale, la plus haute, 16.5m)
+	var pylon_c1 := Mk.box(root, Vector3(1.4, 16.5, 1.2), Vector3(-4.0, 8.25, 0), Color.WHITE, true, mat_pylons)
+	pylon_c1.rotation.z = -0.08
+	var pylon_c2 := Mk.box(root, Vector3(1.4, 16.5, 1.2), Vector3(4.0, 8.25, 0), Color.WHITE, true, mat_pylons)
+	pylon_c2.rotation.z = 0.08
+	# Lintel courbe au sommet
+	Mk.box(root, Vector3(9.2, 1.2, 1.4), Vector3(0, 16.2, 0), Color.WHITE, true, mat_pylons)
+
+	# Arche 2 (Avant, 13.5m)
+	var pylon_f1 := Mk.box(root, Vector3(1.2, 13.5, 1.0), Vector3(-7.5, 6.75, 4.0), Color.WHITE, true, mat_pylons)
+	pylon_f1.rotation.z = -0.12
+	var pylon_f2 := Mk.box(root, Vector3(1.2, 13.5, 1.0), Vector3(7.5, 6.75, 4.0), Color.WHITE, true, mat_pylons)
+	pylon_f2.rotation.z = 0.12
+	Mk.box(root, Vector3(14.0, 1.0, 1.2), Vector3(0, 13.2, 4.0), Color.WHITE, true, mat_pylons)
+
+	# Arche 3 (Arrière, 11.0m)
+	var pylon_b1 := Mk.box(root, Vector3(1.0, 11.0, 0.9), Vector3(-10.0, 5.5, -4.0), Color.WHITE, true, mat_pylons)
+	pylon_b1.rotation.z = -0.15
+	var pylon_b2 := Mk.box(root, Vector3(1.0, 11.0, 0.9), Vector3(10.0, 5.5, -4.0), Color.WHITE, true, mat_pylons)
+	pylon_b2.rotation.z = 0.15
+	Mk.box(root, Vector3(18.0, 0.9, 1.0), Vector3(0, 10.8, -4.0), Color.WHITE, true, mat_pylons)
+
+	# Fissures décoratives et ouvertures contemporaines
+	for i in 5:
+		var hy: float = 4.0 + i * 2.2
+		Mk.box(root, Vector3(7.0, 0.35, 0.4), Vector3(0, hy, 0), Color("0284c7"))
+
+	# 3. Statue en bronze du Joueur de Kora / Flûte traditionnel
+	var statue_base := Vector3(0, 0.5, 0)
+	Mk.cyl(root, 1.6, 1.9, 1.4, statue_base + Vector3(0, 0.7, 0), Color("334155"), true, 12)
+	var mat_musician := StandardMaterial3D.new()
+	mat_musician.albedo_color = Color("78350f")
+	mat_musician.metallic = 0.85
+	mat_musician.roughness = 0.35
+
+	# Corps du musicien assis en tailleur
+	Mk.box(root, Vector3(1.4, 0.8, 1.2), statue_base + Vector3(0, 1.8, 0), Color.WHITE, true, mat_musician)
+	Mk.box(root, Vector3(0.9, 1.4, 0.8), statue_base + Vector3(0, 2.8, 0), Color.WHITE, true, mat_musician)
+	var m_head := Mk.sphere(root, 0.38, statue_base + Vector3(0, 3.8, 0), Color.WHITE)
+	m_head.material_override = mat_musician
+
+	# La Kora traditionnelle (calebasse hémisphérique, manche en bois, cordes)
+	Mk.sphere(root, 0.55, statue_base + Vector3(0.35, 2.4, 0.4), Color("b45309"), Vector3(1.0, 0.9, 0.8))
+	Mk.cyl(root, 0.05, 0.05, 1.9, statue_base + Vector3(0.35, 3.1, 0.4), Color("d97706"), false, 6)
+
+	# 4. Éclairage architectural nocturne bleu océan et or
+	var light_blue := OmniLight3D.new()
+	light_blue.light_color = Color("38bdf8")
+	light_blue.light_energy = 3.0
+	light_blue.omni_range = 18.0
+	light_blue.position = Vector3(0, 3.0, 0)
+	root.add_child(light_blue)
+
+	# Titre officiel
+	Mk.label(root, "PORTE DU TROISIÈME MILLÉNAIRE • DAKAR", Vector3(0, 18.0, 0), 40, Color("f8fafc"))
+
+
+## Grande Mosquée de Dakar (Minaret hispano-mauresque de 67m, Allée Pape Gueye Fall)
+func _make_grande_mosquee_minaret(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "GrandeMosqueeMinaret"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Matériaux du minaret hispano-mauresque
+	var mat_stone: Material = Mk.concrete_pbr(Color("fef08a")) # Grès ocre saharien
+	var mat_white: Material = Mk.concrete_pbr(Color("f8fafc")) # Enduit blanc
+	var mat_green := StandardMaterial3D.new() # Cuivre patiné vert émeraude
+	mat_green.albedo_color = Color("047857")
+	mat_green.roughness = 0.45
+	var mat_gold := StandardMaterial3D.new() # Laiton doré des croissants
+	mat_gold.albedo_color = Color("fbbf24")
+	mat_gold.metallic = 0.92
+	mat_gold.roughness = 0.15
+
+	# Socle carré monumental
+	Mk.box(root, Vector3(8.5, 3.0, 8.5), Vector3(0, 1.5, 0), Color.WHITE, true, mat_stone)
+
+	# Tour principale carrée de 67 mètres
+	var shaft_w := 6.6
+	for level in 6:
+		var ly: float = 3.0 + level * 8.0
+		var m: Material = mat_stone if level % 2 == 0 else mat_white
+		Mk.box(root, Vector3(shaft_w, 8.0, shaft_w), Vector3(0, ly + 4.0, 0), Color.WHITE, true, m)
+
+		# Moucharabiehs / Fenêtres géométriques polylobées sur les 4 faces
+		for face in 4:
+			var ang: float = face * TAU / 4.0
+			var w_pos := Vector3(cos(ang) * (shaft_w * 0.5 + 0.05), ly + 4.2, sin(ang) * (shaft_w * 0.5 + 0.05))
+			var arch := Mk.box(root, Vector3(1.2, 3.2, 0.1), w_pos, Color("14532d"))
+			arch.rotation.y = -ang + PI * 0.5
+			# Grille géométrique islamique dorée
+			Mk.box(root, Vector3(0.9, 2.8, 0.04), w_pos + Vector3(0, 0, 0.02), Color("fbbf24"))
+
+	# Balcon supérieur du Muezzin à 51m
+	var balc_y := 51.0
+	Mk.box(root, Vector3(shaft_w + 1.6, 1.2, shaft_w + 1.6), Vector3(0, balc_y, 0), Color.WHITE, true, mat_stone)
+	# Garde-corps ajouré en marbre blanc
+	Mk.box(root, Vector3(shaft_w + 1.6, 1.1, 0.2), Vector3(0, balc_y + 1.1, (shaft_w + 1.6) * 0.5), Color.WHITE, true, mat_white)
+	Mk.box(root, Vector3(shaft_w + 1.6, 1.1, 0.2), Vector3(0, balc_y + 1.1, -(shaft_w + 1.6) * 0.5), Color.WHITE, true, mat_white)
+	Mk.box(root, Vector3(0.2, 1.1, shaft_w + 1.6), Vector3((shaft_w + 1.6) * 0.5, balc_y + 1.1, 0), Color.WHITE, true, mat_white)
+	Mk.box(root, Vector3(0.2, 1.1, shaft_w + 1.6), Vector3(-(shaft_w + 1.6) * 0.5, balc_y + 1.1, 0), Color.WHITE, true, mat_white)
+
+	# Touron supérieur (Lanternon carré, 3.8m x 3.8m x 9m)
+	var lantern_y := balc_y + 1.2
+	Mk.box(root, Vector3(3.8, 8.5, 3.8), Vector3(0, lantern_y + 4.25, 0), Color.WHITE, true, mat_stone)
+	for face in 4:
+		var ang: float = face * TAU / 4.0
+		var arch2 := Mk.box(root, Vector3(0.8, 2.2, 0.1), Vector3(cos(ang) * 1.95, lantern_y + 4.2, sin(ang) * 1.95), Color("047857"))
+		arch2.rotation.y = -ang + PI * 0.5
+
+	# Dôme pyramidal vert émeraude traditionnel
+	var dome_y := lantern_y + 8.5
+	var dome := Mk.cyl(root, 0.1, 2.6, 4.5, Vector3(0, dome_y + 2.25, 0), Color.WHITE, true, 4)
+	dome.material_override = mat_green
+	dome.rotation.y = PI * 0.25
+
+	# Spire et Jamour doré (Les 3 sphères sacrées en laiton surmontées du Croissant)
+	var spire_base := dome_y + 4.5
+	var spire_pole := Mk.cyl(root, 0.08, 0.08, 3.5, Vector3(0, spire_base + 1.75, 0), Color.WHITE, false, 8)
+	spire_pole.material_override = mat_gold
+	var sp1 := Mk.sphere(root, 0.42, Vector3(0, spire_base + 1.0, 0), Color.WHITE)
+	sp1.material_override = mat_gold
+	var sp2 := Mk.sphere(root, 0.30, Vector3(0, spire_base + 2.0, 0), Color.WHITE)
+	sp2.material_override = mat_gold
+	var sp3 := Mk.sphere(root, 0.20, Vector3(0, spire_base + 2.8, 0), Color.WHITE)
+	sp3.material_override = mat_gold
+	# Croissant de lune au sommet du minaret
+	var crescent := Mk.cyl(root, 0.35, 0.35, 0.06, Vector3(0, spire_base + 3.6, 0), Color.WHITE, false, 8)
+	crescent.material_override = mat_gold
+	crescent.rotation.x = PI * 0.5
+
+	# Éclairage nocturne vert islamique solennel
+	var green_omni := OmniLight3D.new()
+	green_omni.light_color = Color("10b981")
+	green_omni.light_energy = 3.5
+	green_omni.omni_range = 25.0
+	green_omni.position = Vector3(0, 20.0, 0)
+	root.add_child(green_omni)
+
+	Mk.label(root, "GRANDE MOSQUÉE DE DAKAR (MINARET 67m)", Vector3(0, 67.0, 0), 44, Color("10b981"))
+
+
+## Phare des Mamelles (Phare historique de 1864, Cap Manuel / Mamelles, Ouakam)
+func _make_phare_des_mamelles(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var root := Node3D.new()
+	root.name = "PhareDesMamelles"
+	root.position = pos
+	root.rotation.y = yaw
+	parent.add_child(root)
+
+	# Bâtiment de garde colonial à la base (toit de tuiles rouges)
+	Mk.box(root, Vector3(12.0, 4.0, 10.0), Vector3(0, 2.0, 0), Color("f8fafc"), true)
+	Mk.box(root, Vector3(12.8, 0.8, 10.8), Vector3(0, 4.4, 0), Color("c2410c"), true)
+
+	# Tour cylindrique blanche conique du phare (1864, 21m)
+	var mat_tower := StandardMaterial3D.new()
+	mat_tower.albedo_color = Color("ffffff")
+	mat_tower.roughness = 0.2
+	var tower := Mk.cyl(root, 2.0, 2.8, 18.0, Vector3(0, 13.0, 0), Color.WHITE, true, 16)
+	tower.material_override = mat_tower
+
+	# Fenêtres hublots sur la tour
+	for wy in [8.0, 12.0, 16.0]:
+		Mk.box(root, Vector3(0.5, 0.9, 0.3), Vector3(0, wy, 2.4 - (wy - 8.0) * 0.05), Color("0f172a"))
+
+	# Galerie de ronde et passerelle panoramique
+	var gal_y := 22.0
+	Mk.cyl(root, 3.2, 3.2, 0.4, Vector3(0, gal_y, 0), Color("1e293b"), true, 16)
+	# Balustrade en fer forgé noir
+	for k in 16:
+		var ang: float = k * TAU / 16.0
+		var p_b := Vector3(cos(ang) * 3.0, gal_y + 0.6, sin(ang) * 3.0)
+		Mk.box(root, Vector3(0.08, 0.9, 0.08), p_b, Color("0f172a"), false)
+
+	# Chambre de la lanterne (vitrée avec montants en fonte)
+	var mat_lantern_glass := StandardMaterial3D.new()
+	mat_lantern_glass.albedo_color = Color(1.0, 0.95, 0.7, 0.4)
+	mat_lantern_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat_lantern_glass.emission_enabled = true
+	mat_lantern_glass.emission = Color("fef08a")
+	mat_lantern_glass.emission_energy_multiplier = 1.5
+
+	var lantern_room := Mk.cyl(root, 1.8, 1.8, 2.6, Vector3(0, gal_y + 1.5, 0), Color.WHITE, true, 12)
+	lantern_room.material_override = mat_lantern_glass
+
+	# Coupole rouge écarlate et paratonnerre
+	Mk.sphere(root, 1.9, Vector3(0, gal_y + 2.8, 0), Color("b91c1c"), Vector3(1.0, 0.6, 1.0))
+	Mk.cyl(root, 0.04, 0.04, 1.8, Vector3(0, gal_y + 4.5, 0), Color("fbbf24"), false, 6)
+
+	# Faisceau rotatif puissant du phare balayant l'océan
+	var beacon := SpotLight3D.new()
+	beacon.name = "PhareBeacon"
+	beacon.light_color = Color("fffbeb")
+	beacon.light_energy = 6.5
+	beacon.spot_range = 140.0
+	beacon.spot_angle = 15.0
+	beacon.position = Vector3(0, gal_y + 1.5, 0)
+	beacon.rotation.x = -0.05
+	root.add_child(beacon)
+
+	Mk.label(root, "PHARE DES MAMELLES (1864) • DAKAR", Vector3(0, 28.0, 0), 40, Color("fef08a"))
+
 

@@ -905,7 +905,7 @@ func _races_app() -> void:
 		_content.add_child(_note("Mise : %s" % ("aucune" if f == 0 else GameState.fcfa(f))))
 		var row2 := HBoxContainer.new()
 		_content.add_child(row2)
-		for dest in ["Place de l'Indépendance", "Grande Mosquée", "Porte du Millénaire", "Gare routière Petersen"]:
+		for dest in ["Place de l'Indépendance", "Monument de la Renaissance Africaine", "Grande Mosquée", "Porte du Millénaire"]:
 			var dn: String = dest
 			var b2 := _button(dn.replace("Place de l'", "").replace("Gare routière ", "").left(10), func():
 				ui.create_race(dn, f)

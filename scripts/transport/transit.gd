@@ -13,7 +13,7 @@ const LINES := [
 	{"name": "Ligne 1", "type": "bus", "color": Color("f39200"), "buses": 2,
 		"stops": ["Place de l'Indépendance", "Marché Sandaga", "Restaurant Maïga", "Gare routière Petersen", "Marché Tilène", "Grande Mosquée"]},
 	{"name": "Ligne 2", "type": "coach", "color": Color("2f7fc0"), "buses": 2,
-		"stops": ["Gare de Dakar", "Marché Kermel", "Hôpital Principal", "Assemblée nationale", "Cathédrale", "Porte du Millénaire"]},
+		"stops": ["Gare de Dakar", "Marché Kermel", "Hôpital Principal", "Assemblée nationale", "Cathédrale", "Porte du Millénaire", "Monument de la Renaissance Africaine"]},
 	{"name": "SunuBRT Ligne 1", "type": "brt", "color": Color("00a896"), "buses": 2,
 		"stops": ["Gare routière Petersen", "Marché Tilène", "Grande Mosquée", "Stade Iba Mar Diop", "Porte du Millénaire"]},
 ]
@@ -54,8 +54,11 @@ const TAXI_CATEGORIES := [
 		"title": "Monuments & Quartiers",
 		"places": [
 			{"name": "Place de l'Indépendance (Plateau)", "place": "Place de l'Indépendance"},
+			{"name": "Monument de la Renaissance Africaine", "place": "Monument de la Renaissance Africaine"},
+			{"name": "Porte du Millénaire (Corniche Ouest)", "place": "Porte du Millénaire"},
+			{"name": "Phare des Mamelles (Ouakam)", "place": "Phare des Mamelles"},
+			{"name": "Grande Mosquée de Dakar", "place": "Grande Mosquée"},
 			{"name": "Assemblée nationale", "place": "Assemblée nationale"},
-			{"name": "Porte du Millénaire", "place": "Porte du Millénaire"},
 			{"name": "Commissariat Central Plateau", "place": "Commissariat (Dakar-Plateau)"},
 			{"name": "Commissariat de la Médina", "place": "Commissariat"},
 			{"name": "Caserne des Pompiers", "place": "Caserne"},
@@ -422,7 +425,7 @@ func _show_taxi_main_menu(v) -> void:
 		])
 
 	# 2. Destinations directes populaires les plus proches
-	var popular_places := ["Place de l'Indépendance", "Marché Sandaga", "Grande Mosquée", "Hôpital Principal", "Gare de Dakar", "Stade Iba Mar Diop", "Chez Adja", "Marché Kermel", "Marché Tilène"]
+	var popular_places := ["Place de l'Indépendance", "Monument de la Renaissance Africaine", "Marché Sandaga", "Grande Mosquée", "Porte du Millénaire", "Phare des Mamelles", "Hôpital Principal", "Gare de Dakar", "Stade Iba Mar Diop", "Chez Adja", "Marché Kermel", "Marché Tilène"]
 	var quick_options: Array = []
 	for p_name in popular_places:
 		if not city.places.has(p_name):
