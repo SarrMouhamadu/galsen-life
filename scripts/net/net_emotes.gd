@@ -6,7 +6,7 @@ extends Node
 signal emote(id: int, clip: String)
 
 ## [nom affiché, animation] (tools/bake_animations.gd)
-const LIST := [["Saluer", "wave"], ["Téléphoner", "phone"], ["Applaudir", "clap"], ["Bras croisés", "arms_crossed"],
+const LIST := [["S'asseoir", "sit"], ["Saluer", "wave"], ["Téléphoner", "phone"], ["Applaudir", "clap"], ["Bras croisés", "arms_crossed"],
 	["Prière (dua)", "dua"], ["Danser", "dance"], ["S'accroupir", "crouch"], ["Discuter", "talk"]]
 const RANGE := 80.0
 const COOLDOWN_MS := 300

@@ -110,6 +110,10 @@ static func place(parent: Node3D, id: String, pos: Vector3, yaw := 0.0, collide 
 	var inst := _scene(id).instantiate()
 	inst.scale = Vector3.ONE * s
 	holder.add_child(inst)
+	var low_id := id.to_lower()
+	if "chair" in low_id or "sofa" in low_id or "banc" in low_id or "bench" in low_id or "seat" in low_id:
+		holder.add_to_group("chairs")
+		holder.set_meta("chair_id", id)
 	if collide:
 		var ab := size_of(id)
 		var body := StaticBody3D.new()

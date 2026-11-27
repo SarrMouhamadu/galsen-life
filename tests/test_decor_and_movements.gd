@@ -68,6 +68,64 @@ func _run() -> void:
 	test_ground.queue_free()
 	test_sidewalk.queue_free()
 
+	# 2b. Test du réalisme des gestes : Allures (walk/jog/sprint), Sauts (jump/fall) et Assise (sit)
+	var NetEmotesScript = load("res://scripts/net/net_emotes.gd")
+	assert(NetEmotesScript.valid("sit"), "L'émote 'sit' doit être reconnue comme valide dans NetEmotes")
+	var has_sit_in_list := false
+	for e in NetEmotesScript.LIST:
+		if e[1] == "sit":
+			has_sit_in_list = true
+			break
+	assert(has_sit_in_list, "L'émote 'S'asseoir' (sit) doit être présente dans NetEmotes.LIST")
+	print("  [OK] Émote 'S'asseoir' (sit) validée dans NetEmotes")
+
+	# Test des animations de saut et de chute en vol
+	player.global_position = Vector3(0, 10, 0)
+	player.velocity = Vector3(0, 2.5, 0) # Montée du saut
+	player._physics_process(1.0 / 60.0)
+	if player.model and player.model.has_method("play_clip"):
+		assert(player.model._current == "jump", "L'animation 'jump' doit être active lors de la montée du saut")
+
+	player.velocity = Vector3(0, -3.0, 0) # Descente de chute
+	player._physics_process(1.0 / 60.0)
+	if player.model and player.model.has_method("play_clip"):
+		assert(player.model._current == "fall", "L'animation 'fall' doit être active lors de la descente")
+	print("  [OK] Gestes réalistes en l'air (jump en montée, fall en descente) validés")
+
+	# Test de l'interaction avec une chaise / banc (s'asseoir et se relever)
+	var test_chair = Node3D.new()
+	test_chair.add_to_group("chairs")
+	root.add_child(test_chair)
+	test_chair.global_position = Vector3(10, 0, 10)
+	player.global_position = Vector3(10.5, 0, 10)
+
+	var hint: String = player.get_interaction_hint()
+	assert(hint == "S'asseoir", "Le joueur doit voir 'S'asseoir' quand il est proche d'une chaise")
+	player._interact()
+	assert(player.is_sitting, "Le joueur doit être dans l'état assis après interaction")
+	assert(player.emote == "sit", "Le joueur doit jouer l'émote 'sit'")
+	assert(player.get_interaction_hint() == "Se lever", "L'indication doit devenir 'Se lever'")
+
+	# Se relever avec le déplacement
+	game_state.touch_move = Vector2(0, 1.0)
+	player._physics_process(1.0 / 60.0)
+	assert(not player.is_sitting, "Le joueur doit se relever dès qu'un mouvement est initié")
+	assert(player.emote == "", "L'émote 'sit' doit s'arrêter à la reprise de la marche")
+	print("  [OK] Geste de s'asseoir sur une chaise et se relever validé avec succès")
+	test_chair.queue_free()
+
+	# Test de calibration des allures (marche, jogging, sprint)
+	if player.model and player.model.has_method("locomote"):
+		player.model.locomote(0.0)
+		assert(player.model._current == "idle", "À 0 m/s l'allure doit être 'idle'")
+		player.model.locomote(1.8)
+		assert(player.model._current == "walk", "À 1.8 m/s l'allure doit être 'walk'")
+		player.model.locomote(3.6)
+		assert(player.model._current == "jog", "À 3.6 m/s l'allure doit être 'jog'")
+		player.model.locomote(6.5)
+		assert(player.model._current == "sprint", "À 6.5 m/s (vitesse de sprint) l'allure doit être 'sprint'")
+		print("  [OK] Calibration naturelle des allures (idle -> walk -> jog -> sprint) validée")
+
 	# Test du retour au point de départ à pied
 	player.return_to_start(city)
 	assert(player.global_position.distance_to(city.spawn_point) < 2.0, "Le joueur doit être rapatrié au point de départ (Place de l'Indépendance)")

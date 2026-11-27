@@ -27,19 +27,46 @@ var _prev_on_floor := true
 var _prev_fall_vy := 0.0
 var _step_dist := 0.0
 var _step_smooth_y := 0.0 ## lissage visuel du passage de bordure / trottoir
+var is_sitting := false ## état assis (chaise ou geste au sol)
+var sitting_chair: Node3D = null ## chaise occupée
 
 
 func start_emote(clip: String) -> void:
 	if current_vehicle or riding or not model.has_method("play_clip"):
 		return
 	emote = clip
+	if clip == "sit":
+		is_sitting = true
 	Net.emotes.send(clip)
 
 
 func stop_emote() -> void:
-	if emote != "":
+	if emote != "" or is_sitting:
 		emote = ""
+		is_sitting = false
+		sitting_chair = null
 		Net.emotes.send("")
+
+
+## S'asseoir confortablement sur une chaise, un fauteuil ou un banc
+func sit_on_chair(chair: Node3D) -> void:
+	if current_vehicle or riding:
+		return
+	is_sitting = true
+	sitting_chair = chair
+	start_emote("sit")
+	if is_instance_valid(chair):
+		global_position = chair.global_position + Vector3(0, 0.02, 0)
+		model.rotation.y = chair.global_rotation.y
+	velocity = Vector3.ZERO
+	GameState.notify.emit("Tu t'assois confortablement (Énergie en régénération).")
+
+
+## Se relever naturellement
+func stand_up() -> void:
+	if is_sitting or emote == "sit":
+		stop_emote()
+		GameState.notify.emit("Tu te relèves.")
 var _walk_t := 0.0
 var no_jump := false ## pendant un match de mini-foot, SAUT sert au dribble
 var _anim_lock := 0.0 ## coup de poing ou coup reçu en cours : la marche n'écrase pas l'animation
@@ -112,11 +139,18 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 	elif Input.is_action_just_pressed("jump") and not GameState.typing and not no_jump:
 		velocity.y = JUMP_VELOCITY
-		_squash_scale = Vector3(0.96, 1.06, 0.96)
+		_squash_scale = Vector3(0.92, 1.14, 0.92) # Impulsion athlétique
+		if is_sitting:
+			stand_up()
 
 	var inp: Vector2 = GameState.get_move_input()
 	var yaw: float = camera_rig.yaw if camera_rig else 0.0
 	var dir := Vector3(inp.x, 0.0, inp.y).rotated(Vector3.UP, yaw)
+	if is_sitting and dir.length() > 0.05:
+		stand_up()
+	if is_sitting:
+		GameState.energy = minf(1.0, GameState.energy + delta * 0.12) # Récupération assis
+
 	var running := Input.is_action_pressed("sprint") or GameState.touch_move.length() > 0.92
 	# Épuisé (énergie à zéro) : on ne peut plus courir
 	var spd := RUN_SPEED if running and GameState.energy > 0.0 else WALK_SPEED
@@ -148,11 +182,11 @@ func _physics_process(delta: float) -> void:
 	if _prev_on_floor and not is_on_floor() and velocity.y <= 0.0:
 		apply_floor_snap()
 
-	# Réception au sol : tassement (squash) uniquement sur chute libre ou saut franc (pas sur un trottoir de 16cm)
+	# Réception au sol : amorti réaliste des genoux sur tout saut ou chute (squash naturel)
 	var on_ground := is_on_floor()
-	if not _prev_on_floor and on_ground and _prev_fall_vy < -4.0:
-		var impact := clampf(-_prev_fall_vy / 18.0, 0.08, 0.22)
-		_squash_scale = Vector3(1.0 + impact * 0.5, 1.0 - impact, 1.0 + impact * 0.5)
+	if not _prev_on_floor and on_ground and _prev_fall_vy < -2.0:
+		var impact := clampf(-_prev_fall_vy / 18.0, 0.06, 0.24)
+		_squash_scale = Vector3(1.0 + impact * 0.45, 1.0 - impact, 1.0 + impact * 0.45)
 		Audio.play_sfx("thud", -12.0)
 	_prev_on_floor = on_ground
 	_prev_fall_vy = velocity.y
@@ -192,7 +226,13 @@ func _physics_process(delta: float) -> void:
 		stop_emote()
 	if model.has_method("locomote"):
 		if _anim_lock <= 0.0:
-			if emote != "":
+			if not is_on_floor():
+				# Animation aérienne réaliste : impulsion ascendante de saut ou descente de chute
+				if velocity.y > 0.4:
+					model.play_clip("jump", 0.15, 1.1)
+				else:
+					model.play_clip("fall", 0.2, 1.0)
+			elif emote != "":
 				model.play_clip(emote, 0.25)
 			else:
 				model.locomote(ground_speed)
@@ -254,6 +294,9 @@ func _step_climb(delta: float) -> void:
 
 
 func _interact() -> void:
+	if is_sitting:
+		stand_up()
+		return
 	if job_manager and job_manager.try_interact():
 		return
 	for pv in providers:
@@ -261,6 +304,11 @@ func _interact() -> void:
 			return
 	if current_vehicle:
 		exit_vehicle()
+		return
+	# S'asseoir sur une chaise ou un banc à proximité
+	var ch := _nearest_chair()
+	if ch:
+		sit_on_chair(ch)
 		return
 	# Si une moto ou une charrette est à portée, monter directement dessus
 	var v = _nearest_vehicle()
@@ -281,6 +329,8 @@ func _interact() -> void:
 
 
 func get_interaction_hint() -> String:
+	if is_sitting:
+		return "Se lever"
 	if job_manager:
 		var h: String = job_manager.get_hint()
 		if h != "":
@@ -297,6 +347,9 @@ func get_interaction_hint() -> String:
 		var th: String = transit.get_hint()
 		if th != "":
 			return th
+	var ch := _nearest_chair()
+	if ch:
+		return "S'asseoir"
 	var v = _nearest_vehicle()
 	if v:
 		var stolen: bool = v.ai_enabled or v.route_active or v.vehicle_type in ["police", "army"]
@@ -314,6 +367,20 @@ func get_interaction_hint() -> String:
 			return "Acheter : %s (%s)" % [np.get("vendor_item"), GameState.fcfa(np.get("vendor_price"))]
 		return "Parler au passant"
 	return ""
+
+
+func _nearest_chair(max_d := 1.8) -> Node3D:
+	var closest: Node3D = null
+	var min_d := max_d
+	var nodes := get_tree().get_nodes_in_group("chairs")
+	for n in nodes:
+		if not n is Node3D or not is_instance_valid(n):
+			continue
+		var d: float = global_position.distance_to(n.global_position)
+		if d < min_d:
+			min_d = d
+			closest = n
+	return closest
 
 
 func enter_vehicle(v) -> void:

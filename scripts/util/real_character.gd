@@ -521,11 +521,11 @@ func locomote(speed: float) -> void:
 	if speed < 0.15:
 		play_clip("idle", 0.3)
 	elif speed < 2.4:
-		play_clip("walk", 0.25, clampf(speed / _ground_speed("walk", 1.15), 0.5, 2.0))
-	elif speed < 7.8:
-		play_clip("jog", 0.2, clampf(speed / _ground_speed("jog", 5.0), 0.55, 1.45))
+		play_clip("walk", 0.25, clampf(speed / _ground_speed("walk", 1.55), 0.6, 1.6))
+	elif speed < 4.8:
+		play_clip("jog", 0.2, clampf(speed / _ground_speed("jog", 3.8), 0.65, 1.35))
 	else:
-		play_clip("sprint", 0.2, clampf(speed / _ground_speed("sprint", 8.8), 0.7, 1.3))
+		play_clip("sprint", 0.2, clampf(speed / _ground_speed("sprint", 6.2), 0.75, 1.35))
 
 
 ## Vitesse (m/s) à laquelle le pied d'appui recule dans l'allure (tools/bake_animations.gd)
