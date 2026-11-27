@@ -562,6 +562,8 @@ func return_to_start(city_ref = null) -> void:
 	var dest: Vector3 = c.spawn_point if (c != null and c.get("spawn_point") != null) else Vector3(0, 0.5, 0)
 	global_position = dest
 	velocity = Vector3.ZERO
+	if camera_rig and is_instance_valid(camera_rig):
+		camera_rig.global_position = dest + Vector3(0, 1.6, 0)
 	Audio.play_sfx("horn", -10.0)
 	GameState.notify.emit("📍 Retour réussi au point de départ (Place de l'Indépendance) !")
 

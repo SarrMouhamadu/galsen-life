@@ -144,6 +144,8 @@ func _run() -> void:
 	# Monter le joueur dans la voiture
 	player.enter_vehicle(car)
 	assert(player.current_vehicle == car, "Le joueur doit être au volant du taxi")
+	if player.camera_rig:
+		assert(is_equal_approx(player.camera_rig.yaw, car.rotation.y), "La caméra doit être orientée dans l'axe du véhicule")
 
 	# Test set_gps_to_start
 	car.set_gps_to_start(city)
@@ -158,6 +160,17 @@ func _run() -> void:
 	assert(car.condition >= 85.0, "La voiture doit être réparée lors du rapatriement")
 	assert(car.fuel >= 80.0, "La voiture doit être ravitaillée lors du rapatriement")
 	print("  [OK] Rapatriement complet de la voiture et du joueur au point de départ validé")
+
+	# Test de l'orientation de tous les modèles de véhicules (notamment Berline sf_bmw2002)
+	var clando_bmw = VehicleScript.new()
+	clando_bmw.vehicle_type = "clando"
+	clando_bmw.model_override = "sf_bmw2002"
+	root.add_child(clando_bmw)
+	var bmw_model = clando_bmw.get_node_or_null("Modele")
+	assert(bmw_model != null, "Le modèle BMW 2002 doit exister")
+	assert(is_equal_approx(bmw_model.rotation.y, PI), "Le modèle BMW 2002 doit être redressé à 180° pour pointer vers -Z")
+	clando_bmw.queue_free()
+	print("  [OK] Orientation de tous les véhicules (y compris Berline sf_bmw2002) validée dans l'axe de marche !")
 
 	print("[PASS] Tous les tests de mouvements, décors (arbres, routes) et retour voiture sont validés avec succès !")
 	quit()

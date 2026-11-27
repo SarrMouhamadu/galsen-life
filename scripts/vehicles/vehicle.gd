@@ -245,6 +245,9 @@ func _build_real_model() -> void:
 	var inst: Node3D = _model_scenes[_model_file].instantiate()
 	inst.name = "Modele"
 	add_child(inst)
+	# Modèle sf_bmw2002 : l'export d'origine est inversé à 180° (+Z vers l'avant au lieu de -Z)
+	if _model_file == "sf_bmw2002":
+		inst.rotation.y = PI
 	var sketchfab := _model_file.begins_with("sf_")
 	var colors: Dictionary = MODELS[vehicle_type][1].duplicate() if (not sketchfab or vehicle_type in ["grosse_moto", "jakarta"]) else {}
 	if (vehicle_type in ["clando", "suv"]) and BODY.has(_model_file):
@@ -1139,11 +1142,12 @@ func _physics_process(delta: float) -> void:
 		var inp: Vector2 = GameState.get_move_input()
 		var throttle := -inp.y
 		# Gâchettes analogiques manette (R2/RT = accélérer, L2/LT = freiner / marche arrière)
-		var trig_accel: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT)
-		var trig_brake: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_LEFT)
-		if trig_accel > 0.05 or trig_brake > 0.05:
-			throttle = trig_accel - trig_brake
-			GameState.gamepad_active = true
+		if not Input.get_connected_joypads().is_empty():
+			var trig_accel: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT)
+			var trig_brake: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_LEFT)
+			if trig_accel > 0.15 or trig_brake > 0.15:
+				throttle = trig_accel - trig_brake
+				GameState.gamepad_active = true
 		# Essence : environ 15 km pour un réservoir plein ; à sec, le moteur ne tire plus
 		fuel = maxf(0.0, fuel - absf(speed) * delta * FUEL_PER_M)
 		GameState.add_skill("conduite", absf(speed) * delta / 400.0)
@@ -1704,10 +1708,17 @@ func return_to_start(city_ref = null) -> void:
 		c = driver.get_parent().get("city")
 	var dest: Vector3 = c.spawn_point if (c != null and c.get("spawn_point") != null) else Vector3(0, 0.5, 0)
 
-	# Repositionnement propre sur la chaussée à l'arrêt complet
+	# Repositionnement propre sur la chaussée dans le sens de la circulation
 	global_position = dest + Vector3(0, 0.35, 0)
-	rotation = Vector3.ZERO
-	_motion_yaw = 0.0
+	var spawn_yaw := 0.0
+	if c != null and c.has_method("nearest_node") and c.has_method("drive_neighbors"):
+		var a: int = c.nearest_node(dest, "drive")
+		var nb: PackedInt32Array = c.drive_neighbors(a)
+		if not nb.is_empty():
+			var d: Vector3 = c.node_pos[nb[0]] - c.node_pos[a]
+			spawn_yaw = atan2(-d.x, -d.z)
+	rotation = Vector3(0, spawn_yaw, 0)
+	_motion_yaw = spawn_yaw
 	slip = 0.0
 	speed = 0.0
 	velocity = Vector3.ZERO
@@ -1720,6 +1731,10 @@ func return_to_start(city_ref = null) -> void:
 	if driver != null and is_instance_valid(driver):
 		driver.global_position = global_position
 		driver.velocity = Vector3.ZERO
+		if driver.get("camera_rig") and is_instance_valid(driver.camera_rig):
+			driver.camera_rig.global_position = global_position + Vector3(0, 1.6, 0)
+			driver.camera_rig.yaw = spawn_yaw
+			driver.camera_rig._look_cooldown = 0.0
 
 	Audio.play_sfx("horn", -8.0)
 	GameState.notify.emit("🚗 Voiture ramenée avec succès au point de départ (Place de l'Indépendance) !")

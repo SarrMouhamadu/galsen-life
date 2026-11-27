@@ -383,9 +383,9 @@ func get_move_input() -> Vector2:
 
 func _setup_input() -> void:
 	# Touches physiques : fonctionne en QWERTY (WASD) comme en AZERTY (ZQSD).
-	_bind_keys("move_forward", [KEY_W, KEY_UP])
+	_bind_keys("move_forward", [KEY_W, KEY_Z, KEY_UP])
 	_bind_keys("move_back", [KEY_S, KEY_DOWN])
-	_bind_keys("move_left", [KEY_A, KEY_LEFT])
+	_bind_keys("move_left", [KEY_A, KEY_Q, KEY_LEFT])
 	_bind_keys("move_right", [KEY_D, KEY_RIGHT])
 	_bind_keys("interact", [KEY_E])
 	_bind_keys("attack", [KEY_F])
@@ -464,9 +464,12 @@ func _ensure_action(action: String) -> void:
 func _bind_keys(action: String, keys: Array) -> void:
 	_ensure_action(action)
 	for k in keys:
-		var ev := InputEventKey.new()
-		ev.physical_keycode = k
-		InputMap.action_add_event(action, ev)
+		var ev_phys := InputEventKey.new()
+		ev_phys.physical_keycode = k
+		InputMap.action_add_event(action, ev_phys)
+		var ev_key := InputEventKey.new()
+		ev_key.keycode = k
+		InputMap.action_add_event(action, ev_key)
 
 
 func _bind_axis(action: String, axis: JoyAxis, value: float) -> void:

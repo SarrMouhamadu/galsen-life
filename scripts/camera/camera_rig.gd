@@ -36,7 +36,14 @@ func set_target(t: Node3D) -> void:
 			spring.add_excluded_object(t.get_rid())
 	var d = t.get("camera_distance")
 	distance = d if d != null else 5.0
-	if global_position == Vector3.ZERO:
+	var in_car: bool = t.get("max_speed") != null and t.get("size") != null
+	if in_car:
+		# Repositionnement immédiat et alignement dans le sens de marche du véhicule
+		global_position = t.global_position + Vector3(0, 1.6, 0)
+		yaw = t.rotation.y
+		pitch = -0.22
+		_look_cooldown = 0.0
+	elif global_position == Vector3.ZERO:
 		global_position = t.global_position + Vector3(0, 1.6, 0)
 
 
