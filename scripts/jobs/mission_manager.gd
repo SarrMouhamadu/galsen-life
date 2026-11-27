@@ -270,7 +270,306 @@ const MISSIONS := {
 				"action_hint": "Franchir la ligne d'arrivée"
 			}
 		]
+	},
+	"renaissance_odyssey": {
+		"id": "renaissance_odyssey",
+		"title": "L'Épopée de la Renaissance Africaine",
+		"icon": "🗿",
+		"mode": "all",
+		"giver": "Pr Alioune Sow (Conservateur du Patrimoine)",
+		"desc": "Une délégation culturelle panafricaine visite Dakar ! Guide le convoi officiel depuis la Place de l'Indépendance, passe par la Porte du Millénaire, grimpe au sommet du Monument de la Renaissance et termine au Phare des Mamelles.",
+		"reward": 22000,
+		"steps": [
+			{
+				"text": "Rassemble la délégation devant le mât du Drapeau National",
+				"place": "Place de l'Indépendance",
+				"radius": 15.0,
+				"action_hint": "Saluer les couleurs républicaines"
+			},
+			{
+				"text": "Rejoins la Porte du Millénaire au bord de l'océan",
+				"place": "Porte du Millénaire",
+				"radius": 16.0,
+				"action_hint": "Écouter l'hymne joué à la Kora"
+			},
+			{
+				"text": "Gravis les 198 marches jusqu'au belvédère de la Renaissance",
+				"place": "Monument de la Renaissance Africaine",
+				"radius": 18.0,
+				"action_hint": "Présenter le colosse de bronze de 52m"
+			},
+			{
+				"text": "Terminus au Phare des Mamelles pour admirer le crépuscule",
+				"place": "Phare des Mamelles",
+				"radius": 15.0,
+				"action_hint": "Valider la visite officielle au phare"
+			}
+		]
+	},
+	"mamelles_night_watch": {
+		"id": "mamelles_night_watch",
+		"title": "Le Gardien du Phare des Mamelles",
+		"icon": "🗼",
+		"mode": "all",
+		"giver": "Capitaine Babacar Ndiaye (Capitainerie Maritime)",
+		"desc": "Alerte maritime nocturne ! Le faisceau lumineux du Phare des Mamelles a subi une avarie. Achemine en urgence une ampoule halogène de forte puissance depuis le port pour guider les navires au large de Dakar !",
+		"reward": 19500,
+		"steps": [
+			{
+				"text": "Récupère la lampe maritime scellée aux docks du port",
+				"place": "Restaurant Cercle de la Rade",
+				"radius": 14.0,
+				"action_hint": "Embarquer la lampe halogène"
+			},
+			{
+				"text": "Fends la Corniche Ouest sans heurter d'obstacle",
+				"place": "Porte du Millénaire",
+				"radius": 16.0,
+				"time_limit": 120.0,
+				"action_hint": "Passer le poste de contrôle côtier"
+			},
+			{
+				"text": "Grimpe au sommet du Phare des Mamelles et relance le faisceau",
+				"place": "Phare des Mamelles",
+				"radius": 16.0,
+				"time_limit": 130.0,
+				"action_hint": "Installer la lampe dans la lanterne"
+			}
+		]
+	},
+	"soumbedioune_taleb": {
+		"id": "soumbedioune_taleb",
+		"title": "La Pêche Royale de Soumbédioune",
+		"icon": "🐟",
+		"mode": "all",
+		"giver": "Ndeye Fatou Diouf (Mareyeuse en chef)",
+		"desc": "Les pirogues artisanales aux couleurs nationales viennent d'accoster avec une prise miraculeuse de thiof et de dorades royales. Livre les grands restaurants avant le coup de feu de midi !",
+		"reward": 16500,
+		"steps": [
+			{
+				"text": "Charge les caisses de thiof frais débarquées des pirogues",
+				"place": "Porte du Millénaire",
+				"radius": 15.0,
+				"action_hint": "Charger les glacières de poisson"
+			},
+			{
+				"text": "Livre le restaurant traditionnel Chez Adja à la Médina pour le Thiéboudienne",
+				"place": "Chez Adja",
+				"radius": 12.0,
+				"time_limit": 125.0,
+				"action_hint": "Déposer le thiof en cuisine"
+			},
+			{
+				"text": "Livre le restaurant Chez Loutcha au Plateau",
+				"place": "Chez Loutcha",
+				"radius": 12.0,
+				"time_limit": 115.0,
+				"action_hint": "Transmettre les dorades au chef"
+			},
+			{
+				"text": "Remets la recette de la criée à la coopérative de Kermel",
+				"place": "Marché Kermel",
+				"radius": 14.0,
+				"action_hint": "Verser la recette du poisson"
+			}
+		]
+	},
+	"couture_bazin_royal": {
+		"id": "couture_bazin_royal",
+		"title": "La Haute Couture de la Médina",
+		"icon": "🪡",
+		"mode": "all",
+		"giver": "Maître Tailleur Ibrahima Diallo",
+		"desc": "C'est la saison des grands mariages et de la Korité ! L'atelier de confection de la Médina doit livrer ses plus somptueuses créations en bazin riche brodé d'or aux quatre coins de Dakar.",
+		"reward": 17500,
+		"steps": [
+			{
+				"text": "Récupère les tenues d'apparat à l'atelier de confection",
+				"place": "Marché Tilène",
+				"radius": 14.0,
+				"action_hint": "Prendre les boubous brodés"
+			},
+			{
+				"text": "Livre la parure d'apparat au notable de la Grande Mosquée",
+				"place": "Grande Mosquée",
+				"radius": 15.0,
+				"action_hint": "Remettre le boubou traditionnel"
+			},
+			{
+				"text": "Livre le costume de cérémonie au salon d'honneur du Plateau",
+				"place": "Place de l'Indépendance",
+				"radius": 14.0,
+				"action_hint": "Déposer la commande de gala"
+			},
+			{
+				"text": "Achète de nouvelles bobines de fil doré et boutons chez les merciers",
+				"place": "Marché Sandaga",
+				"radius": 14.0,
+				"action_hint": "Acheter le fil d'or chez les merciers"
+			}
+		]
+	},
+	"online_teranga_rally": {
+		"id": "online_teranga_rally",
+		"title": "Le Grand Rallye de la Teranga",
+		"icon": "🌐",
+		"mode": "online",
+		"giver": "Fédération Automobile Sénégalaise",
+		"desc": "Grand circuit chronométré reliant les monuments les plus prestigieux de Dakar. En ligne, le serveur diffuse ta performance à tous les joueurs de Dakar !",
+		"reward": 28000,
+		"steps": [
+			{
+				"text": "Départ au pied du mât de la Place de l'Indépendance",
+				"place": "Place de l'Indépendance",
+				"radius": 15.0,
+				"action_hint": "Top départ du Rallye Teranga"
+			},
+			{
+				"text": "Checkpoint 1 devant le minaret de la Grande Mosquée",
+				"place": "Grande Mosquée",
+				"radius": 15.0,
+				"time_limit": 105.0,
+				"action_hint": "Pointer au Checkpoint 1"
+			},
+			{
+				"text": "Checkpoint 2 sous les arches de la Porte du Millénaire",
+				"place": "Porte du Millénaire",
+				"radius": 16.0,
+				"time_limit": 110.0,
+				"action_hint": "Pointer au Checkpoint 2"
+			},
+			{
+				"text": "Checkpoint 3 au pied du Monument de la Renaissance",
+				"place": "Monument de la Renaissance Africaine",
+				"radius": 18.0,
+				"time_limit": 120.0,
+				"action_hint": "Pointer au Checkpoint 3"
+			},
+			{
+				"text": "Ligne d'arrivée victorieuse au sommet du Phare des Mamelles !",
+				"place": "Phare des Mamelles",
+				"radius": 16.0,
+				"time_limit": 95.0,
+				"action_hint": "Franchir la ligne d'arrivée"
+			}
+		]
+	},
+	"online_police_patrol": {
+		"id": "online_police_patrol",
+		"title": "Patrouille & Escorte Républicaine",
+		"icon": "👮",
+		"mode": "online",
+		"giver": "Commandant Fall (Police Nationale)",
+		"desc": "Mission de sécurisation républicaine et de patrouille sur les grands axes stratégiques de Dakar. En ligne, sécurise les zones fréquentées par les citoyens et joueurs de la ville.",
+		"reward": 21000,
+		"steps": [
+			{
+				"text": "Prends tes ordres d'escorte au Commissariat Central",
+				"place": "Commissariat (Dakar-Plateau)",
+				"radius": 14.0,
+				"action_hint": "Recevoir l'ordre de mission"
+			},
+			{
+				"text": "Effectue une ronde de contrôle sur le parvis du TER à la Gare",
+				"place": "Gare de Dakar",
+				"radius": 14.0,
+				"action_hint": "Valider la ronde ferroviaire"
+			},
+			{
+				"text": "Sécurise le périmètre de la Place de l'Indépendance",
+				"place": "Place de l'Indépendance",
+				"radius": 15.0,
+				"action_hint": "Signaler la zone sécurisée"
+			},
+			{
+				"text": "Rends ton rapport de patrouille au Commissariat de la Médina",
+				"place": "Commissariat",
+				"radius": 14.0,
+				"action_hint": "Déposer le rapport d'escorte"
+			}
+		]
+	},
+	"online_car_rapide_tour": {
+		"id": "online_car_rapide_tour",
+		"title": "Le Défi Chauffeur de Car Rapide",
+		"icon": "🚌",
+		"mode": "online",
+		"giver": "Gorgui Diouf (Syndicat des Transporteurs)",
+		"desc": "Prends le volant d'un Car Rapide ou minibus dakarois et assure la ligne populaire traversant les artères animées de la capitale, au rythme des klaxons et de la bonne humeur !",
+		"reward": 22000,
+		"steps": [
+			{
+				"text": "Embarque les passagers à la Gare routière Petersen",
+				"place": "Gare routière Petersen",
+				"radius": 15.0,
+				"action_hint": "Faire monter les passagers"
+			},
+			{
+				"text": "Arrêt commercial au Marché Tilène",
+				"place": "Marché Tilène",
+				"radius": 14.0,
+				"action_hint": "Déposer et faire monter les marchands"
+			},
+			{
+				"text": "Arrêt des sportifs au Stade Iba Mar Diop",
+				"place": "Stade Iba Mar Diop",
+				"radius": 15.0,
+				"action_hint": "Déposer les supporters de lamb"
+			},
+			{
+				"text": "Terminus triomphal sur l'esplanade de la Porte du Millénaire",
+				"place": "Porte du Millénaire",
+				"radius": 16.0,
+				"action_hint": "Valider la fin de ligne"
+			}
+		]
+	},
+	"online_bank_heist_defense": {
+		"id": "online_bank_heist_defense",
+		"title": "Protection des Fonds Bancaires",
+		"icon": "🛡️",
+		"mode": "online",
+		"giver": "Consortium Bancaire de Dakar",
+		"desc": "Un transfert interbancaire de haute importance doit s'opérer entre les établissements financiers du Plateau. Pilote le véhicule blindé et préserve les réserves de la capitale !",
+		"reward": 26000,
+		"steps": [
+			{
+				"text": "Prends en charge la valise diplomatique à la Banque BHS",
+				"place": "Banque BHS",
+				"radius": 12.0,
+				"action_hint": "Charger les documents financiers"
+			},
+			{
+				"text": "Transfère les fonds à la succursale BGFI Bank",
+				"place": "Banque BGFI Bank",
+				"radius": 12.0,
+				"time_limit": 120.0,
+				"action_hint": "Déposer le premier coffre"
+			},
+			{
+				"text": "Dépose les réserves à la Banque Nationale de Développement (BNDE)",
+				"place": "Banque BNDE",
+				"radius": 12.0,
+				"time_limit": 110.0,
+				"action_hint": "Verrouiller les fonds en chambre forte"
+			}
+		]
 	}
+}
+
+## Points d'amorçage de missions dans le monde ouvert de Dakar (PNJs et points de contact)
+const WORLD_MISSION_HUBS := {
+	"Place de l'Indépendance": "renaissance_odyssey",
+	"Porte du Millénaire": "soumbedioune_taleb",
+	"Marché Tilène": "couture_bazin_royal",
+	"Restaurant Maïga": "maiga_rush",
+	"Stade Iba Mar Diop": "lamb_champion",
+	"Polyclinique de la Médina": "hopital_urgence",
+	"Gare routière Petersen": "online_car_rapide_tour",
+	"Garage Taxi": "taxi_rally",
+	"Commissariat (Dakar-Plateau)": "online_police_patrol",
+	"Banque BHS": "online_bank_heist_defense",
+	"Restaurant Cercle de la Rade": "mamelles_night_watch",
 }
 
 var main
@@ -321,7 +620,11 @@ func start_mission(id: String) -> bool:
 	active_id = id
 	step_idx = 0
 	_setup_step()
-	GameState.notify.emit("🎯 MISSION ACCEPTÉE : %s !\n%s" % [m["title"], m["desc"]])
+	if Net.online:
+		Net.send_mission_event("start", id, m["title"])
+		GameState.notify.emit("🌐 [EN LIGNE] CONTRAT MULTIJOUEUR : %s !\n%s" % [m["title"], m["desc"]])
+	else:
+		GameState.notify.emit("🎯 MISSION ACCEPTÉE : %s !\n%s" % [m["title"], m["desc"]])
 	Audio.play_sfx("coin", -6.0)
 	return true
 
@@ -377,7 +680,11 @@ func _complete_mission() -> void:
 		completed.append(active_id)
 	GameState.missions["completed"] = completed
 
-	GameState.notify.emit("🏆 MISSION ACCOMPLIE : %s !\nTu reçois %s ! Félicitations !" % [m["title"], GameState.fcfa(reward)])
+	if Net.online:
+		Net.send_mission_event("complete", active_id, m["title"], reward)
+		GameState.notify.emit("🏆 [EN LIGNE] MISSION ACCOMPLIE : %s !\nTu remportes %s crédités sur ton compte en ligne !" % [m["title"], GameState.fcfa(reward)])
+	else:
+		GameState.notify.emit("🏆 MISSION ACCOMPLIE : %s !\nTu reçois %s ! Félicitations !" % [m["title"], GameState.fcfa(reward)])
 	Audio.play_sfx("coin", 0.0)
 
 	active_id = ""
@@ -464,39 +771,62 @@ func _process(delta: float) -> void:
 
 ## Fournisseur d'interactions pour player.providers
 func get_hint() -> String:
-	if not has_active_mission():
+	if has_active_mission():
+		var m: Dictionary = MISSIONS[active_id]
+		var steps: Array = m["steps"]
+		if step_idx >= steps.size():
+			return ""
+		var st: Dictionary = steps[step_idx]
+		var action_hint: String = st.get("action_hint", "")
+		if action_hint == "":
+			return ""
+		var p_pos: Vector3 = player.get_world_position() if player else Vector3.ZERO
+		var d := Vector2(p_pos.x - target_pos.x, p_pos.z - target_pos.z).length()
+		var rad: float = float(st.get("radius", 12.0))
+		if d <= rad:
+			return "Action : %s" % action_hint
 		return ""
-	var m: Dictionary = MISSIONS[active_id]
-	var steps: Array = m["steps"]
-	if step_idx >= steps.size():
-		return ""
-	var st: Dictionary = steps[step_idx]
-	var action_hint: String = st.get("action_hint", "")
-	if action_hint == "":
-		return ""
-	var p_pos: Vector3 = player.get_world_position() if player else Vector3.ZERO
-	var d := Vector2(p_pos.x - target_pos.x, p_pos.z - target_pos.z).length()
-	var rad: float = float(st.get("radius", 12.0))
-	if d <= rad:
-		return "Action : %s" % action_hint
+
+	# Amorçage de quêtes depuis le monde ouvert à Dakar
+	if player and city:
+		var p_pos: Vector3 = player.get_world_position()
+		for place_name in WORLD_MISSION_HUBS:
+			if city.places.has(place_name):
+				var hub_pos: Vector3 = city.places[place_name]
+				var d := Vector2(p_pos.x - hub_pos.x, p_pos.z - hub_pos.z).length()
+				if d <= 12.0:
+					var m_id: String = WORLD_MISSION_HUBS[place_name]
+					if MISSIONS.has(m_id):
+						return "Mission : %s (Interagir pour accepter)" % MISSIONS[m_id]["title"]
 	return ""
 
 
 func try_interact() -> bool:
-	if not has_active_mission():
+	if has_active_mission():
+		var m: Dictionary = MISSIONS[active_id]
+		var steps: Array = m["steps"]
+		if step_idx >= steps.size():
+			return false
+		var st: Dictionary = steps[step_idx]
+		var action_hint: String = st.get("action_hint", "")
+		if action_hint == "":
+			return false
+		var p_pos: Vector3 = player.get_world_position() if player else Vector3.ZERO
+		var d := Vector2(p_pos.x - target_pos.x, p_pos.z - target_pos.z).length()
+		var rad: float = float(st.get("radius", 12.0))
+		if d <= rad:
+			advance_step()
+			return true
 		return false
-	var m: Dictionary = MISSIONS[active_id]
-	var steps: Array = m["steps"]
-	if step_idx >= steps.size():
-		return false
-	var st: Dictionary = steps[step_idx]
-	var action_hint: String = st.get("action_hint", "")
-	if action_hint == "":
-		return false
-	var p_pos: Vector3 = player.get_world_position() if player else Vector3.ZERO
-	var d := Vector2(p_pos.x - target_pos.x, p_pos.z - target_pos.z).length()
-	var rad: float = float(st.get("radius", 12.0))
-	if d <= rad:
-		advance_step()
-		return true
+
+	# Lancement d'une mission depuis le monde ouvert
+	if player and city:
+		var p_pos: Vector3 = player.get_world_position()
+		for place_name in WORLD_MISSION_HUBS:
+			if city.places.has(place_name):
+				var hub_pos: Vector3 = city.places[place_name]
+				var d := Vector2(p_pos.x - hub_pos.x, p_pos.z - hub_pos.z).length()
+				if d <= 12.0:
+					var m_id: String = WORLD_MISSION_HUBS[place_name]
+					return start_mission(m_id)
 	return false

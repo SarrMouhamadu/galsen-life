@@ -1201,6 +1201,27 @@ func rpc_notice(text: String) -> void:
 	GameState.notify.emit(text)
 
 
+## Événements de missions (synchronisation multijoueur et solo en ligne)
+@rpc("any_peer", "reliable")
+func rpc_mission_event(event_type: String, mission_id: String, mission_title: String, reward: int) -> void:
+	if not is_server:
+		return
+	var id := multiplayer.get_remote_sender_id()
+	if not _sessions.has(id):
+		return
+	var who: String = _sessions[id]
+	if event_type == "start":
+		print("[Mission Serveur] %s a lancé la mission : %s" % [who, mission_title])
+	elif event_type == "complete":
+		print("[Mission Serveur] %s a accompli la mission : %s (+%d FCFA)" % [who, mission_title, reward])
+		_broadcast_chat("Serveur", "🏆 Félicitations à %s pour avoir triomphé dans la mission « %s » (+%s) !" % [who, mission_title, GameState.fcfa(reward)])
+
+
+func send_mission_event(event_type: String, mission_id: String, mission_title: String, reward: int = 0) -> void:
+	if online:
+		rpc_mission_event.rpc_id(1, event_type, mission_id, mission_title, reward)
+
+
 ## Rejoindre un ami grâce à son Code Ami unique (ex: "GAL-12345")
 ## Note : géré côté client pour compatibilité totale avec le serveur dédié officiel
 func join_by_friend_code(code: String) -> void:

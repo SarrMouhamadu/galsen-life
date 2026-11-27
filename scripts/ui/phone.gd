@@ -53,6 +53,7 @@ var _app := "home"
 var _contact := ""
 var _wallet := ""
 var _recipient := ""
+var _mission_filter := "all"
 var _title: Label
 var _clock: Label
 var _content: VBoxContainer
@@ -1533,12 +1534,47 @@ func _missions_app() -> void:
 		b_abort.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn_row.add_child(b_abort)
 
-	# 2. Liste de toutes les missions disponibles
-	_content.add_child(_label("Contrats urbains disponibles (%d terminées)" % completed_list.size(), 14, Color("fef08a")))
-	_content.add_child(_note("Accepte une mission pour guider ton GPS et remporter la prime."))
+	# 2. Bannière de statut réseau (En ligne / Hors ligne)
+	if Net.online:
+		_content.add_child(_note("🟢 MODE EN LIGNE • Missions synchronisées avec le serveur et annoncées aux joueurs."))
+	else:
+		_content.add_child(_note("⚪ MODE HORS LIGNE • Toutes les missions sont jouables en solo partout à Dakar."))
+
+	# 3. Barre de filtres (Toutes, Solo & Teranga, Multijoueur En Ligne)
+	var filter_row := HBoxContainer.new()
+	filter_row.add_theme_constant_override("separation", 6)
+	_content.add_child(filter_row)
+
+	var b_all := _button("Toutes (%d)" % mgr.MISSIONS.size(), func():
+		_mission_filter = "all"
+		_show("missions"), Color("2563eb") if _mission_filter == "all" else Color("334155"))
+	b_all.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	filter_row.add_child(b_all)
+
+	var b_solo := _button("🇸🇳 Solo", func():
+		_mission_filter = "solo"
+		_show("missions"), Color("059669") if _mission_filter == "solo" else Color("334155"))
+	b_solo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	filter_row.add_child(b_solo)
+
+	var b_multi := _button("🌐 En Ligne", func():
+		_mission_filter = "online"
+		_show("missions"), Color("d97706") if _mission_filter == "online" else Color("334155"))
+	b_multi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	filter_row.add_child(b_multi)
+
+	# 4. Liste de toutes les missions disponibles selon filtre
+	_content.add_child(_label("Contrats urbains (%d terminées)" % completed_list.size(), 14, Color("fef08a")))
+	_content.add_child(_note("Accepte une mission pour activer le guidage GPS, les balises et remporter la prime."))
 
 	for id in mgr.MISSIONS:
 		var m: Dictionary = mgr.MISSIONS[id]
+		var m_mode: String = m.get("mode", "all")
+		if _mission_filter == "solo" and m_mode == "online":
+			continue
+		if _mission_filter == "online" and m_mode != "online":
+			continue
+
 		var is_active: bool = (mgr.active_id == id)
 		var is_done: bool = id in completed_list
 
@@ -1568,6 +1604,10 @@ func _missions_app() -> void:
 		var tag_lbl := _label(tag, 11, tag_col, HORIZONTAL_ALIGNMENT_RIGHT)
 		tag_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		top_row.add_child(tag_lbl)
+
+		var mode_badge: String = "🌐 CONTRAT MULTIJOUEUR EN LIGNE" if m_mode == "online" else "🇸🇳 MISSION SOLO & TERANGA"
+		var badge_col: Color = Color("38bdf8") if m_mode == "online" else Color("34d399")
+		cv.add_child(_label(mode_badge, 11, badge_col))
 
 		cv.add_child(_note("Par : %s — Prime : %s (%d étapes)" % [m["giver"], GameState.fcfa(m["reward"]), m["steps"].size()]))
 		cv.add_child(_note(m["desc"]))
