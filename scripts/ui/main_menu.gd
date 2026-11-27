@@ -44,8 +44,10 @@ var _channel: OptionButton
 var _pseudo: LineEdit
 var _password: LineEdit
 var _avatar: OptionButton
+var _customize_avatar_btn: Button
 var _friend_code: LineEdit
 var _create: CheckBox
+var _customize_on_start: CheckBox
 var _status: Label
 var _connect_btn: Button
 var _offline_btn: Button
@@ -403,6 +405,13 @@ func _build() -> void:
 	_avatar.select(maxi(0, Net.AVATARS.find(cfg.get_value("net", "avatar", "heros"))))
 	_content_vbox.add_child(_avatar)
 
+	_customize_avatar_btn = Button.new()
+	_customize_avatar_btn.text = "🎨 Personnaliser ce personnage avant de jouer"
+	_customize_avatar_btn.custom_minimum_size = Vector2(0, 38)
+	_customize_avatar_btn.add_theme_font_size_override("font_size", 13)
+	_customize_avatar_btn.pressed.connect(func(): _open_studio(false))
+	_content_vbox.add_child(_customize_avatar_btn)
+
 	_password = _field(_content_vbox, "Mot de passe", saved_pw)
 	_password.secret = true
 
@@ -421,6 +430,19 @@ func _build() -> void:
 	var actions_box := VBoxContainer.new()
 	actions_box.add_theme_constant_override("separation", 8)
 	_content_vbox.add_child(actions_box)
+
+	_customize_on_start = CheckBox.new()
+	_customize_on_start.text = " 🎨 Ouvrir le Studio 3D avant de lancer la partie"
+	_customize_on_start.custom_minimum_size = Vector2(0, 34)
+	_customize_on_start.add_theme_font_size_override("font_size", 14)
+	_customize_on_start.button_pressed = bool(cfg.get_value("ui", "customize_on_start", false))
+	_customize_on_start.toggled.connect(func(pressed: bool):
+		var c := ConfigFile.new()
+		c.load(SETTINGS)
+		c.set_value("ui", "customize_on_start", pressed)
+		c.save(SETTINGS)
+	)
+	actions_box.add_child(_customize_on_start)
 
 	_connect_btn = Button.new()
 	_connect_btn.text = "🌐 SE CONNECTER"
@@ -687,6 +709,15 @@ func apply_theme() -> void:
 		_studio_btn.add_theme_stylebox_override("hover", studio_st)
 		_studio_btn.add_theme_color_override("font_color", Color.WHITE)
 
+	if _customize_avatar_btn and is_instance_valid(_customize_avatar_btn):
+		_customize_avatar_btn.add_theme_stylebox_override("normal", studio_st)
+		_customize_avatar_btn.add_theme_stylebox_override("hover", studio_st)
+		_customize_avatar_btn.add_theme_color_override("font_color", Color.WHITE)
+
+	if _customize_on_start and is_instance_valid(_customize_on_start):
+		_customize_on_start.add_theme_color_override("font_color", col_text)
+		_customize_on_start.add_theme_color_override("font_pressed_color", col_field_focus)
+
 	# 5. Boutons de bascule de thème
 	var theme_st := StyleBoxFlat.new()
 	theme_st.bg_color = Color("e2e8f0") if is_light_mode else Color(0.18, 0.22, 0.29, 0.9)
@@ -897,6 +928,10 @@ func _on_login(ok: bool, message: String) -> void:
 
 
 func _start_offline() -> void:
+	if _customize_on_start and _customize_on_start.button_pressed:
+		_open_studio(true)
+		return
+
 	Audio.stop_music()
 	var chosen_p: String = _pseudo.text.strip_edges() if _pseudo else ""
 	var cfg := ConfigFile.new()
@@ -916,9 +951,10 @@ func _start_offline() -> void:
 	get_tree().change_scene_to_file(MAIN)
 
 
-func _open_studio() -> void:
+func _open_studio(auto_launch: bool = false) -> void:
 	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
-	var studio = CharacterStudioScript.new()
+	var chosen_av: String = Net.AVATARS[_avatar.selected] if _avatar else ""
+	var studio = CharacterStudioScript.new(chosen_av, auto_launch)
 	add_child(studio)
 	studio.closed.connect(func(saved: bool):
 		if saved:

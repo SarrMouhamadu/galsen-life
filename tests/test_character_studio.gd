@@ -96,6 +96,15 @@ func _run() -> void:
 	assert(studio.current_outfit != "", "Une tenue aléatoire doit être générée")
 	print("  [OK] Studio 3D dédié pour CHAQUE Personnage Principal validé avec succès !")
 
+	# Test studio avec démarrage direct du jeu (launch_game_on_save)
+	var studio_launch = StudioScript.new("heros", true)
+	root.add_child(studio_launch)
+	await create_timer(0.05).timeout
+	assert(studio_launch.launch_game_on_save == true, "launch_game_on_save doit valoir true")
+	assert(studio_launch.get("_save_btn") != null, "Le bouton de validation doit exister")
+	assert("COMMENCER LE JEU" in studio_launch.get("_save_btn").text, "Le bouton doit indiquer COMMENCER LE JEU en mode launch")
+	studio_launch.queue_free()
+
 	# Nettoyage
 	studio.queue_free()
 	dummy_root.queue_free()
@@ -109,7 +118,14 @@ func _run() -> void:
 	var studio_btn: Button = menu.get("_studio_btn")
 	assert(studio_btn != null, "Le bouton _studio_btn doit exister dans le menu principal")
 	assert(studio_btn.text.contains("STUDIO PERSONNAGE"), "Le libellé du bouton studio doit être explicite")
-	print("  [OK] Accès direct au Studio depuis le Menu Principal validé")
+
+	var cust_avatar_btn: Button = menu.get("_customize_avatar_btn")
+	assert(cust_avatar_btn != null, "Le bouton _customize_avatar_btn doit exister sous le sélecteur d'avatar")
+	assert("Personnaliser" in cust_avatar_btn.text, "Le libellé de personnalisation doit être explicite")
+
+	var cust_on_start: CheckBox = menu.get("_customize_on_start")
+	assert(cust_on_start != null, "L'option _customize_on_start doit exister dans les options de lancement")
+	print("  [OK] Personnalisation du personnage dès le lancement et au menu principal validée")
 	menu.queue_free()
 
 	# 6. Test intégration dans le Téléphone

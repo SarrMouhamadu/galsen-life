@@ -324,6 +324,8 @@ var current_outfit: String = ""
 var initial_avatar: String = "heros"
 var initial_outfit: String = ""
 var requested_character_id: String = ""
+var launch_game_on_save: bool = false
+var _save_btn: Button
 
 # Éléments 3D du Studio
 var _subview_container: SubViewportContainer
@@ -367,8 +369,9 @@ var _scroll_container: ScrollContainer
 var _active_category: String = "avatar"
 
 
-func _init(initial_char_id: String = "") -> void:
+func _init(initial_char_id: String = "", p_launch_on_save: bool = false) -> void:
 	requested_character_id = initial_char_id
+	launch_game_on_save = p_launch_on_save
 
 
 func _ready() -> void:
@@ -659,16 +662,16 @@ func _setup_ui() -> void:
 	reset_btn.pressed.connect(_reset_look)
 	act_box.add_child(reset_btn)
 
-	var save_btn := Button.new()
-	save_btn.text = "💾 CHOISIR CE PERSONNAGE"
-	save_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	save_btn.custom_minimum_size = Vector2(0, 42)
+	_save_btn = Button.new()
+	_save_btn.text = "💾 VALIDER & COMMENCER LE JEU" if launch_game_on_save else "💾 CHOISIR CE PERSONNAGE"
+	_save_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_save_btn.custom_minimum_size = Vector2(0, 42)
 	var s_st := StyleBoxFlat.new()
 	s_st.bg_color = Color("00853f")
 	s_st.set_corner_radius_all(8)
-	save_btn.add_theme_stylebox_override("normal", s_st)
-	save_btn.pressed.connect(_save_and_close)
-	act_box.add_child(save_btn)
+	_save_btn.add_theme_stylebox_override("normal", s_st)
+	_save_btn.pressed.connect(_save_and_close)
+	act_box.add_child(_save_btn)
 
 	# Contrôles de caméra orbitale sur la gauche
 	var cam_ctrls := VBoxContainer.new()
@@ -1288,14 +1291,21 @@ func _save_and_close() -> void:
 	cfg.save("user://settings.cfg")
 	GameState.save_game()
 
-	var tree = get_tree()
+	var tree := get_tree()
 	if tree:
-		var players = tree.get_nodes_in_group("player")
+		var players := tree.get_nodes_in_group("player")
 		for p in players:
-			if p.get("model") and p.model.has_method("set_outfit"):
+			if p.has_method("update_avatar"):
+				p.update_avatar(current_avatar, current_outfit)
+			elif p.get("model") and p.model.has_method("set_outfit"):
 				p.model.set_outfit(current_outfit)
 
 	closed.emit(true)
+	if launch_game_on_save:
+		if tree and tree.current_scene and tree.current_scene.scene_file_path != "res://scenes/main.tscn":
+			var chosen_p: String = cfg.get_value("net", "pseudo", "Galsenois")
+			Net.start_offline(chosen_p, current_avatar)
+			tree.change_scene_to_file("res://scenes/main.tscn")
 	queue_free()
 
 

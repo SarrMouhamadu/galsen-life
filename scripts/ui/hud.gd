@@ -738,6 +738,10 @@ func _build_intro(root: Control) -> void:
 	_intro.color = Color(0.03, 0.03, 0.05, 0.82)
 	_intro.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(_intro)
+	_intro.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			_hide_intro()
+	)
 	var cc := CenterContainer.new()
 	cc.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_intro.add_child(cc)
@@ -759,9 +763,45 @@ func _build_intro(root: Control) -> void:
 	var jobs := _label(19, Color("a8dadc"), HORIZONTAL_ALIGNMENT_CENTER)
 	jobs.text = "Gagne ta vie : monte dans un taxi jaune et noir, livre le thiéb de Chez Adja,\nvends du café Touba au marché Sandaga... et n'oublie pas de manger un dibi !\nAttention : voler une voiture ou renverser un passant, et la police te tombe dessus."
 	v.add_child(jobs)
-	var go := _label(24, Color("7cfc9a"), HORIZONTAL_ALIGNMENT_CENTER)
-	go.text = "Touche l'écran ou appuie sur une touche pour commencer"
-	v.add_child(go)
+
+	var intro_actions := VBoxContainer.new()
+	intro_actions.add_theme_constant_override("separation", 10)
+	intro_actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	v.add_child(intro_actions)
+
+	var btns_box := HBoxContainer.new()
+	btns_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	btns_box.add_theme_constant_override("separation", 14)
+	intro_actions.add_child(btns_box)
+
+	var play_btn := Button.new()
+	play_btn.text = "🚀 COMMENCER L'AVENTURE"
+	play_btn.custom_minimum_size = Vector2(230, 52)
+	play_btn.add_theme_font_size_override("font_size", 16)
+	var play_st := StyleBoxFlat.new()
+	play_st.bg_color = Color("00853f")
+	play_st.set_corner_radius_all(8)
+	play_btn.add_theme_stylebox_override("normal", play_st)
+	play_btn.pressed.connect(_hide_intro)
+	btns_box.add_child(play_btn)
+
+	var studio_intro_btn := Button.new()
+	studio_intro_btn.text = "🎨 MODIFIER MON PERSONNAGE (Studio 3D)"
+	studio_intro_btn.custom_minimum_size = Vector2(330, 52)
+	studio_intro_btn.add_theme_font_size_override("font_size", 15)
+	var studio_st := StyleBoxFlat.new()
+	studio_st.bg_color = Color("c9a227").darkened(0.2)
+	studio_st.border_color = Color("ffd166")
+	studio_st.set_border_width_all(2)
+	studio_st.set_corner_radius_all(8)
+	studio_intro_btn.add_theme_stylebox_override("normal", studio_st)
+	studio_intro_btn.pressed.connect(_open_studio_from_intro)
+	btns_box.add_child(studio_intro_btn)
+
+	var go := _label(16, Color("7cfc9a"), HORIZONTAL_ALIGNMENT_CENTER)
+	go.text = "Ou appuie sur n'importe quelle touche pour entrer directement dans Dakar"
+	intro_actions.add_child(go)
+
 	var credit := _label(14, Color("bbbbbb"), HORIZONTAL_ALIGNMENT_CENTER)
 	credit.text = "Carte de Dakar : © les contributeurs d'OpenStreetMap (ODbL)"
 	v.add_child(credit)
@@ -771,6 +811,26 @@ func _hide_intro() -> void:
 	var tw := create_tween()
 	tw.tween_property(_intro, "modulate:a", 0.0, 0.4)
 	tw.tween_callback(func(): _intro.visible = false)
+
+
+func _open_studio_from_intro() -> void:
+	var CharacterStudioScript = load("res://scripts/ui/character_studio.gd")
+	if not CharacterStudioScript:
+		return
+	var studio = CharacterStudioScript.new(Net.avatar, false)
+	add_child(studio)
+	studio.closed.connect(func(saved: bool):
+		if saved:
+			var tree := get_tree()
+			if tree:
+				var players := tree.get_nodes_in_group("player")
+				for p in players:
+					if p.has_method("update_avatar"):
+						p.update_avatar(Net.avatar, GameState.tenue)
+					elif p.get("model") and p.model.has_method("set_outfit"):
+						p.model.set_outfit(GameState.tenue)
+			_hide_intro()
+	)
 
 
 func _is_press(event: InputEvent) -> bool:
@@ -801,7 +861,7 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 		return
 	if _intro.visible and _intro.modulate.a >= 1.0:
-		if _is_press(event):
+		if event is InputEventKey and event.pressed and not event.echo:
 			_hide_intro()
 			get_viewport().set_input_as_handled()
 		return

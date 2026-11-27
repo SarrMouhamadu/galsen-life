@@ -122,6 +122,18 @@ func _ready() -> void:
 	model.set_outfit(GameState.tenue)
 
 
+## Met à jour dynamiquement le modèle 3D et la tenue du joueur
+func update_avatar(avatar_type: String = "", outfit: String = "") -> void:
+	if avatar_type != "":
+		Net.avatar = avatar_type
+	if outfit != "":
+		GameState.tenue = outfit
+	if is_instance_valid(model):
+		model.queue_free()
+	model = RealCharacter.create(self, Net.avatar if Net.avatar != "" else RealCharacter.HERO)
+	model.set_outfit(GameState.tenue)
+
+
 func get_world_position() -> Vector3:
 	# Dans un intérieur : on compte la position de la porte (sauvegarde, police, mini-carte)
 	if interior_door != Vector3.ZERO:
